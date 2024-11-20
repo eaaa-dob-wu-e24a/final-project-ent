@@ -1,5 +1,4 @@
 <?php
-
 include("../../../functions/handle_api_request.php");
 
 $input = handle_api_request("POST", "Invalid request method", 405);
@@ -15,15 +14,32 @@ $email = $input["email"];
 $password = $input["password"];
 $phone_number = $input["phone_number"];
 
-// hash the password
+// Hash the password
 $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-$sql = "CALL create_user('$username', '$email', '$password_hash', '$phone_number')";
-$result = $mySQL->query($sql);
+// Enable exceptions for MySQLi
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-if ($result) {
+try {
+    // Prepare the SQL statement
+    $stmt = $mySQL->prepare("CALL create_user(?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $username, $email, $password_hash, $phone_number);
+    $stmt->execute();
+    $stmt->close();
+
     echo json_encode(["message" => "User created successfully"]);
-} else {
-    http_response_code(500);
-    echo json_encode(["error" => "An error occurred while creating the user"]);
+} catch (mysqli_sql_exception $e) {
+    $error_message = $e->getMessage();
+
+    if (strpos($error_message, 'Email already exists') !== false) {
+        http_response_code(400);
+        echo json_encode(["error" => "The email address is already registered. Please use a different email."]);
+    } elseif (strpos($error_message, 'Username already exists') !== false) {
+        http_response_code(400);
+        echo json_encode(["error" => "The username is already taken. Please choose a different username."]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["error" => "An unexpected error occurred while creating the user. Please try again later."]);
+    }
 }
+?>
