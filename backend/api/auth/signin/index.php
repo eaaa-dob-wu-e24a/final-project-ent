@@ -1,4 +1,20 @@
 <?php
+// Enable error reporting (remove in production)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Add CORS headers
+header("Access-Control-Allow-Origin: http://localhost:3000"); // Allow requests from your frontend
+header("Access-Control-Allow-Credentials: true"); // Allow cookies to be sent
+header("Access-Control-Allow-Headers: Content-Type"); // Allow the Content-Type header
+header("Access-Control-Allow-Methods: POST, OPTIONS"); // Allow POST and OPTIONS methods
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    // Return only the headers and not the content
+    exit(0);
+}
 
 /*===============================================
 =          Sign in endpoint           =
@@ -70,5 +86,23 @@ try {
     echo json_encode(["error" => "An error occurred during login. Please try again later."]);
     // Optionally, log $e->getMessage() to a file for debugging
 }
+
+
+// Set the access token as an HTTP-only cookie
+setcookie(
+    'access_token',
+    $access_token,
+    [
+        'expires' => strtotime('+1 hour'),
+        'path' => '/',
+        'domain' => 'localhost',  // Adjust as needed
+        'secure' => false,        // Set to true if using HTTPS
+        'httponly' => true,
+        'samesite' => 'Lax'       // Adjust based on your requirements
+    ]
+);
+
+// Return a success message (optional)
+echo json_encode(["message" => "Login successful"]);
 
 ?>

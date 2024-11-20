@@ -10,11 +10,12 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare the data to send
     const data = {
       email: email,
       password: password,
     };
+
+    console.log("Submitting login form with data:", data);
 
     try {
       const response = await fetch("http://localhost:4000/api/auth/signin/", {
@@ -23,18 +24,21 @@ function LoginForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include", // Include cookies in the request
       });
+
+      console.log("Received response:", response);
 
       const result = await response.json();
 
-      if (response.ok) {
-        // Store the access token (consider security implications)
-        localStorage.setItem("access_token", result.access_token);
+      console.log("Parsed response JSON:", result);
 
+      if (response.ok) {
+        console.log("Login successful, redirecting...");
         // Redirect to a protected page or dashboard
         router.push("/dashboard");
       } else {
-        // Handle errors (e.g., display error message)
+        console.error("Login failed with error:", result.error);
         alert(result.error);
       }
     } catch (error) {

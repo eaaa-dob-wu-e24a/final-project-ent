@@ -2,30 +2,18 @@
 // authorize.php
 function authorize($mySQL)
 {
-    // Get headers
-    $headers = getallheaders();
-
-    // Check if the Authorization header is present
-    if (isset($headers['Authorization'])) {
-        $authHeader = $headers['Authorization'];
+    // Check if the access token cookie is set
+    if (isset($_COOKIE['access_token'])) {
+        $access_token = $_COOKIE['access_token'];
     } else {
         http_response_code(401);
-        echo json_encode(['error' => 'Authorization header missing']);
-        exit();
-    }
-
-    // Parse the Bearer token
-    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
-        $bearerToken = $matches[1];
-    } else {
-        http_response_code(401);
-        echo json_encode(['error' => 'Invalid authorization format']);
+        echo json_encode(['error' => 'Access token missing']);
         exit();
     }
 
     // Prepare statement to check the access token
     $stmt = $mySQL->prepare("SELECT user_login_id, access_token_expiry FROM session WHERE access_token = ?");
-    $stmt->bind_param("s", $bearerToken);
+    $stmt->bind_param("s", $access_token);
     $stmt->execute();
     $stmt->store_result();
 
