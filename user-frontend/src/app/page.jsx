@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import Navigation from "../components/navigation";
 import ProductList from "../components/card";
+import LoginForm from "../components/login-form";
 
 export default function Home() {
   return (
@@ -9,6 +10,8 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <ProductList />
         <Navigation />
+
+        <LoginForm />
       </main>
     </div>
   );
