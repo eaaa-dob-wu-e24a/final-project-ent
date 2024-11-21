@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { lazy, useState } from "react";
 import { FaHouse, FaBookmark, FaUserLarge, FaPlus } from "react-icons/fa6";
 import { PiHandbagSimpleFill } from "react-icons/pi";
 import { FaTimes } from "react-icons/fa";
@@ -24,7 +24,7 @@ export default function Navigation() {
       >
         {/* Modal Content */}
         <div
-          className={`bg-white w-full max-w-md rounded-t-2xl p-6 shadow-lg transform transition-transform duration-300 ${
+          className={`bg-white w-full z-20 max-w-md rounded-t-2xl p-6 shadow-lg transform transition-transform duration-300 ${
             isModalOpen ? "translate-y-0" : "translate-y-full"
           }`}
           onClick={(e) => e.stopPropagation()} // Prevent closing modal on inner click

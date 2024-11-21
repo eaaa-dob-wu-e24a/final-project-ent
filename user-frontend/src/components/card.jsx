@@ -14,14 +14,14 @@ export default function ProductList() {
   ];
 
   return (
-    <div className="w-full p-2 flex flex-col space-y-4 mx-auto">
+    <div className="w-full z-0 p- flex px-5  flex-col space-y-4 mx-auto">
       {products.map((product) => (
         <div
           key={product.id}
-          className="relative bg-white rounded-lg shadow-lg flex flex-col items-start overflow-hidden"
+          className="relative py-3 bg-white rounded-lg shadow-lg flex flex-col items-start overflow-hidden"
         >
           <svg
-            className="absolute right-0 top-0 h-full w-auto object-cover pointer-events-none"
+            className="absolute right-[-8px] top-0 h-48 w-[150px] object-cover pointer-events-none"
             width="103"
             height="144"
             viewBox="0 0 103 144"
@@ -56,11 +56,11 @@ export default function ProductList() {
             </p>
           </div>
 
-          <div className="absolute right-4 top-4 z-10 w-16 h-16 flex-shrink-0">
+          <div className="absolute right-[10px] h-[200px] top-4 z-10 w-[100px] flex-shrink-0">
             <img
               src={product.image}
               alt={product.title}
-              className="object-contain rounded-xl"
+              className="object-contain rounded-[30px]"
             />
           </div>
         </div>
