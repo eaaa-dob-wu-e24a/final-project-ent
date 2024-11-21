@@ -1,41 +1,25 @@
 <?php
-// Enable error reporting (remove in production)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Add CORS headers
-header("Access-Control-Allow-Origin: http://localhost:3000"); // Allow requests from your frontend
-header("Access-Control-Allow-Credentials: true"); // Allow cookies to be sent
-header("Access-Control-Allow-Headers: Content-Type"); // Allow the Content-Type header
-header("Access-Control-Allow-Methods: POST, OPTIONS"); // Allow POST and OPTIONS methods
-
-// Handle preflight OPTIONS request
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    // Return only the headers and not the content
-    exit(0);
-}
-
-/*===============================================
-=          Sign in endpoint           =
-===============================================*/
-
+// Include necessary files
 include("../../../functions/handle_api_request.php");
-$input = handle_api_request("POST", "Invalid request method", 405);
+// signin.php
 
-if (!isset($input["email"]) || !isset($input["password"])) {
-    http_response_code(400);
-    echo json_encode(["error" => "Please fill out all required fields"]);
-    exit();
-}
-
-$email = $input["email"];
-$password = $input["password"];
-
-// Enable exceptions for MySQLi
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
+    $input = handle_api_request("POST", "Invalid request method", 405);
+
+    if (!isset($input["email"]) || !isset($input["password"])) {
+        http_response_code(400);
+        echo json_encode(["error" => "Please fill out all required fields"]);
+        ob_end_flush();
+        exit();
+    }
+
+    $email = $input["email"];
+    $password = $input["password"];
+
+    // Enable exceptions for MySQLi
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
     // Prepare statement to get user with the given email
     $stmt = $mySQL->prepare("SELECT PK_ID, password FROM user_login WHERE email = ?");
     $stmt->bind_param("s", $email);
@@ -46,6 +30,7 @@ try {
     if ($stmt->num_rows == 0) {
         http_response_code(401);
         echo json_encode(["error" => "Invalid email or password"]);
+        ob_end_flush();
         exit();
     }
 
@@ -58,6 +43,7 @@ try {
     if (!password_verify($password, $password_hash_db)) {
         http_response_code(401);
         echo json_encode(["error" => "Invalid email or password"]);
+        ob_end_flush();
         exit();
     }
 
@@ -77,32 +63,34 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    // Return the access token to the client
-    echo json_encode(["access_token" => $access_token]);
+    // Set the access token as an HTTP-only cookie
+    setcookie(
+        'access_token',
+        $access_token,
+        [
+            'expires' => time() + 3600, // 1 hour from now
+            'path' => '/',
+            'domain' => 'localhost',  // Adjust as needed
+            'secure' => false,        // Set to true if using HTTPS
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]
+    );
 
-} catch (mysqli_sql_exception $e) {
-    // Handle exception
+    // Return a single JSON response
+    echo json_encode([
+        "message" => "Login successful",
+        "access_token" => $access_token // Optional: include if needed on the client side
+    ]);
+
+} catch (Exception $e) {
+    // Log the error message (adjust the path as needed)
+    error_log($e->getMessage());
+
+    // Send error response
     http_response_code(500);
     echo json_encode(["error" => "An error occurred during login. Please try again later."]);
-    // Optionally, log $e->getMessage() to a file for debugging
 }
 
-
-// Set the access token as an HTTP-only cookie
-setcookie(
-    'access_token',
-    $access_token,
-    [
-        'expires' => strtotime('+1 hour'),
-        'path' => '/',
-        'domain' => 'localhost',  // Adjust as needed
-        'secure' => false,        // Set to true if using HTTPS
-        'httponly' => true,
-        'samesite' => 'Lax'       // Adjust based on your requirements
-    ]
-);
-
-// Return a success message (optional)
-echo json_encode(["message" => "Login successful"]);
-
+ob_end_flush();
 ?>
