@@ -1,4 +1,6 @@
 <?php
+include("../../../functions/handle_api_request.php");
+
 // authorize.php
 function authorize($mySQL)
 {
@@ -12,8 +14,7 @@ function authorize($mySQL)
     }
 
     // Prepare statement to check the access token
-    $stmt = $mySQL->prepare("SELECT user_login_id, access_token_expiry FROM session WHERE access_token = ?");
-    $stmt->bind_param("s", $access_token);
+    $stmt = $mySQL->prepare("INSERT INTO session (user_login_id, access_token, access_token_expiry) VALUES (?, ?, ?)");    $stmt->bind_param("s", $access_token);
     $stmt->execute();
     $stmt->store_result();
 
