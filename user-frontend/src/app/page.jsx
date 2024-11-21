@@ -1,7 +1,8 @@
 import Navigation from "../components/navigation";
 import ProductList from "../components/card";
 import LoginForm from "../components/login-form";
-import ProductForm from "@/components/product-form";
+import ProductForm from "../components/product-form";
+import SignupForm from "../components/signup-form";
 
 export default function Home() {
   return (
@@ -11,7 +12,7 @@ export default function Home() {
         <ProductList />
         <ProductForm />
         <Navigation />
-
+        <SignupForm />
         <LoginForm />
       </main>
     </div>
