@@ -61,7 +61,6 @@ export default function Navigation() {
           <FaBookmark size={25} />
         </button>
 
-        {/* Floating Action Button */}
         <button
           onClick={toggleModal}
           className={`w-20 h-20 rounded-full  flex items-center justify-center shadow-lg -translate-y-9 transition-all duration-300 ${
@@ -70,7 +69,7 @@ export default function Navigation() {
         >
           <span
             className={`text-2xl text-white  transform transition-transform duration-300 ${
-              isModalOpen ? "rotate-45" : "rotate-0"
+              isModalOpen ? "rotate-90" : "rotate-0"
             }`}
           >
             {isModalOpen ? <FaTimes size={24} /> : <FaPlus size={24} />}
