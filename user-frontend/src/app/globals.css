@@ -9,7 +9,7 @@
 
 @font-face {
   font-family: "Modak";
-  src: url("/app/fonts/modak-regular.ttf") format("truetype");
+  src: url("/fonts/modak-regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }

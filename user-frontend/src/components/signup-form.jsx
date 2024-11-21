@@ -24,19 +24,23 @@ export default function SignupForm() {
     setSuccessMessage(null);
     setLoading(true);
 
-    // Prepare FormData for sending to the server
-    const formPayload = new FormData();
-    formPayload.append("username", formData.username);
-    formPayload.append("email", formData.email);
-    formPayload.append("password", formData.password);
-    formPayload.append("phone_number", formData.phone_number);
+    // Prepare the payload
+    const payload = {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      phone_number: formData.phone_number,
+    };
 
     try {
       const response = await fetch(
-        "http://localhost:4000/backend/api/auth/signup/index.php",
+        "http://localhost:4000/api/auth/signup/index.php",
         {
           method: "POST",
-          body: formPayload,
+          headers: {
+            "Content-Type": "application/json", // Use JSON
+          },
+          body: JSON.stringify(payload), // Send as JSON
         }
       );
 
