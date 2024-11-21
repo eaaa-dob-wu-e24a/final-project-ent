@@ -6,13 +6,11 @@ import ProductForm from "@/components/product-form";
 export default function Home() {
   return (
     <>
-      
-        <ProductList />
-        <ProductForm />
-        <Navigation />
+      <ProductList />
+      <ProductForm />
+      <Navigation />
 
-        <LoginForm />
-      
+      <LoginForm />
     </>
   );
 }
