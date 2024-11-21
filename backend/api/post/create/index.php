@@ -25,16 +25,23 @@ try {
     $product_condition = $input["product_condition"];
     $brand = isset($input["brand"]) ? $input["brand"] : null;
 
-    // $mySQL is available from mysql.php
+    // Retrieve the user_id from the session or authentication context
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(["error" => "Unauthorized"]);
+        exit();
+    }
+    $user_id = $_SESSION['user_id'];
 
     // Prepare the SQL statement
-    $stmt = $mySQL->prepare("CALL create_product(?, ?, ?, ?, ?, ?)");
+    $stmt = $mySQL->prepare("CALL create_product(?, ?, ?, ?, ?, ?, ?)");
 
     if (!$stmt) {
         throw new Exception("Failed to prepare statement: " . $mySQL->error);
     }
 
-    $stmt->bind_param("ssssss", $name, $product_type, $size, $color, $product_condition, $brand);
+    $stmt->bind_param("ssssssi", $name, $product_type, $size, $color, $product_condition, $brand, $user_id);
     $stmt->execute();
     $stmt->close();
 
@@ -51,5 +58,3 @@ try {
     http_response_code(500);
     echo json_encode(["error" => "Der skete en fejl under oprettelsen af produktet"]);
 }
-
-// No closing PHP tag
