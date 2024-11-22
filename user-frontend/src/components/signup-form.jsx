@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import LendrLogo from "./lendr-logo";
+import Link from "next/link";
 
 export default function SignupForm() {
   const [formData, setFormData] = useState({
@@ -24,7 +26,6 @@ export default function SignupForm() {
     setSuccessMessage(null);
     setLoading(true);
 
-    // Prepare the payload
     const payload = {
       username: formData.username,
       email: formData.email,
@@ -38,9 +39,9 @@ export default function SignupForm() {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json", // Use JSON
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload), // Send as JSON
+          body: JSON.stringify(payload),
         }
       );
 
@@ -65,95 +66,105 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold text-center mb-4">Register</h1>
-      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-      {successMessage && (
-        <p className="text-green-500 text-center mb-4">{successMessage}</p>
-      )}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label
-            className="block text-sm font-medium text-gray-700"
-            htmlFor="username"
-          >
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            required
-          />
-        </div>
+    <div className="bg-white min-w-[385px] min-h-svh max-w-lg mx-auto p-6 rounded-lg shadow-md">
+      <div className="mx-auto mt-5 p-6 rounded-lg">
+        <LendrLogo />
+        <h1 className="text-2xl font-bold text-center mb-4">Register</h1>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {successMessage && (
+          <p className="text-green-500 text-center mb-4">{successMessage}</p>
+        )}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="username"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label
-            className="block text-sm font-medium text-gray-700"
-            htmlFor="email"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            required
-          />
-        </div>
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="email"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label
-            className="block text-sm font-medium text-gray-700"
-            htmlFor="password"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            required
-          />
-        </div>
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label
-            className="block text-sm font-medium text-gray-700"
-            htmlFor="phone_number"
-          >
-            Phone Number
-          </label>
-          <input
-            type="text"
-            id="phone_number"
-            name="phone_number"
-            value={formData.phone_number}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            required
-          />
-        </div>
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="phone_number"
+            >
+              Phone Number
+            </label>
+            <input
+              type="text"
+              id="phone_number"
+              name="phone_number"
+              value={formData.phone_number}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              required
+            />
+          </div>
 
-        <button
-          type="submit"
-          className={`w-full px-4 py-2 text-white font-bold rounded-md shadow ${
-            loading ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
-          }`}
-          disabled={loading}
-        >
-          {loading ? "Registering..." : "Register"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            className={`w-full px-4 py-2 text-white font-bold rounded-md shadow ${
+              loading ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
+            }`}
+            disabled={loading}
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
+          <h4 className="text-center mt-4">Har du allerede en bruger?</h4>
+          <Link
+            href="/"
+            className="text-blue-500 hover:underline text-center block mt-2"
+          >
+            Login
+          </Link>
+        </form>
+      </div>
     </div>
   );
 }
