@@ -135,7 +135,7 @@ function ProductForm() {
 
       <form
         onSubmit={handleSubmit}
-        className="grid gap-6 px-10 py-10 rounded-t-[50px] bg-[#E2F0E9]"
+        className="grid gap-6 px-10 pb-[150px] pt-10 rounded-t-[50px] bg-[#E2F0E9]"
       >
         <h2 className="text-center text-black text-lg font-bold font-['Poppins']">
           Vælg type af produkt
