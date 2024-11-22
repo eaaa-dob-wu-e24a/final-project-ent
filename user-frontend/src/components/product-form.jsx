@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { createProduct } from "../actions/product.actions"; // Import the createProduct function
 
 function ProductForm() {
   const [formData, setFormData] = useState({
@@ -13,11 +14,9 @@ function ProductForm() {
   });
 
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
 
-  const productTypes = ["kuffert", "vandrerygsæk", "rygsæk"];
+  const productTypes = ["kuffert", "vandrerygsaek", "rygsaek"];
   const productConditions = ["som ny", "let brugt", "brugt", "slidt"];
 
   const colors = [
@@ -78,19 +77,7 @@ function ProductForm() {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      // Generate a preview URL
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setImageFile(null);
-      setImagePreview(null);
-    }
+    setImageFile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -107,48 +94,21 @@ function ProductForm() {
     formDataToSend.append("image", imageFile);
 
     try {
-      const response = await fetch(
-        "http://localhost:4000/api/product/create/",
-        {
-          method: "POST",
-          credentials: "include",
-          body: formDataToSend,
-          // Note: Do not set the Content-Type header; the browser will set it automatically
-        }
-      );
+      const result = await createProduct(formDataToSend);
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
         setMessage(result.message);
-        setMessageType("success");
-        setFormData({
-          name: "",
-          product_type: "",
-          size: "",
-          color: "",
-          product_condition: "",
-          brand: "",
-        });
-        setImageFile(null);
-        setImagePreview(null);
+        // Reset form fields if needed
       } else {
-        setMessage(
-          result.error || "Der skete en fejl under oprettelsen af produktet"
-        );
-        setMessageType("error");
+        setMessage(result.error);
       }
     } catch (error) {
-      console.error("An error occurred:", error);
-      setMessage(
-        "En uventet fejl opstod under oprettelsen af produktet. Prøv igen senere."
-      );
-      setMessageType("error");
+      setMessage("An error occurred while creating the product.");
     }
   };
 
   return (
-    <div className="mx-auto max-w-md">
+    <div className="mx-auto">
       <Image
         className="mx-auto my-8"
         src="/images/lendrlogo.png"
@@ -159,15 +119,7 @@ function ProductForm() {
       <div className="text-center text-black text-2xl my-5 font-bold font-['Amulya']">
         Opret produkt
       </div>
-      {message && (
-        <p
-          className={`mb-4 ${
-            messageType === "success" ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {message}
-        </p>
-      )}
+      {message && <p className="mb-4 text-red-500">{message}</p>}
 
       <form
         onSubmit={handleSubmit}
@@ -177,11 +129,7 @@ function ProductForm() {
           Vælg type af produkt
         </h2>
         {/* Product Type */}
-        <label htmlFor="product_type" className="sr-only">
-          Produkt Type
-        </label>
         <select
-          id="product_type"
           name="product_type"
           value={formData.product_type}
           onChange={handleChange}
@@ -199,27 +147,19 @@ function ProductForm() {
           Indtast oplysninger
         </h4>
         {/* Name */}
-        <label htmlFor="name" className="sr-only">
-          Name
-        </label>
         <input
           type="text"
-          id="name"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder="Navn"
+          placeholder="Name"
           required
           className="w-full mt-[-5px] h-[49px] pl-6 bg-white rounded-[10px] placeholder-[#808080] text-black"
         />
 
         {/* Brand */}
-        <label htmlFor="brand" className="sr-only">
-          Brand
-        </label>
         <input
           type="text"
-          id="brand"
           name="brand"
           value={formData.brand}
           onChange={handleChange}
@@ -229,24 +169,16 @@ function ProductForm() {
 
         {/* Size and Product Condition */}
         <div className="grid grid-cols-2 gap-4">
-          <label htmlFor="size" className="sr-only">
-            Size
-          </label>
           <input
             type="text"
-            id="size"
             name="size"
             value={formData.size}
             onChange={handleChange}
-            placeholder="Størrelse"
+            placeholder="Size"
             required
             className="w-full h-[49px] text-center bg-white rounded-[10px] text-[#808080]"
           />
-          <label htmlFor="product_condition" className="sr-only">
-            Tilstand
-          </label>
           <select
-            id="product_condition"
             name="product_condition"
             value={formData.product_condition}
             onChange={handleChange}
@@ -276,18 +208,16 @@ function ProductForm() {
           className="flex items-center overflow-x-auto space-x-4 w-full h-14 cursor-grab"
         >
           {colors.map((colorOption) => (
-            <button
-              type="button"
+            <div
               key={colorOption}
               onClick={() => handleColorSelect(colorOption)}
               className={`w-12 h-12 rounded-full cursor-pointer flex-shrink-0 border ${
                 formData.color === colorOption
                   ? "border-black"
                   : "border-gray-300"
-              } focus:outline-none`}
+              }`}
               style={{ backgroundColor: colorOption }}
-              aria-label={`Vælg farven ${colorOption}`}
-            ></button>
+            ></div>
           ))}
         </div>
         {formData.color && (
@@ -304,39 +234,24 @@ function ProductForm() {
         <h4 className="text-black text-lg font-bold font-['Amulya']">
           Upload billede
         </h4>
-        <label htmlFor="image" className="sr-only">
-          Upload billede
-        </label>
         <input
           type="file"
-          id="image"
           name="image"
           accept="image/*"
           onChange={handleFileChange}
           required
           className="w-full h-[49px] bg-white rounded-[10px] text-center text-[#808080]"
         />
-        {imagePreview && (
-          <div className="mt-2">
-            <Image
-              src={imagePreview}
-              alt="Billede Preview"
-              width={100}
-              height={100}
-              className="object-cover rounded"
-            />
-          </div>
-        )}
         {imageFile && (
-          <p className="mt-2 text-black">Valgt fil: {imageFile.name}</p>
+          <p className="mt-2 text-black">Selected file: {imageFile.name}</p>
         )}
 
         {/* Submit Button */}
         <button
           type="submit"
-          className="h-[61px] mt-8 bg-[#5bad86] rounded-[20px] transition hover:bg-[#4da174] focus:outline-none"
+          className="h-[61px] mt-8 bg-[#5bad86] rounded-[20px] transition"
         >
-          Opret Produkt
+          Create Product
         </button>
       </form>
     </div>
