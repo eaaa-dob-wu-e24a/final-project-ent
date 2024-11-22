@@ -1,143 +1,67 @@
 <?php
-// Start output buffering
-ob_start();
 
-// Include necessary files
-include("../../../functions/handle_api_request.php");
+// Include the authorize and handle_api_request functions
+include_once("../../../functions/authorize.php");
+include_once("../../../functions/handle_api_request.php");
 
-// Bring $mySQL into the current scope
-global $mySQL;
+// Authenticate the user and retrieve their user login ID
+$user_login_id = authorize($mySQL);
 
-try {
-    // For now, hardcode the user_id to 6
-    $user_id = 6;
+// Handle the API request
+$input = handle_api_request('POST', 'Request method must be POST', 405);
 
-    // Validate input data
-    $requiredFields = ['name', 'product_type', 'size', 'color', 'product_condition'];
-    foreach ($requiredFields as $field) {
-        if (!isset($_POST[$field]) || empty($_POST[$field])) {
-            http_response_code(400);
-            echo json_encode(["error" => "Please fill out all required fields"]);
-            ob_end_flush();
-            exit();
-        }
-    }
-
-    // Extract input data
-    $name = $_POST["name"];
-    $product_type = $_POST["product_type"];
-    $size = $_POST["size"];
-    $color = $_POST["color"];
-    $product_condition = $_POST["product_condition"];
-    $brand = isset($_POST["brand"]) ? $_POST["brand"] : null;
-
-    // Handle file upload
-    if (!isset($_FILES['image'])) {
-        http_response_code(400);
-        echo json_encode(["error" => "Image file is required"]);
-        ob_end_flush();
-        exit();
-    }
-
-    $image = $_FILES['image'];
-
-    // Check for upload errors
-    if ($image['error'] !== UPLOAD_ERR_OK) {
-        http_response_code(400);
-        echo json_encode(["error" => "An error occurred during file upload"]);
-        ob_end_flush();
-        exit();
-    }
-
-    // Validate file type (allow only JPEG and PNG)
-    $allowedTypes = ['image/jpeg', 'image/png'];
-    if (!in_array($image['type'], $allowedTypes)) {
-        http_response_code(400);
-        echo json_encode(["error" => "Only JPEG and PNG images are allowed"]);
-        ob_end_flush();
-        exit();
-    }
-
-    // Limit file size to 2MB
-    if ($image['size'] > 2 * 1024 * 1024) { // 2MB limit
-        http_response_code(400);
-        echo json_encode(["error" => "File size exceeds 2MB limit"]);
-        ob_end_flush();
-        exit();
-    }
-
-    // Generate a unique file name
-    $extension = pathinfo($image['name'], PATHINFO_EXTENSION);
-    $fileName = uniqid() . '.' . $extension;
-
-    // Set the upload directory
-    $uploadDir = __DIR__ . '/uploads/'; // Adjust the path if necessary
-
-    // Create the upload directory if it doesn't exist
-    if (!is_dir($uploadDir)) {
-        if (!mkdir($uploadDir, 0755, true)) {
-            throw new Exception("Failed to create upload directory.");
-        }
-    }
-
-    // Move the uploaded file to the upload directory
-    $filePath = $uploadDir . $fileName;
-    if (!move_uploaded_file($image['tmp_name'], $filePath)) {
-        http_response_code(500);
-        echo json_encode(["error" => "Failed to save the uploaded file"]);
-        ob_end_flush();
-        exit();
-    }
-
-    // Prepare the SQL statement with an OUT parameter
-    $stmt = $mySQL->prepare("CALL create_product(?, ?, ?, ?, ?, ?, ?, @new_product_id)");
-    if (!$stmt) {
-        throw new Exception("Failed to prepare statement: " . $mySQL->error);
-    }
-
-    $stmt->bind_param("ssssssi", $name, $product_type, $size, $color, $product_condition, $brand, $user_id);
-    $stmt->execute();
-    $stmt->close();
-
-    // Retrieve the OUT parameter
-    $result = $mySQL->query("SELECT @new_product_id AS product_id");
-    if ($result) {
-        $row = $result->fetch_assoc();
-        $product_id = $row['product_id'];
-        $result->close();
-    } else {
-        throw new Exception("Failed to retrieve inserted product ID");
-    }
-
-    // Check if product_id was retrieved
-    if (!$product_id) {
-        throw new Exception("Failed to retrieve inserted product ID");
-    }
-
-    // Prepare the SQL statement to insert the image path
-    $stmt = $mySQL->prepare("INSERT INTO product_pictures (picture_path, product_id) VALUES (?, ?)");
-    if (!$stmt) {
-        throw new Exception("Failed to prepare statement for image insertion: " . $mySQL->error);
-    }
-
-    $relativeFilePath = 'uploads/' . $fileName; // Use relative path for storage
-    $stmt->bind_param("si", $relativeFilePath, $product_id);
-    $stmt->execute();
-    $stmt->close();
-
-    // Close the database connection
-    $mySQL->close();
-
-    // Send success response
-    echo json_encode(["message" => "Dit produkt er nu oprettet"]);
-} catch (Exception $e) {
-    // Log the error message
-    error_log($e->getMessage());
-
-    // Send error response
-    http_response_code(500);
-    echo json_encode(["error" => "Der skete en fejl under oprettelsen af produktet"]);
+// Validate that all required fields are provided in the input
+if (!isset($input['name']) || !isset($input['brand']) || !isset($input['product_type']) || 
+    !isset($input['size']) || !isset($input['color']) || !isset($input['product_condition'])) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Please fill out all required fields']);
+    exit();
 }
 
-ob_end_flush();
+// Extract the input data into variables
+$name = $input['name'];
+$brand = $input['brand'];
+$product_type = $input['product_type'];
+$size = $input['size'];
+$color = $input['color'];
+$product_condition = $input['product_condition'];
+
+try {
+    // Prepare the SQL statement to call the stored procedure
+    $stmt = $mySQL->prepare("CALL create_user_product(?, ?, ?, ?, ?, ?, ?)");
+    
+    // Bind the parameters to the SQL statement. (s = string, i = integer)
+    $stmt->bind_param("ssssssi", $name, $product_type, $size, $color, $product_condition, $brand, $user_login_id);
+
+    // Execute the statement / stored procedure
+    if ($stmt->execute()) {
+        // Fetch the result set containing the new product ID
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        if ($row && isset($row['new_product_id'])) {
+            // Return a success response with the new product ID
+            echo json_encode(['message' => 'Product created successfully', 'product_id' => $row['new_product_id']]);
+        } else {
+            // If no product ID is returned, respond with an error
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to retrieve the new product ID']);
+        }
+    } else {
+        // If the stored procedure execution fails, return a 500 Internal Server Error
+        http_response_code(500);
+        echo json_encode(['error' => 'An error occurred while creating the product']);
+    }
+
+    // Close the prepared statement
+    $stmt->close();
+} catch (mysqli_sql_exception $e) {
+    // Catch any database-related exceptions and return a 500 Internal Server Error with the exception message
+    http_response_code(500);
+    echo json_encode(['error' => $e->getMessage()]);
+}
+
+// Close the database connection to release resources
+$mySQL->close();
+
 ?>
