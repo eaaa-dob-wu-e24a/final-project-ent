@@ -36,7 +36,7 @@ function LoginForm() {
       if (response.ok) {
         console.log("Login successful, redirecting...");
         // Redirect to a protected page or dashboard
-        router.push("/dashboard");
+        router.push("/hjem");
       } else {
         console.error("Login failed with error:", result.error);
         alert(result.error);
