@@ -12,9 +12,9 @@ $input = handle_api_request('POST', 'Request method must be POST', 405);
 
 // Validate that all required fields are provided in the input
 if (!isset($input['name']) || !isset($input['brand']) || !isset($input['product_type']) || 
-    !isset($input['size']) || !isset($input['color']) || !isset($input['product_condition'])) {
+    !isset($input['size']) || !isset($input['color']) || !isset($input['product_condition']) || !isset($input['files']['image'])) {
     http_response_code(400);
-    echo json_encode(['error' => 'Please fill out all required fields']);
+    echo json_encode(['error' => 'Please fill out all required fields, including an image']);
     exit();
 }
 
@@ -25,13 +25,56 @@ $product_type = $input['product_type'];
 $size = $input['size'];
 $color = $input['color'];
 $product_condition = $input['product_condition'];
+$image = $input['files']['image'];
+
+// Function to handle image upload
+function upload_image($image){
+
+    // check for upload errors
+    if ($image['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception('An error occurred while uploading the image');
+    }
+
+    // Validate the image file type (only allow PNG and JPEG images)
+    $allowed_types = ['image/png', 'image/jpeg'];
+    if (!in_array($image['type'], $allowed_types)) {
+        throw new Exception('Only PNG and JPEG images are allowed');
+    }
+
+    // Limit file size to 2MB
+    if ($image['size'] > 2 * 1024 * 1024) {
+        throw new Exception('Image must be less than 2MB');
+    }
+
+    // Generate a unique filename for the image
+    $extension = pathinfo($image['name'], PATHINFO_EXTENSION);
+    $file_name = uniqid() . '.' . $extension;
+
+    // Define the upload directory
+    $upload_dir = __DIR__ . '/uploads/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+
+    // Move the uploaded file to the upload directory
+    $destination = $upload_dir . $file_name;
+    if (!move_uploaded_file($image['tmp_name'], $destination)) {
+        throw new Exception('Failed to move uploaded file');
+    }
+
+    // Return the relative path of the uploaded image
+    return './uploads/' . $file_name;
+}
 
 try {
+    // upload the image
+    $image_path = upload_image($_FILES['image']);
+
     // Prepare the SQL statement to call the stored procedure
-    $stmt = $mySQL->prepare("CALL create_user_product(?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $mySQL->prepare("CALL create_user_product_with_image(?, ?, ?, ?, ?, ?, ?, ?)");
     
     // Bind the parameters to the SQL statement. (s = string, i = integer)
-    $stmt->bind_param("ssssssi", $name, $product_type, $size, $color, $product_condition, $brand, $user_login_id);
+    $stmt->bind_param("ssssssis", $name, $product_type, $size, $color, $product_condition, $brand, $user_login_id, $image_path);
 
     // Execute the statement / stored procedure
     if ($stmt->execute()) {
@@ -40,8 +83,12 @@ try {
         $row = $result->fetch_assoc();
 
         if ($row && isset($row['new_product_id'])) {
-            // Return a success response with the new product ID
-            echo json_encode(['message' => 'Product created successfully', 'product_id' => $row['new_product_id']]);
+         // Return success response with the new product ID and image path
+         echo json_encode([
+            'message' => 'Product created successfully',
+            'product_id' => $row['new_product_id'],
+            'image_path' => $image_path
+        ]);
         } else {
             // If no product ID is returned, respond with an error
             http_response_code(500);
