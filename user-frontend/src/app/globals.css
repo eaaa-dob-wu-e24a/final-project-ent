@@ -7,12 +7,122 @@
   --foreground: #171717;
 }
 
+
 @font-face {
   font-family: "Modak";
-  src: url("/app/fonts/modak-regular.ttf") format("truetype");
+  src: url("fonts/Modak-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
+
+@font-face {
+  font-family: "Amulya";
+  src: url("fonts/Amulya-Bold.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Amulya";
+  src: url("fonts/Amulya-BoldItalic.otf") format("opentype");
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Amulya";
+  src: url("fonts/Amulya-Italic.otf") format("opentype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Amulya";
+  src: url("fonts/Amulya-Light.otf") format("opentype");
+  font-weight: light;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Amulya";
+  src: url("fonts/Amulya-LightItalic.otf") format("opentype");
+  font-weight: light;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Amulya";
+  src: url("fonts/Amulya-Medium.otf") format("opentype");
+  font-weight: medium;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Amulya";
+  src: url("fonts/Amulya-MediumItalic.otf") format("opentype");
+  font-weight: medium;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Amulya";
+  src: url("fonts/Amulya-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Synonym";
+  src: url("fonts/Synonym-Bold.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Synonym";
+  src: url("fonts/Synonym-Extralight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Synonym";
+  src: url("fonts/Synonym-Light.otf") format("opentype");
+  font-weight: light;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Synonym";
+  src: url("fonts/Synonym-Medium.otf") format("opentype");
+  font-weight: medium;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Synonym";
+  src: url("fonts/Synonym-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Synonym";
+  src: url("fonts/Synonym-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+p {
+  font-family: "Synonym", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Amulya", sans-serif;
+}
+
+
+
 
 @media (prefers-color-scheme: dark) {
   :root {

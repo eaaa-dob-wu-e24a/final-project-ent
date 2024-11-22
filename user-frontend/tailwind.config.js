@@ -12,6 +12,10 @@ module.exports = {
         foreground: "var(--foreground)",
         darkgreen: "#5BAD86",
       },
+      fontFamily: {
+        "heading": ["Amulya", "sans-serif"],
+        "body": ["Synonym", "sans-serif"],
+      },
     },
   },
   plugins: [],
