@@ -1,25 +1,75 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 
 export default function ProductList() {
-  const products = [
-    {
-      id: 1,
-      title: "ADAX KUFFERT",
-      condition: "Som ny",
-      size: "80 L",
-      color: "Sort",
-      status: "Aktivt opslag",
-      image: "../dummypicture.webp",
-    },
-  ];
+  const [products, setProducts] = useState([]); // State to hold fetched products
+  const [loading, setLoading] = useState(true); // State to manage loading
+  const [error, setError] = useState(""); // State to handle errors
+
+  useEffect(() => {
+    // Function to fetch products from the backend
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:4000/api/product/read/",
+          {
+            method: "GET",
+            credentials: "include", // Include credentials if needed
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch products.");
+        }
+
+        const data = await response.json();
+
+        // Transform the fetched data to match the frontend structure
+        const transformedProducts = data.map((product) => ({
+          id: product.PK_ID,
+          title: product.name,
+          condition: product.product_condition,
+          size: product.size,
+          color: product.color,
+          status: "Aktivt opslag", // Assuming all products are active; adjust as needed
+          image:
+            product.pictures.length > 0
+              ? `http://localhost:4000/api/product/create/${product.pictures[0]}`
+              : "../dummypicture.webp", // Use the first image or a placeholder
+        }));
+
+        setProducts(transformedProducts);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError("Der skete en fejl under hentning af produkter.");
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []); // Empty dependency array ensures this runs once on mount
+
+  if (loading) {
+    return <p className="text-center">Indlæser produkter...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
+
+  if (products.length === 0) {
+    return <p className="text-center">Ingen produkter fundet.</p>;
+  }
 
   return (
-    <div className="w-full z-0 p- flex px-5  flex-col space-y-4 mx-auto">
+    <div className="w-full z-0 p- flex px-5 flex-col space-y-4 mx-auto">
       {products.map((product) => (
         <div
           key={product.id}
           className="relative py-3 bg-white rounded-lg shadow-lg flex flex-col items-start overflow-hidden"
         >
+          {/* Decorative SVG */}
           <svg
             className="absolute right-[-8px] top-0 h-48 w-[150px] object-cover pointer-events-none"
             width="103"
@@ -34,6 +84,7 @@ export default function ProductList() {
             />
           </svg>
 
+          {/* Product Details */}
           <div className="pl-5 p-1 grid gap-4 relative z-10">
             <h3 className="text-xl pt-2 text-[#060606] font-bold">
               {product.title}
@@ -47,7 +98,10 @@ export default function ProductList() {
                 <span className="font-medium">Størrelse:</span> {product.size}
               </p>
               <p className="flex items-center text-gray-600 text-xs">
-                <span className="w-3 h-3 bg-black rounded-full inline-block mr-2"></span>
+                <span
+                  className="w-3 h-3 bg-black rounded-full inline-block mr-2"
+                  style={{ backgroundColor: product.color }}
+                ></span>
                 {product.color}
               </p>
             </div>
@@ -56,6 +110,7 @@ export default function ProductList() {
             </p>
           </div>
 
+          {/* Product Image */}
           <div className="absolute right-[10px] h-[200px] top-4 z-10 w-[100px] flex-shrink-0">
             <img
               src={product.image}

@@ -12,6 +12,7 @@ function ProductForm() {
     brand: "",
   });
 
+  const [imageFile, setImageFile] = useState(null);
   const [message, setMessage] = useState("");
 
   const productTypes = ["kuffert", "vandrerygsæk", "rygsæk"];
@@ -74,27 +75,33 @@ function ProductForm() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const data = {
-      name: formData.name,
-      product_type: formData.product_type,
-      size: formData.size,
-      color: formData.color,
-      product_condition: formData.product_condition,
-      brand: formData.brand || null,
-    };
+    // Create a FormData object to send form data and the image file
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("product_type", formData.product_type);
+    formDataToSend.append("size", formData.size);
+    formDataToSend.append("color", formData.color);
+    formDataToSend.append("product_condition", formData.product_condition);
+    formDataToSend.append("brand", formData.brand || "");
+    formDataToSend.append("image", imageFile);
 
     try {
-      const response = await fetch("http://localhost:4000/api/post/create/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
+      const response = await fetch(
+        "http://localhost:4000/api/product/create/",
+        {
+          method: "POST",
+          credentials: "include",
+          body: formDataToSend,
+          // Note: Do not set the Content-Type header; the browser will set it automatically
+        }
+      );
 
       const result = await response.json();
 
@@ -108,6 +115,7 @@ function ProductForm() {
           product_condition: "",
           brand: "",
         });
+        setImageFile(null);
       } else {
         setMessage(result.error);
       }
@@ -233,8 +241,8 @@ function ProductForm() {
           ))}
         </div>
         {formData.color && (
-          <p className="mt-2">
-            Selected Color:{" "}
+          <p className="mt-2 text-black flex gap-2 items-center">
+            Valgte farve:{" "}
             <span
               className="inline-block w-5 h-5 rounded-full"
               style={{ backgroundColor: formData.color }}
@@ -242,6 +250,23 @@ function ProductForm() {
           </p>
         )}
 
+        {/* Image Upload Field */}
+        <h4 className="text-black text-lg font-bold font-['Amulya']">
+          Upload billede
+        </h4>
+        <input
+          type="file"
+          name="image"
+          accept="image/*"
+          onChange={handleFileChange}
+          required
+          className="w-full h-[49px] bg-white rounded-[10px] text-center text-[#808080]"
+        />
+        {imageFile && (
+          <p className="mt-2 text-black">Selected file: {imageFile.name}</p>
+        )}
+
+        {/* Submit Button */}
         <button
           type="submit"
           className="h-[61px] mt-8 bg-[#5bad86] rounded-[20px] transition"
