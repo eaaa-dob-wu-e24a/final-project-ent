@@ -1,4 +1,5 @@
 import "./globals.css";
+import NavWrapper from "@/components/nav-wrapper";
 
 export const metadata = {
   title: "Create Next App",
@@ -12,6 +13,7 @@ export default function RootLayout({ children }) {
         <main className="flex flex-col min-h-screen bg-[#F7F9FD]">
           {children}
         </main>
+        <NavWrapper />
       </body>
     </html>
   );
