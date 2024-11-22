@@ -4,6 +4,7 @@ import { FaHouse, FaBookmark, FaUserLarge, FaPlus } from "react-icons/fa6";
 import { PiHandbagSimpleFill } from "react-icons/pi";
 import { FaTimes } from "react-icons/fa";
 import ProductForm from "./product-form"; // Ensure the path and casing are correct
+import Link from "next/link";
 
 export default function Navigation() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,13 +71,16 @@ export default function Navigation() {
 
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 w-full bg-white shadow-md flex items-center justify-between px-4 py-2">
-        <button className="flex flex-col items-center text-gray-400">
+        <Link className="flex flex-col items-center text-gray-400" href="/hjem">
           <FaHouse size={30} />
-        </button>
+        </Link>
 
-        <button className="flex flex-col items-center text-gray-400">
+        <Link
+          className="flex flex-col items-center text-gray-400"
+          href="/favoritter"
+        >
           <FaBookmark size={25} />
-        </button>
+        </Link>
 
         <button
           onClick={toggleModal}
@@ -93,13 +97,19 @@ export default function Navigation() {
           </span>
         </button>
 
-        <button className="flex flex-col items-center text-gray-400">
+        <Link
+          className="flex flex-col items-center text-gray-400"
+          href="/ordre-og-opslag"
+        >
           <PiHandbagSimpleFill size={30} />
-        </button>
+        </Link>
 
-        <button className="flex flex-col items-center text-gray-400">
+        <Link
+          className="flex flex-col items-center text-gray-400"
+          href="/profil"
+        >
           <FaUserLarge size={24} />
-        </button>
+        </Link>
       </footer>
     </>
   );

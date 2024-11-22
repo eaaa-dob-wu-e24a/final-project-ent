@@ -134,17 +134,4 @@ h1, h2, h3, h4, h5, h6 {
 body {
   color: var(--foreground);
   background: var(--background);
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  button {
-    font-family: amulya, bold, sans-serif;
-  }
-  p {
-    font-family: synonym, regular, sans-serif;
-  }
 }
