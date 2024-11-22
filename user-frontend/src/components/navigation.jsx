@@ -1,14 +1,22 @@
 "use client";
-import React, { lazy, useState } from "react";
+import React, { useState } from "react";
 import { FaHouse, FaBookmark, FaUserLarge, FaPlus } from "react-icons/fa6";
 import { PiHandbagSimpleFill } from "react-icons/pi";
 import { FaTimes } from "react-icons/fa";
+import ProductForm from "./product-form"; // Ensure the path and casing are correct
+import Link from "next/link";
 
 export default function Navigation() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState("default"); // State to track modal content
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
+    if (!isModalOpen) setModalContent("default"); // Reset modal content when reopening
+  };
+
+  const showProductForm = () => {
+    setModalContent("productForm"); // Set content to ProductForm
   };
 
   return (
@@ -24,51 +32,64 @@ export default function Navigation() {
       >
         {/* Modal Content */}
         <div
-          className={`bg-white w-full z-20 max-w-md rounded-t-2xl p-6 shadow-lg transform transition-transform duration-300 ${
+          className={`bg-white w-full z-20 max-w-md rounded-t-2xl shadow-lg transform transition-transform duration-300 overflow-y-auto ${
             isModalOpen ? "translate-y-0" : "translate-y-full"
           }`}
           onClick={(e) => e.stopPropagation()} // Prevent closing modal on inner click
-          style={{ height: "700px" }} // Add custom height here
+          style={{ height: "700px" }} // Custom height
         >
-          <div className="flex items-center flex-col h-full">
-            <h2
-              className="text-5xl text-[#53BF6D] mb-4"
-              style={{ fontFamily: "Modak" }}
-            >
-              LEND'<span className="text-[#FF7127]">r</span>
-            </h2>
-            <p className="text-xl font-semibold text-center text-[#060606] mb-6">
-              Opret opslag eller produkt
-            </p>
-            <div className="flex space-x-4 font-bold">
-              <button className="px-4 py-2 bg-[#2B8F60] text-white rounded-lg shadow-md">
-                Opret produkt
-              </button>
-              <button className="px-4 py-2 bg-[#5BAD86] text-white rounded-lg shadow-md">
-                Opret ordre
-              </button>
+          {modalContent === "default" ? (
+            // Default modal content
+            <div className="flex items-center mt-5 flex-col h-full">
+              <h2
+                className="text-5xl text-[#53BF6D] mb-4"
+                style={{ fontFamily: "Modak" }}
+              >
+                LEND'<span className="text-[#FF7127]">r</span>
+              </h2>
+              <p className="text-xl font-semibold text-center text-[#060606] mb-6">
+                Opret opslag eller produkt
+              </p>
+              <div className="flex space-x-4 font-bold">
+                <button
+                  className="px-4 py-2 bg-[#2B8F60] text-white rounded-lg shadow-md"
+                  onClick={showProductForm} // Show ProductForm on click
+                >
+                  Opret produkt
+                </button>
+                <button className="px-4 py-2 bg-[#5BAD86] text-white rounded-lg shadow-md">
+                  Opret ordre
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            // Render ProductForm
+            <ProductForm />
+          )}
         </div>
       </div>
 
+      {/* Footer */}
       <footer className="fixed bottom-0 left-0 w-full bg-white shadow-md flex items-center justify-between px-4 py-2">
-        <button className="flex flex-col items-center text-gray-400">
+        <Link className="flex flex-col items-center text-gray-400" href="/hjem">
           <FaHouse size={30} />
-        </button>
+        </Link>
 
-        <button className="flex flex-col items-center text-gray-400">
+        <Link
+          className="flex flex-col items-center text-gray-400"
+          href="/favoritter"
+        >
           <FaBookmark size={25} />
-        </button>
+        </Link>
 
         <button
           onClick={toggleModal}
-          className={`w-20 h-20 rounded-full  flex items-center justify-center shadow-lg -translate-y-9 transition-all duration-300 ${
+          className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg -translate-y-9 transition-all duration-300 ${
             isModalOpen ? "bg-[#FF7127]" : "bg-[#53BF6D]"
           }`}
         >
           <span
-            className={`text-2xl text-white  transform transition-transform duration-300 ${
+            className={`text-2xl text-white transform transition-transform duration-300 ${
               isModalOpen ? "rotate-90" : "rotate-0"
             }`}
           >
@@ -76,13 +97,19 @@ export default function Navigation() {
           </span>
         </button>
 
-        <button className="flex flex-col items-center text-gray-400">
+        <Link
+          className="flex flex-col items-center text-gray-400"
+          href="/ordre-og-opslag"
+        >
           <PiHandbagSimpleFill size={30} />
-        </button>
+        </Link>
 
-        <button className="flex flex-col items-center text-gray-400">
+        <Link
+          className="flex flex-col items-center text-gray-400"
+          href="/profil"
+        >
           <FaUserLarge size={24} />
-        </button>
+        </Link>
       </footer>
     </>
   );

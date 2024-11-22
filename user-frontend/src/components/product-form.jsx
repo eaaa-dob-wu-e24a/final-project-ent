@@ -1,7 +1,6 @@
-// components/ProductForm.js
-
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import Image from "next/image";
 
 function ProductForm() {
   const [formData, setFormData] = useState({
@@ -15,19 +14,49 @@ function ProductForm() {
 
   const [message, setMessage] = useState("");
 
-  // Preset options for product_type and product_condition
   const productTypes = ["kuffert", "vandrerygsæk", "rygsæk"];
   const productConditions = ["som ny", "let brugt", "brugt", "slidt"];
 
-  // Preset colors for the color picker
   const colors = [
-    "#FF0000", // Red
-    "#00FF00", // Green
-    "#0000FF", // Blue
-    "#FFFF00", // Yellow
-    "#FFA500", // Orange
-    "#800080", // Purple
+    "#000000",
+    "#5337FF",
+    "#72CA81",
+    "#7F8992",
+    "#9E29BB",
+    "#C1C1C1",
+    "#FF3DD4",
+    "#FF5757",
+    "#FFB23F",
+    "#FFE34E",
+    "#FFFFFF",
   ];
+
+  const colorsRef = useRef(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    startX.current = e.pageX - colorsRef.current.offsetLeft;
+    scrollLeft.current = colorsRef.current.scrollLeft;
+  };
+
+  const handleMouseLeave = () => {
+    isDragging.current = false;
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    e.preventDefault();
+    const x = e.pageX - colorsRef.current.offsetLeft;
+    const walk = (x - startX.current) * 2; // Scroll faster
+    colorsRef.current.scrollLeft = scrollLeft.current - walk;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,14 +77,13 @@ function ProductForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare the data to send
     const data = {
       name: formData.name,
       product_type: formData.product_type,
       size: formData.size,
       color: formData.color,
       product_condition: formData.product_condition,
-      brand: formData.brand || null, // brand is optional
+      brand: formData.brand || null,
     };
 
     try {
@@ -65,14 +93,13 @@ function ProductForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-        credentials: "include", // Include cookies if needed
+        credentials: "include",
       });
 
       const result = await response.json();
 
       if (response.ok) {
         setMessage(result.message);
-        // Optionally, reset the form
         setFormData({
           name: "",
           product_type: "",
@@ -93,107 +120,84 @@ function ProductForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Create a New Product</h2>
+    <div className="mx-auto">
+      <Image
+        className="mx-auto my-8"
+        src="/images/lendrlogo.png"
+        alt="Product Image"
+        width={200}
+        height={300}
+      />
+      <div className="text-center text-black text-2xl my-5 font-bold font-['Amulya']">
+        Opret produkt
+      </div>
+      {message && <p className="mb-4 text-red-500">{message}</p>}
 
-      {message && <p className="mb-4">{message}</p>}
-
-      <form onSubmit={handleSubmit}>
-        {/* Name */}
-        <div className="mb-4">
-          <label className="block text-gray-700">Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border rounded"
-          />
-        </div>
-
+      <form
+        onSubmit={handleSubmit}
+        className="grid gap-6 px-10 pb-[150px] pt-10 rounded-t-[50px] bg-[#E2F0E9]"
+      >
+        <h2 className="text-center text-black text-lg font-bold font-['Poppins']">
+          Vælg type af produkt
+        </h2>
         {/* Product Type */}
-        <div className="mb-4">
-          <label className="block text-gray-700">Product Type:</label>
-          <select
-            name="product_type"
-            value={formData.product_type}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border rounded"
-          >
-            <option value="">Select a product type</option>
-            {productTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          name="product_type"
+          value={formData.product_type}
+          onChange={handleChange}
+          required
+          className="w-full h-[49px] bg-white rounded-[10px] text-center text-[#808080]"
+        >
+          <option value="">Produkt type</option>
+          {productTypes.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+        <h4 className="text-black text-lg font-bold font-['Amulya']">
+          Indtast oplysninger
+        </h4>
+        {/* Name */}
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Name"
+          required
+          className="w-full mt-[-5px] h-[49px] pl-6 bg-white rounded-[10px] placeholder-[#808080] text-black"
+        />
 
-        {/* Size */}
-        <div className="mb-4">
-          <label className="block text-gray-700">Size:</label>
+        {/* Brand */}
+        <input
+          type="text"
+          name="brand"
+          value={formData.brand}
+          onChange={handleChange}
+          placeholder="Brand"
+          className="w-full h-[49px] pl-6 bg-white rounded-[10px] placeholder-[#808080] text-black"
+        />
+
+        {/* Size and Product Condition */}
+        <div className="grid grid-cols-2 gap-4">
           <input
             type="text"
             name="size"
             value={formData.size}
             onChange={handleChange}
+            placeholder="Size"
             required
-            className="w-full text-black px-3 py-2 border rounded"
+            className="w-full h-[49px] text-center bg-white rounded-[10px] text-[#808080]"
           />
-        </div>
-
-        {/* Color Picker */}
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Color:</label>
-          <div className="flex space-x-2">
-            {colors.map((colorOption) => (
-              <div
-                key={colorOption}
-                onClick={() => handleColorSelect(colorOption)}
-                style={{
-                  backgroundColor: colorOption,
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  border:
-                    formData.color === colorOption
-                      ? "3px solid black"
-                      : "1px solid gray",
-                  cursor: "pointer",
-                }}
-                title={colorOption}
-              ></div>
-            ))}
-          </div>
-          {formData.color && (
-            <p className="mt-2">
-              Selected Color:{" "}
-              <span
-                style={{
-                  display: "inline-block",
-                  width: "20px",
-                  height: "20px",
-                  backgroundColor: formData.color,
-                  borderRadius: "50%",
-                }}
-              ></span>
-            </p>
-          )}
-        </div>
-
-        {/* Product Condition */}
-        <div className="mb-4">
-          <label className="block text-gray-700">Condition:</label>
           <select
             name="product_condition"
             value={formData.product_condition}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full h-[49px] text-center bg-white rounded-[10px] text-[#808080]"
           >
-            <option value="">Select product condition</option>
+            <option value="">Tilstand</option>
             {productConditions.map((condition) => (
               <option key={condition} value={condition}>
                 {condition}
@@ -202,21 +206,45 @@ function ProductForm() {
           </select>
         </div>
 
-        {/* Brand (Optional) */}
-        <div className="mb-4">
-          <label className="block text-gray-700">Brand (Optional):</label>
-          <input
-            type="text"
-            name="brand"
-            value={formData.brand}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded"
-          />
+        {/* Color Picker */}
+        <h4 className="text-[#031926] text-[17px] font-medium font-['Amulya']">
+          Farve
+        </h4>
+
+        <div
+          ref={colorsRef}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          className="flex items-center overflow-x-auto space-x-4 w-full h-14 cursor-grab"
+        >
+          {colors.map((colorOption) => (
+            <div
+              key={colorOption}
+              onClick={() => handleColorSelect(colorOption)}
+              className={`w-12 h-12 rounded-full cursor-pointer flex-shrink-0 border ${
+                formData.color === colorOption
+                  ? "border-black"
+                  : "border-gray-300"
+              }`}
+              style={{ backgroundColor: colorOption }}
+            ></div>
+          ))}
         </div>
+        {formData.color && (
+          <p className="mt-2">
+            Selected Color:{" "}
+            <span
+              className="inline-block w-5 h-5 rounded-full"
+              style={{ backgroundColor: formData.color }}
+            ></span>
+          </p>
+        )}
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200"
+          className="h-[61px] mt-8 bg-[#5bad86] rounded-[20px] transition"
         >
           Create Product
         </button>

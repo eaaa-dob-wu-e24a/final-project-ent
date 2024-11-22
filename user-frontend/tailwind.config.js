@@ -10,6 +10,11 @@ module.exports = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        darkgreen: "#5BAD86",
+      },
+      fontFamily: {
+        "heading": ["Amulya", "sans-serif"],
+        "body": ["Synonym", "sans-serif"],
       },
     },
   },
