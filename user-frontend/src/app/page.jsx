@@ -7,9 +7,7 @@ export default function Home() {
   return (
     <>
       <ProductList />
-      <ProductForm />
       <Navigation />
-
       <LoginForm />
     </>
   );
