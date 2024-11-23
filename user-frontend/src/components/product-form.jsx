@@ -1,4 +1,9 @@
 "use client";
+
+/*===============================================
+=   This component creates product for user - Its imported in the navigation.jsx  =
+===============================================*/
+
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { createProduct } from "../actions/product.actions"; // Import the createProduct function
@@ -16,7 +21,11 @@ function ProductForm() {
   const [imageFile, setImageFile] = useState(null);
   const [message, setMessage] = useState("");
 
-  const productTypes = ["kuffert", "vandrerygsaek", "rygsaek"];
+  const productTypes = [
+    { value: "kuffert", label: "Kuffert" },
+    { value: "vandrerygsaek", label: "Vandrerygsæk" },
+    { value: "rygsaek", label: "Rygsæk" },
+  ];
   const productConditions = ["som ny", "let brugt", "brugt", "slidt"];
 
   const colors = [
@@ -138,11 +147,12 @@ function ProductForm() {
         >
           <option value="">Produkt type</option>
           {productTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
+            <option key={type.value} value={type.value}>
+              {type.label}
             </option>
           ))}
         </select>
+
         <h4 className="text-black text-lg font-bold font-['Amulya']">
           Indtast oplysninger
         </h4>

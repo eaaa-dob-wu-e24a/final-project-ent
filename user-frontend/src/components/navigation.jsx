@@ -1,4 +1,9 @@
 "use client";
+
+/*===============================================
+=          This component is the global navigation / footer            =
+===============================================*/
+
 import React, { useState } from "react";
 import { FaHouse, FaBookmark, FaUserLarge, FaPlus } from "react-icons/fa6";
 import { PiHandbagSimpleFill } from "react-icons/pi";

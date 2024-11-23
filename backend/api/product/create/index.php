@@ -1,12 +1,12 @@
 <?php
-// Include the authorize and handle_api_request functions
-include_once("../../../functions/authorize.php");
-include_once("../../../functions/handle_api_request.php");
+// Start output buffering
 ob_start();
+
+// Include necessary functions
+include_once("../../../functions/authorize.php");
 
 // Authenticate the user and retrieve their user login ID
 $user_login_id = authorize($mySQL);
-$input = handle_api_request('POST', 'Request method must be POST', 405);
 
 // Ensure the request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -29,7 +29,7 @@ foreach ($requiredFields as $field) {
 
 // Extract the input data into variables
 $name = $_POST['name'];
-$brand = isset($_POST['brand']) ? $_POST['brand'] : null; // Make brand optional
+$brand = isset($_POST['brand']) ? $_POST['brand'] : null; // Brand is optional
 $product_type = $_POST['product_type'];
 $size = $_POST['size'];
 $color = $_POST['color'];
@@ -63,18 +63,20 @@ if (!in_array($image['type'], $allowedTypes)) {
 }
 
 // Limit file size to 2MB
-if ($image['size'] > 2 * 1024 * 1024) { // 2MB limit
+if ($image['size'] > 2 * 1024 * 1024) {
     http_response_code(400);
     echo json_encode(['error' => 'File size exceeds 2MB limit']);
     ob_end_flush();
     exit();
 }
 
+// Generate a unique file name
 $extension = pathinfo($image['name'], PATHINFO_EXTENSION);
 $fileName = uniqid() . '.' . $extension;
 
 // Define the uploads directory
 $uploadsDir = __DIR__ . '/uploads/';
+
 // Create the upload directory if it doesn't exist
 if (!is_dir($uploadsDir)) {
     if (!mkdir($uploadsDir, 0755, true)) {
@@ -96,6 +98,7 @@ if (!move_uploaded_file($image['tmp_name'], $destination)) {
 
 // Prepare to store the image path (relative to the web root)
 $image_path = './uploads/' . $fileName;
+
 $transaction_started = false;
 
 try {
@@ -103,13 +106,13 @@ try {
     $mySQL->begin_transaction();
     $transaction_started = true;
 
-    // Prepare the SQL statement to call the stored procedure with 7 parameters
+    // Prepare the SQL statement to call the stored procedure
     $stmt = $mySQL->prepare("CALL create_user_product(?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         throw new Exception("Failed to prepare statement: " . $mySQL->error);
     }
 
-    // Bind the parameters to the SQL statement. (s = string, i = integer)
+    // Bind the parameters to the SQL statement
     $stmt->bind_param(
         "ssssssi",
         $name,
@@ -121,33 +124,26 @@ try {
         $user_login_id
     );
 
-    // Execute the statement / stored procedure
+    // Execute the stored procedure
     if (!$stmt->execute()) {
         throw new Exception("Failed to execute stored procedure: " . $stmt->error);
     }
 
-    // Fetch the result set containing the new product ID
+    // Fetch the result containing the new product ID
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-    $result->free(); // Free the first result set
+    $result->free(); // Free the result set
 
-    // Process any additional result sets to avoid "Commands out of sync" errors
-    while ($stmt->more_results() && $stmt->next_result()) {
-        $extraResult = $stmt->get_result();
-        if ($extraResult) {
-            $extraResult->free();
-        }
-    }
-
+    // Close the statement
     $stmt->close();
 
     if ($row && isset($row['new_product_id'])) {
         $new_product_id = $row['new_product_id'];
 
-        // Prepare the SQL statement to insert the image path into 'product_pictures' table
+        // Insert the image path into 'product_pictures' table
         $insert_stmt = $mySQL->prepare("INSERT INTO product_pictures (picture_path, product_id) VALUES (?, ?)");
         if (!$insert_stmt) {
-            throw new Exception("Failed to prepare statement for image insertion: " . $mySQL->error);
+            throw new Exception("Failed to prepare image insertion: " . $mySQL->error);
         }
 
         // Bind parameters
@@ -155,7 +151,7 @@ try {
 
         // Execute the insert statement
         if (!$insert_stmt->execute()) {
-            throw new Exception("Failed to execute insert statement: " . $insert_stmt->error);
+            throw new Exception("Failed to insert image: " . $insert_stmt->error);
         }
 
         $insert_stmt->close();
@@ -175,12 +171,9 @@ try {
 } catch (Exception $e) {
     // Rollback the transaction if it was started
     if ($transaction_started) {
-        // Ensure all result sets are processed before rollback
+        // Process any remaining results to avoid "Commands out of sync" errors
         while ($mySQL->more_results() && $mySQL->next_result()) {
-            $extraResult = $mySQL->store_result();
-            if ($extraResult) {
-                $extraResult->free();
-            }
+            $mySQL->store_result();
         }
         $mySQL->rollback();
     }
@@ -189,7 +182,7 @@ try {
     echo json_encode(['error' => 'An error occurred: ' . $e->getMessage()]);
 }
 
-// Close the database connection to release resources
+// Close the database connection
 $mySQL->close();
 
 // End output buffering

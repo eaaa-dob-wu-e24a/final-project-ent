@@ -1,4 +1,9 @@
 "use client";
+
+/*===============================================
+=          Login form is the  first page that is shown / rendered to the client.           =
+===============================================*/
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -99,7 +104,7 @@ function LoginForm() {
           </button>
           <h4 className="text-center mt-4">Har du ikke en bruger?</h4>
           <Link
-            href="/signup"
+            href="/opret-bruger"
             className="text-blue-500 hover:underline text-center block mt-2"
           >
             Register

@@ -1,3 +1,7 @@
+/*===============================================
+=  This component ensures the Lendr logo is displayed equal size on all pages 
+===============================================*/
+
 export default function () {
   return (
     <>

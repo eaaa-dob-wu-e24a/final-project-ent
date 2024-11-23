@@ -24,13 +24,32 @@ export default function ProductList() {
 
         const data = await response.json();
 
+        /*===============================================
+        =        Disse farves skal checkes igennem, og omnavngives på et tidspunlt.           =
+        ===============================================*/
+
+        const colorLabels = {
+          "#000000": "Sort",
+          "#5337FF": "Blå",
+          "#72CA81": "Grøn",
+          "#7F8992": "Grå",
+          "#9E29BB": "Lilla",
+          "#C1C1C1": "Sølv",
+          "#FF3DD4": "Pink",
+          "#FF5757": "Rød",
+          "#FFB23F": "Orange",
+          "#FFE34E": "Gul",
+          "#FFFFFF": "Hvid",
+          // Add other mappings as needed
+        };
         // Transform the fetched data to match the frontend structure
         const transformedProducts = data.map((product) => ({
           id: product.PK_ID,
           title: product.name,
           condition: product.product_condition,
           size: product.size,
-          color: product.color,
+          colorLabel: colorLabels[product.color] || product.color,
+          colorCode: product.color,
           status: "Aktivt opslag", // Assuming all products are active; adjust as needed
           image:
             product.pictures.length > 0
@@ -99,10 +118,10 @@ export default function ProductList() {
               </p>
               <p className="flex items-center text-gray-600 text-xs">
                 <span
-                  className="w-3 h-3 bg-black rounded-full inline-block mr-2"
-                  style={{ backgroundColor: product.color }}
+                  className="w-3 h-3 rounded-full inline-block mr-2"
+                  style={{ backgroundColor: product.colorCode }}
                 ></span>
-                {product.color}
+                {product.colorLabel}
               </p>
             </div>
             <p className="text-[#5BAD86] font-semibold text-xs ">
@@ -111,11 +130,11 @@ export default function ProductList() {
           </div>
 
           {/* Product Image */}
-          <div className="absolute right-[10px] h-[200px] top-4 z-10 w-[100px] flex-shrink-0">
+          <div className="absolute right-[10px] h-[100px] top-4 z-10 w-[100px] flex-shrink-0">
             <img
               src={product.image}
               alt={product.title}
-              className="object-contain rounded-[30px]"
+              className="object-cover h-full w-full rounded-[30px]"
             />
           </div>
         </div>

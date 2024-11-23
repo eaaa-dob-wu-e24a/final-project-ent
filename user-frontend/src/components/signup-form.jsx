@@ -1,4 +1,7 @@
 "use client";
+/*===============================================
+=          Signup form           =
+===============================================*/
 
 import { useState } from "react";
 import LendrLogo from "./lendr-logo";
