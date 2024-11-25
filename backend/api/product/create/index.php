@@ -18,14 +18,14 @@ if (!isset($input['name']) || !isset($input['brand']) || !isset($input['product_
     exit();
 }
 
-// Extract the input data into variables
+// Extract the input data into variables from the input array
 $name = $input['name'];
 $brand = $input['brand'];
 $product_type = $input['product_type'];
 $size = $input['size'];
 $color = $input['color'];
 $product_condition = $input['product_condition'];
-$image = $input['files']['image'];
+$image = $input['files']['image'];  // Extract the image file from the input using the 'files' key
 
 // Function to handle image upload
 function upload_image($image){
@@ -90,12 +90,12 @@ try {
             'image_path' => $image_path
         ]);
         } else {
-            // If no product ID is returned, respond with an error
+            // If no product ID is returned, respond with an error. If the procedure runs successfully, but does not return a valid result.
             http_response_code(500);
             echo json_encode(['error' => 'Failed to retrieve the new product ID']);
         }
     } else {
-        // If the stored procedure execution fails, return a 500 Internal Server Error
+        // If the stored procedure execution fails altogether, then respond with an error.
         http_response_code(500);
         echo json_encode(['error' => 'An error occurred while creating the product']);
     }

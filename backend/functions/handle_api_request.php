@@ -13,15 +13,15 @@ function handle_api_request($method, $error_message, $error_code) {
 
     // Handle multipart/form-data. Used for file uploads in a form submission
     if (strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false) {
-        // Extract the data from the form submission
+        // Extract the form data (excluding files) using the $_POST superglobal and save it to the $data array
         $data = $_POST;
 
         // Check if files are included in the request
         if (!empty($_FILES)) {
-            $data['files'] = $_FILES; // Include the files in the data under the 'files' key
+            $data['files'] = $_FILES; // Save the files to the 'files' key in the $data array
         }
 
-        // Return the combined data
+        // Return the combined data, including both form data and uploaded files
         return $data;
     }
 

@@ -121,6 +121,7 @@ export default function CreateProduct() {
         <label>Upload Image</label>
         <input
           type="file"
+          name='image'
           accept="image/*"
           onChange={handleImageChange}
           required
