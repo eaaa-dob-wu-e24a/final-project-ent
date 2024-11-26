@@ -11,6 +11,11 @@ function handle_api_request($method, $error_message, $error_code) {
         exit();
     }
 
+       // For GET requests, return null as there is no body to parse
+    if ($method === 'GET') {
+        return null;
+    }
+
     // Handle multipart/form-data. Used for file uploads in a form submission
     if (strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false) {
         // Extract the form data (excluding files) using the $_POST superglobal and save it to the $data array

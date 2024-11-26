@@ -14,29 +14,23 @@ const Profile = () => {
           {
             method: "GET", // Use GET to fetch user profile
             credentials: "include", // Ensure cookies are sent with the request
-            headers: {
-              "Content-Type": "application/json", // Expecting JSON from the backend
-            },
           }
         );
-
-        // Check if the response is okay (status code 200-299)
+    
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-
-        // Parse JSON response from the backend
+    
         const data = await response.json();
-        console.log("Fetched Data: ", data); // Log fetched data for debugging
-
-        // Set the user profile data
+        console.log("Fetched Data: ", data);
+    
         setUserProfile(data);
       } catch (err) {
-        // Log any errors and display an error message
         console.error("Error fetching user profile:", err);
         setError("An error occurred while fetching user data.");
       }
     };
+    
 
     fetchUserProfile(); // Trigger the fetch when the component mounts
   }, []);
