@@ -1,6 +1,5 @@
 import { IoArrowDownCircle } from "react-icons/io5";
 import { RxSewingPinFilled } from "react-icons/rx";
-import CreateProduct from  "../../components/create-product";
 
 export default function Page() {
   const orders = [
@@ -89,7 +88,6 @@ export default function Page() {
           </div>
         </div>
       ))}
-    <CreateProduct />
     </>
   );
 }
