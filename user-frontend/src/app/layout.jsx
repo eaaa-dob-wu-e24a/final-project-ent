@@ -10,7 +10,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <main className="flex flex-col min-h-screen mb-48 bg-[#F7F9FD]">
+        <main className="flex flex-col min-h-screen pb-48 bg-[#F7F9FD]">
           {children}
         </main>
         <NavWrapper />
