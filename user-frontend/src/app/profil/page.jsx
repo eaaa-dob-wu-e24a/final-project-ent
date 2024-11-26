@@ -10,32 +10,48 @@ const Profile = () => {
     const fetchUserProfile = async () => {
       try {
         const response = await fetch(
-          process.env.NEXT_PUBLIC_API_URL + "/api/user/read/"
-        ); // Endpoint to call PHP backend
-        const data = await response.json();
+          process.env.NEXT_PUBLIC_API_URL + "/api/user/read/",
+          {
+            method: "GET", // Use GET to fetch user profile
+            credentials: "include", // Ensure cookies are sent with the request
+            headers: {
+              "Content-Type": "application/json", // Expecting JSON from the backend
+            },
+          }
+        );
 
-        if (response.ok) {
-          setUserProfile(data);
-        } else {
-          setError(data.error);
+        // Check if the response is okay (status code 200-299)
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
+
+        // Parse JSON response from the backend
+        const data = await response.json();
+        console.log("Fetched Data: ", data); // Log fetched data for debugging
+
+        // Set the user profile data
+        setUserProfile(data);
       } catch (err) {
-        console.error(err);
-        setError("An error occurred while fetching user data");
+        // Log any errors and display an error message
+        console.error("Error fetching user profile:", err);
+        setError("An error occurred while fetching user data.");
       }
     };
 
-    fetchUserProfile();
+    fetchUserProfile(); // Trigger the fetch when the component mounts
   }, []);
 
+  // If an error occurred, display the error message
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
 
+  // If no data yet, show loading message
   if (!userProfile) {
     return <div>Loading...</div>;
   }
 
+  // Render user profile once data is available
   return (
     <div className="container mx-auto p-6">
       <div className="max-w-xl mx-auto p-4 bg-white shadow-lg rounded-lg">
