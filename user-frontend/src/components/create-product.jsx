@@ -1,16 +1,20 @@
-'use client'; // Client component for handling user input and state
+/*===============================================
+=          RELEVANT FILE NOW?           =
+===============================================*/
 
-import { useState } from 'react';
-import { createProduct } from '../actions/product.actions';
+"use client"; // Client component for handling user input and state
+
+import { useState } from "react";
+import { createProduct } from "../actions/product.actions";
 
 export default function CreateProduct() {
   const [form, setForm] = useState({
-    name: '',
-    brand: '',
-    product_type: '',
-    size: '',
-    color: '',
-    product_condition: '',
+    name: "",
+    brand: "",
+    product_type: "",
+    size: "",
+    color: "",
+    product_condition: "",
   });
 
   const [image, setImage] = useState(null); // State for image file
@@ -32,14 +36,14 @@ export default function CreateProduct() {
     e.preventDefault();
 
     if (!image) {
-      setStatus({ success: false, message: 'Please upload an image' });
+      setStatus({ success: false, message: "Please upload an image" });
       return;
     }
 
     try {
       const result = await createProduct({ ...form, image }); // Pass the form data and image
       setStatus({ success: true, message: result.message });
-      console.log('Product created successfully:', result.product_id);
+      console.log("Product created successfully:", result.product_id);
     } catch (error) {
       setStatus({ success: false, message: error.message });
     }
@@ -71,7 +75,12 @@ export default function CreateProduct() {
 
       <div>
         <label>Product Type</label>
-        <select name="product_type" value={form.product_type} onChange={handleChange} required>
+        <select
+          name="product_type"
+          value={form.product_type}
+          onChange={handleChange}
+          required
+        >
           <option value="">Select Type</option>
           <option value="kuffert">Kuffert</option>
           <option value="vandrerygsaek">Vandrerygsæk</option>
@@ -121,7 +130,7 @@ export default function CreateProduct() {
         <label>Upload Image</label>
         <input
           type="file"
-          name='image'
+          name="image"
           accept="image/*"
           onChange={handleImageChange}
           required
@@ -131,7 +140,7 @@ export default function CreateProduct() {
       <button type="submit">Create Product</button>
 
       {status && (
-        <p style={{ color: status.success ? 'green' : 'red' }}>
+        <p style={{ color: status.success ? "green" : "red" }}>
           {status.message}
         </p>
       )}

@@ -1,6 +1,13 @@
 "use client";
-import React, { useEffect, useState } from "react";
 
+/*===============================================
+=          
+Top-section - Which also works as the fetch call for product_type: fetch call might be moved into an product.actions 
+functionality later on.           
+=
+===============================================*/
+
+import React, { useEffect, useState } from "react";
 export default function TopUi() {
   const [products, setProducts] = useState([]); // State to hold fetched products
   const [loading, setLoading] = useState(true); // State to manage loading
@@ -24,11 +31,17 @@ export default function TopUi() {
 
         const data = await response.json();
 
-        // Transform the fetched data to match the frontend structure
+        const productTypeLabels = {
+          kuffert: "Kuffert",
+          vandrerygsaek: "Vandrerygsæk",
+          rygsaek: "Rygsæk",
+          // Add other mappings as needed
+        };
+
         const transformedProducts = data.map((product) => ({
           id: product.PK_ID,
-          type: product.product_type, // Corrected typo from 'tpye' to 'type'
-          // Adjust based on your server setup
+          type: productTypeLabels[product.product_type] || product.product_type,
+          // Include other fields as needed
         }));
 
         setProducts(transformedProducts);
