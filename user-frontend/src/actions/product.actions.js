@@ -1,28 +1,26 @@
 export async function createProduct(data) {
-  const { name, brand, product_type, size, color, product_condition, image } =
+  const { name, product_type, size, color, product_condition, brand, image } =
     data;
 
   try {
     const formData = new FormData();
 
-    // Append text fields
     formData.append("name", name);
-    formData.append("brand", brand);
     formData.append("product_type", product_type);
     formData.append("size", size);
     formData.append("color", color);
     formData.append("product_condition", product_condition);
+    formData.append("brand", brand || "");
 
-    // Append the image file
+    // Append the image file to the form data
     formData.append("image", image);
 
-    // Send the request
     const response = await fetch(
       process.env.NEXT_PUBLIC_API_URL + "/api/product/create/",
       {
         method: "POST",
         credentials: "include",
-        body: formData, // Send FormData
+        body: formData,
       }
     );
 
