@@ -8,6 +8,7 @@ functionality later on.
 ===============================================*/
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 export default function TopUi() {
   const [products, setProducts] = useState([]); // State to hold fetched products
   const [loading, setLoading] = useState(true); // State to manage loading
@@ -79,16 +80,29 @@ export default function TopUi() {
   ];
 
   return (
-    <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-      {uniqueProductTypes.map((type, index) => (
-        <div
-          key={index}
-          className="product-item p-2 my-2 bg-white rounded-md shadow-sm hover:bg-gray-50 transition duration-200"
-        >
-          <span className="font-medium text-blue-600">Produkt type:</span>{" "}
-          {type}
-        </div>
-      ))}
-    </div>
+    <section className="bg-[#e2f0e9]">
+      <div className="flex">
+        <input className="w-[275px]" type="search" name="" id="" />
+
+        <Image
+          className=""
+          src="/images/filter-btn.svg"
+          alt="Product Image"
+          width={62}
+          height={58}
+        />
+      </div>
+
+      <div className="flex gap-3 mb-20">
+        {uniqueProductTypes.map((type, index) => (
+          <div
+            key={index}
+            className="w-auto px-4 text-[#8c8c8c] h-11 flex items-center justify-center bg-white rounded-[10px]"
+          >
+            {type}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
