@@ -1,11 +1,14 @@
 import React from "react";
 import ProductList from "../../components/card";
-import Topsection from "../../components/top-section";
+import TopUI from "@/components/top-section";
 
 export default function Page() {
   return (
     <>
-      <Topsection />
+      <TopUI
+        title="Udforsk alle former for rejseartikler"
+        marginBottom="-50px"
+      />
       <ProductList />
     </>
   );
