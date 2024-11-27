@@ -2,26 +2,28 @@
 
 // Include necessary files
 
-include_once("../../../functions/authorize.php");
-include_once("../../../functions/handle_api_request.php");
+include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
+include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
+include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_json_request.php");
 
 // Authorize the user and get the user_login_id
 $user_login_id = authorize($mySQL);
 
 // Get JSON input
-$data = handle_api_request('PUT', 'Request method must be PUT', 405);
+handle_api_request('PUT', 'Request method must be PUT', 405);
+$input = handle_json_request();
 
 // Validate input data
-if (!isset($data['username']) || !isset($data['phone_number'])) {
+if (!isset($input['username']) || !isset($input['phone_number'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Username and phone number are required']);
     exit();
 }
 
 // Extract and sanitize inputs
-$username = $data['username'];
-$phone_number = $data['phone_number'];
-$profile_picture = $data['profile_picture'] ?? null; // Optional field
+$username = $input['username'];
+$phone_number = $input['phone_number'];
+$profile_picture = $input['profile_picture'] ?? null; // Optional field
 
 // Prepare and execute the SQL statement to update the user profile
 $stmt = $mySQL->prepare("UPDATE user_profile SET username = ?, phone_number = ?, profile_picture = ? WHERE user_login_id = ?");
