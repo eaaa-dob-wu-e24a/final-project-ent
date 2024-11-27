@@ -9,6 +9,7 @@ import Image from "next/image";
 import { createProduct } from "../actions/product.actions"; // Import the createProduct function
 
 function ProductForm() {
+  // Form data state for managing product fields
   const [formData, setFormData] = useState({
     name: "",
     product_type: "",
@@ -18,16 +19,23 @@ function ProductForm() {
     brand: "",
   });
 
+  // Image file state for handling the uploaded image
   const [imageFile, setImageFile] = useState(null);
-  const [message, setMessage] = useState("");
 
+  // Message state for displaying success or error messages
+  const [message, setMessage] = useState({ text: "", type: "" });
+
+  // Predefined options for product types
   const productTypes = [
     { value: "kuffert", label: "Kuffert" },
     { value: "vandrerygsaek", label: "Vandrerygsæk" },
     { value: "rygsaek", label: "Rygsæk" },
   ];
+
+  // Predefined options for product conditions
   const productConditions = ["som ny", "let brugt", "brugt", "slidt"];
 
+  // Predefined color options for the color picker
   const colors = [
     "#000000",
     "#5337FF",
@@ -42,25 +50,30 @@ function ProductForm() {
     "#FFFFFF",
   ];
 
+  // Refs for managing drag behavior on the color picker
   const colorsRef = useRef(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
+  // Handle mouse down event for drag interaction
   const handleMouseDown = (e) => {
     isDragging.current = true;
     startX.current = e.pageX - colorsRef.current.offsetLeft;
     scrollLeft.current = colorsRef.current.scrollLeft;
   };
 
+  // Handle mouse leave event to stop drag interaction
   const handleMouseLeave = () => {
     isDragging.current = false;
   };
 
+  // Handle mouse up event to end drag interaction
   const handleMouseUp = () => {
     isDragging.current = false;
   };
 
+  // Handle mouse move event for drag scrolling
   const handleMouseMove = (e) => {
     if (!isDragging.current) return;
     e.preventDefault();
@@ -69,6 +82,7 @@ function ProductForm() {
     colorsRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
+  // Handle input changes for text fields
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -78,6 +92,7 @@ function ProductForm() {
     }));
   };
 
+  // Handle color selection for the color picker
   const handleColorSelect = (color) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -85,36 +100,30 @@ function ProductForm() {
     }));
   };
 
+  // Handle file change for the image upload
   const handleFileChange = (e) => {
     setImageFile(e.target.files[0]);
   };
 
+  // Handle form submission to send data to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Create a FormData object to send form data and the image file
-    const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("product_type", formData.product_type);
-    formDataToSend.append("size", formData.size);
-    formDataToSend.append("color", formData.color);
-    formDataToSend.append("product_condition", formData.product_condition);
-    formDataToSend.append("brand", formData.brand || "");
-    formDataToSend.append("image", imageFile);
-
+  
     try {
-      const result = await createProduct(formDataToSend);
-
-      if (result.success) {
-        setMessage(result.message);
-        // Reset form fields if needed
-      } else {
-        setMessage(result.error);
-      }
+      // Pass the form data and image directly to createProduct
+      const result = await createProduct({
+        ...formData,
+        image: imageFile,
+      });
+  
+      // Handle success and error messages
+      setMessage({ text: result.message || "Product created successfully!", type: "success" });
     } catch (error) {
-      setMessage("An error occurred while creating the product.");
+      setMessage({ text: error.message || "Failed to create product", type: "error" });
+      console.error("Error:", error);
     }
   };
+  
 
   return (
     <div className="mx-auto">
@@ -128,7 +137,15 @@ function ProductForm() {
       <div className="text-center text-black text-2xl my-5 font-bold font-['Amulya']">
         Opret produkt
       </div>
-      {message && <p className="mb-4 text-red-500">{message}</p>}
+      {message.text && (
+        <p
+          className={`mb-4 ${
+            message.type === "success" ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {message.text}
+        </p>
+      )}
 
       <form
         onSubmit={handleSubmit}
