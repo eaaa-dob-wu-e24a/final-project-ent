@@ -1,6 +1,6 @@
 <?php
 // Include necessary files
-include("../../../functions/handle_api_request.php");
+include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 // signin.php
 
 date_default_timezone_set('Europe/Copenhagen');

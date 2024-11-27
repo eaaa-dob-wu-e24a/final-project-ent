@@ -1,8 +1,8 @@
 <?php
 
 // Include the authorize and handle_api_request functions
-include_once("../../../functions/authorize.php");
-include_once("../../../functions/handle_api_request.php");
+include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
+include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 
 // Authenticate the user and retrieve their user login ID
 $user_login_id = authorize($mySQL);

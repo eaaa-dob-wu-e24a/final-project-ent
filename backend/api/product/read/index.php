@@ -3,7 +3,9 @@
 ob_start();
 
 // Include necessary files
-include("../../../functions/handle_api_request.php");
+include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
+
+
 
 // Bring $mySQL into the current scope
 global $mySQL;
