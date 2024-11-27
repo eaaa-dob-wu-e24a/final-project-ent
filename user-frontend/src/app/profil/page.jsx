@@ -41,7 +41,7 @@ const Profile = () => {
       const response = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/api/user/update/",
         {
-          method: "POST",
+          method: "PUT",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
