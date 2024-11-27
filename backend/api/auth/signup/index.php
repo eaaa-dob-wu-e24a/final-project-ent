@@ -1,7 +1,7 @@
 <?php 
 include("../../../functions/handle_api_request.php");
 
-$input = handle_api_request("POST", "Invalid request method", 405);
+    $input = handle_api_request("POST", "Invalid request method", 405);
 
 if (
     empty($input["username"]) ||

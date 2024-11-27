@@ -9,7 +9,7 @@ include_once("../../../functions/handle_api_request.php");
 $user_login_id = authorize($mySQL);
 
 // Get JSON input
-$data = json_decode(file_get_contents('php://input'), true);
+$data = handle_api_request('PUT', 'Request method must be PUT', 405);
 
 // Validate input data
 if (!isset($data['username']) || !isset($data['phone_number'])) {
