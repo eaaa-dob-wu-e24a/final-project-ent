@@ -3,7 +3,7 @@
 ob_start();
 
 // Include necessary files
-include("../../../functions/handle_api_request.php");
+include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 
 // Bring $mySQL into the current scope
 global $mySQL;
@@ -27,7 +27,7 @@ try {
             p.color,
             p.product_condition,
             p.brand,
-            p.user_id,
+            p.user_login_id,
             pp.picture_path
         FROM 
             product p
@@ -58,7 +58,7 @@ try {
                 'color' => $row['color'],
                 'product_condition' => $row['product_condition'],
                 'brand' => $row['brand'],
-                'user_id' => $row['user_id'],
+                'user_id' => $row['user_login_id'],
                 'pictures' => []
             ];
         }

@@ -1,17 +1,12 @@
 <?php
-require_once __DIR__ . "/functions/load_env.php";
+require_once($_SERVER["DOCUMENT_ROOT"] . "/functions/load_env.php");
 
-loadEnv(__DIR__ . '/.env');
+loadEnv($_SERVER["DOCUMENT_ROOT"] . '/.env');
 
 $server = getenv('DB_SERVER');
 $username = getenv('DB_USERNAME');
 $password = getenv('DB_PASSWORD');
 $database = getenv('DB_DATABASE');
-
-// Start output buffering if not already started
-if (!ob_get_level()) {
-    ob_start();
-}
 
 // Set headers (if not already set)
 if (!headers_sent()) {
@@ -26,7 +21,6 @@ if (!headers_sent()) {
 // Handle OPTIONS requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204); // No Content
-    ob_end_flush();
     exit();
 }
 
