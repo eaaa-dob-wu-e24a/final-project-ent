@@ -2,9 +2,11 @@
 include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_json_request.php");
 
+
 handle_api_request("POST", "Invalid request method", 405);
 
 $input = handle_json_request();
+
 
 if (
     empty($input["username"]) ||
