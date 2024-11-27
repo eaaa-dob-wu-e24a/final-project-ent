@@ -3,6 +3,7 @@
 include("../../../functions/handle_api_request.php");
 // signin.php
 
+date_default_timezone_set('Europe/Copenhagen');
 
 try {
     $input = handle_api_request("POST", "Invalid request method", 405);
