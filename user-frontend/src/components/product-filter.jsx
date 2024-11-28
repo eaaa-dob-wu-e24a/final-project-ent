@@ -7,9 +7,10 @@ import { CiSearch } from "react-icons/ci";
 export default function ProductFilter({
   products,
   onFilter,
-  selectedProductType, // Receive the prop
+  selectedProductType,
+  searchQuery,
+  onSearch,
 }) {
-  // Get unique product types
   const uniqueProductTypes = [
     ...new Set(products.map((product) => product.product_type)),
   ];
@@ -30,6 +31,8 @@ export default function ProductFilter({
             placeholder="Søg efter produkter"
             className="w-full h-full pl-10 pr-4 py-2 rounded-[20px] focus:outline-none"
             type="search"
+            value={searchQuery}
+            onChange={(e) => onSearch(e.target.value)} // Update search query
           />
         </div>
         <Image
@@ -39,7 +42,7 @@ export default function ProductFilter({
           height={58}
         />
       </div>
-      <div className="flex gap-3 mb-20 w-[350px] overflow-hidden overflow-x-auto scrollbar-hide">
+      <div className="flex gap-3 mb-20 w-[350px]">
         <div
           onClick={() => onFilter(null)}
           className={`cursor-pointer w-auto px-4 h-11 flex items-center justify-center rounded-[10px] ${

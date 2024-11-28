@@ -9,7 +9,9 @@ export default function TopUI({
   marginBottom = "unset",
   products,
   onFilter,
-  selectedProductType, // Receive the prop
+  selectedProductType,
+  searchQuery, // Receive the search query
+  onSearch, // Receive the search handler
 }) {
   return (
     <section
@@ -17,12 +19,12 @@ export default function TopUI({
       style={{ marginBottom }}
     >
       <div className="flex items-center">
-        <h3 className="text-[#0e0c11] w-[240px] text-[30px] font-bold font-['Amulya']">
+        <h3 className="text-[#0e0c11] w-[240px] text-[30px] font-bold">
           {title}
         </h3>
         <Image
-          className="rounded-full object-cover h-[100px] w-25"
-          src="/images/6740a5b045275.jpg"
+          className="rounded-full bg-white object-cover h-[100px] w-25"
+          src="/images/noavatar.png"
           alt="Product Image"
           width={100}
           height={100}
@@ -31,7 +33,9 @@ export default function TopUI({
       <ProductFilter
         products={products}
         onFilter={onFilter}
-        selectedProductType={selectedProductType} // Pass it down to ProductFilter
+        selectedProductType={selectedProductType}
+        searchQuery={searchQuery} // Pass to ProductFilter
+        onSearch={onSearch} // Pass to ProductFilter
       />
     </section>
   );

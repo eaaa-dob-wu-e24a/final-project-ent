@@ -6,23 +6,43 @@ import ProductList from "../../components/card";
 import useProducts from "../../hooks/useProducts";
 
 export default function Page() {
-  const { products, loading, error } = useProducts();
+  const { products, loading, error } = useProducts(); // Fetch products
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [selectedProductType, setSelectedProductType] = useState(null); // New state variable
+  const [selectedProductType, setSelectedProductType] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(""); // New state variable
 
   useEffect(() => {
     setFilteredProducts(products);
   }, [products]);
 
   const handleFilter = (productType) => {
-    setSelectedProductType(productType); // Update selected category
-    if (!productType) {
-      setFilteredProducts(products);
-    } else {
-      setFilteredProducts(
-        products.filter((product) => product.product_type === productType)
+    setSelectedProductType(productType);
+    applyFilters(productType, searchQuery);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    applyFilters(selectedProductType, query);
+  };
+
+  const applyFilters = (productType, query) => {
+    let updatedProducts = products;
+
+    // Apply category filter if selected
+    if (productType) {
+      updatedProducts = updatedProducts.filter(
+        (product) => product.product_type === productType
       );
     }
+
+    // Apply search filter if query is provided
+    if (query) {
+      updatedProducts = updatedProducts.filter((product) =>
+        product.title.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+
+    setFilteredProducts(updatedProducts);
   };
 
   return (
@@ -32,7 +52,9 @@ export default function Page() {
         marginBottom="-50px"
         products={products}
         onFilter={handleFilter}
-        selectedProductType={selectedProductType} // Pass down the selected category
+        selectedProductType={selectedProductType}
+        searchQuery={searchQuery} // Pass down the search query
+        onSearch={handleSearch} // Pass down the search handler
       />
       <ProductList
         products={filteredProducts}
