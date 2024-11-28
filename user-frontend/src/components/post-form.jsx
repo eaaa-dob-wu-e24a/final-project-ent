@@ -1,11 +1,9 @@
-// File: /components/PostForm.jsx
-
 "use client";
 
 import { useState } from "react";
-import useMyProducts from "../hooks/useMyProducts"; // Adjust the path as necessary
-import Image from "next/image"; // Assuming you're using Next.js for optimized images
+import useMyProducts from "../hooks/useMyProducts"; // Adjust the path if necessary
 import { Button } from "./ui/button";
+import { createPost } from "../actions/post.actions"; // Import createPost
 
 function PostForm() {
   const [formData, setFormData] = useState({
@@ -47,44 +45,29 @@ function PostForm() {
     }
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/post/create.php`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // Include cookies for authentication if using sessions
-          body: JSON.stringify(formData),
-        }
-      );
+      // Pass the form data directly to createPost
+      const result = await createPost({
+        ...formData,
+      });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setMessage({
-          text: result.success || "Post created successfully!",
-          type: "success",
-        });
-
-        // Optionally, reset the form
-        setFormData({
-          description: "",
-          price_per_day: "",
-          product_id: "",
-        });
-      } else {
-        setMessage({
-          text: result.error || "Failed to create post.",
-          type: "error",
-        });
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
+      // Handle success messages
       setMessage({
-        text: "An error occurred while creating the post.",
+        text: result.success || "Post created successfully!",
+        type: "success",
+      });
+
+      // Optionally, reset the form
+      setFormData({
+        description: "",
+        price_per_day: "",
+        product_id: "",
+      });
+    } catch (error) {
+      setMessage({
+        text: error.message || "Failed to create post.",
         type: "error",
       });
+      console.error("An error occurred:", error);
     }
   };
 
