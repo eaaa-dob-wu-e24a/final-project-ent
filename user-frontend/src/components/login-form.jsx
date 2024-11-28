@@ -8,6 +8,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LendrLogo from "./lendr-logo";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -67,13 +69,13 @@ function LoginForm() {
             >
               Email
             </label>
-            <input
+            <Input
               type="email"
               id="email"
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              className=""
               required
             />
           </div>
@@ -85,23 +87,20 @@ function LoginForm() {
             >
               Password
             </label>
-            <input
+            <Input
               type="password"
               id="password"
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              className=""
               required
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full px-4 py-2 text-white font-bold rounded-md shadow bg-blue-500 hover:bg-blue-600 transition duration-200"
-          >
+          <Button variant="default" size="default" type="submit">
             Login
-          </button>
+          </Button>
           <h4 className="text-center mt-4">Har du ikke en bruger?</h4>
           <Link
             href="/opret-bruger"
