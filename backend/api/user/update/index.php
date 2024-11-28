@@ -14,7 +14,7 @@ handle_api_request('PUT', 'Request method must be PUT', 405);
 $input = handle_json_request();
 
 // Validate input data
-if (!isset($input['username']) || !isset($input['phone_number'])) {
+if (!isset($input['username']) || !isset($input['phone_number']) || (!isset($input['email'])) ) {
     http_response_code(400);
     echo json_encode(['error' => 'Username and phone number are required']);
     exit();
@@ -23,15 +23,20 @@ if (!isset($input['username']) || !isset($input['phone_number'])) {
 // Extract and sanitize inputs
 $username = $input['username'];
 $phone_number = $input['phone_number'];
-$profile_picture = $input['profile_picture'] ?? null; // Optional field
+$profile_picture = $input['profile_picture'] ?? null; 
+$email = $input['email']; 
 
 // Prepare and execute the SQL statement to update the user profile
-$stmt = $mySQL->prepare("UPDATE user_profile SET username = ?, phone_number = ?, profile_picture = ? WHERE user_login_id = ?");
-$stmt->bind_param("sssi", $username, $phone_number, $profile_picture, $user_login_id);
+$stmt = $mySQL->prepare("CALL update_user_profile(?, ?, ?, ?, ?)");
+$stmt->bind_param("issss", $user_login_id, $email, $username, $phone_number, $profile_picture);
 
 if ($stmt->execute()) {
     // Fetch the updated profile to return
-    $stmt = $mySQL->prepare("SELECT username, phone_number, profile_picture, rating FROM user_profile WHERE user_login_id = ?");
+    $stmt = $mySQL->prepare("SELECT username, phone_number, profile_picture, email, rating 
+                             FROM user_profile 
+                             INNER JOIN user_login 
+                             ON user_profile.user_login_id = user_login.PK_ID 
+                             WHERE user_login_id = ?");
     $stmt->bind_param("i", $user_login_id);
     $stmt->execute();
     $result = $stmt->get_result()->fetch_assoc();

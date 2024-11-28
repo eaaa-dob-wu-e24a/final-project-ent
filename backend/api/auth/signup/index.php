@@ -27,8 +27,6 @@ $phone_number = $input["phone_number"];
 // Hash the password
 $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-// Enable exceptions for MySQLi
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
     $stmt = $mySQL->prepare("CALL create_user(?, ?, ?, ?)");
