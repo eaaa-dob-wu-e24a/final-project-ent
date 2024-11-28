@@ -9,6 +9,7 @@ import { FaHouse, FaBookmark, FaUserLarge, FaPlus } from "react-icons/fa6";
 import { PiHandbagSimpleFill } from "react-icons/pi";
 import { FaTimes } from "react-icons/fa";
 import ProductForm from "./product-form"; // Ensure the path and casing are correct
+import PostForm from "./post-form"; // Import the PostForm component
 import Link from "next/link";
 import LendrLogo from "./lendr-logo";
 
@@ -23,6 +24,10 @@ export default function Navigation() {
 
   const showProductForm = () => {
     setModalContent("productForm"); // Set content to ProductForm
+  };
+
+  const showPostForm = () => {
+    setModalContent("postForm"); // Set content to PostForm
   };
 
   return (
@@ -58,14 +63,20 @@ export default function Navigation() {
                 >
                   Opret produkt
                 </button>
-                <button className="px-4 py-2 bg-[#5BAD86] text-white rounded-lg shadow-md">
-                  Opret ordre
+                <button
+                  className="px-4 py-2 bg-[#5BAD86] text-white rounded-lg shadow-md"
+                  onClick={showPostForm} // Show PostForm on click
+                >
+                  Opret opslag
                 </button>
               </div>
             </div>
-          ) : (
+          ) : modalContent === "productForm" ? (
             // Render ProductForm
             <ProductForm />
+          ) : (
+            // Render PostForm
+            <PostForm />
           )}
         </div>
       </div>

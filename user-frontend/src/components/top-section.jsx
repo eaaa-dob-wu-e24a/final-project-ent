@@ -23,8 +23,8 @@ export default function TopUI({
           {title}
         </h3>
         <Image
-          className="rounded-full object-cover h-[100px] w-25"
-          src="/images/6740a5b045275.jpg"
+          className="rounded-full bg-white object-cover h-[100px] w-25"
+          src="/images/noavatar.png"
           alt="Product Image"
           width={100}
           height={100}

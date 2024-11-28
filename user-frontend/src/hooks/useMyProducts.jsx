@@ -1,10 +1,13 @@
+// File: /hooks/useMyProducts.jsx
+
 import { useState, useEffect } from "react";
 
-export default function useProducts() {
-  const [products, setProducts] = useState([]);
+export default function useMyProducts() {
+  const [myProducts, setMyProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Optional: Mapping color codes to labels
   const colorLabels = {
     "#000000": "Sort",
     "#5337FF": "Blå",
@@ -20,26 +23,27 @@ export default function useProducts() {
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchMyProducts = async () => {
       try {
         const response = await fetch(
-          process.env.NEXT_PUBLIC_API_URL + "/api/product/read/",
-
+          `${process.env.NEXT_PUBLIC_API_URL}/api/product/my-products/read/`,
           {
             method: "GET",
-            credentials: "include",
+            credentials: "include", // Include cookies for authentication if using sessions
           }
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch products.");
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to fetch your products.");
         }
 
         const data = await response.json();
 
+        // Transform data if necessary
         const transformedProducts = data.map((product) => ({
-          id: product.PK_ID,
-          title: product.name,
+          id: product.product_id,
+          name: product.name,
           product_type: product.product_type,
           condition: product.product_condition,
           size: product.size,
@@ -52,17 +56,19 @@ export default function useProducts() {
               : "../dummypicture.webp",
         }));
 
-        setProducts(transformedProducts);
+        setMyProducts(transformedProducts);
         setLoading(false);
       } catch (err) {
         console.error(err);
-        setError("Der skete en fejl under hentning af produkter.");
+        setError(
+          err.message || "An error occurred while fetching your products."
+        );
         setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchMyProducts();
   }, []);
 
-  return { products, loading, error };
+  return { myProducts, loading, error };
 }
