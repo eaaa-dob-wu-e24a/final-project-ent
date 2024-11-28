@@ -6,6 +6,8 @@
 import { useState } from "react";
 import LendrLogo from "./lendr-logo";
 import Link from "next/link";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 export default function SignupForm() {
   const [formData, setFormData] = useState({
@@ -38,7 +40,8 @@ export default function SignupForm() {
 
     try {
       const response = await fetch(
-        "http://localhost:4000/api/auth/signup/index.php",
+        process.env.NEXT_PUBLIC_API_URL + "/api/auth/signup/",
+
         {
           method: "POST",
           headers: {
@@ -72,7 +75,7 @@ export default function SignupForm() {
     <div className="bg-white min-w-[385px] min-h-svh max-w-lg mx-auto p-6 rounded-lg shadow-md">
       <div className="mx-auto mt-5 p-6 rounded-lg">
         <LendrLogo />
-        <h1 className="text-2xl font-bold text-center mb-4">Register</h1>
+        <h2 className="text-2xl font-bold text-center mb-4">Registrer</h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         {successMessage && (
           <p className="text-green-500 text-center mb-4">{successMessage}</p>
@@ -83,9 +86,9 @@ export default function SignupForm() {
               className="block text-sm font-medium text-gray-700"
               htmlFor="username"
             >
-              Username
+              Brugernavn
             </label>
-            <input
+            <Input
               type="text"
               id="username"
               name="username"
@@ -103,7 +106,7 @@ export default function SignupForm() {
             >
               Email
             </label>
-            <input
+            <Input
               type="email"
               id="email"
               name="email"
@@ -119,9 +122,9 @@ export default function SignupForm() {
               className="block text-sm font-medium text-gray-700"
               htmlFor="password"
             >
-              Password
+              Adgangskode
             </label>
-            <input
+            <Input
               type="password"
               id="password"
               name="password"
@@ -137,9 +140,9 @@ export default function SignupForm() {
               className="block text-sm font-medium text-gray-700"
               htmlFor="phone_number"
             >
-              Phone Number
+              Telefon nummer
             </label>
-            <input
+            <Input
               type="text"
               id="phone_number"
               name="phone_number"
@@ -150,15 +153,14 @@ export default function SignupForm() {
             />
           </div>
 
-          <button
+          <Button
+            variant="default"
+            size="default"
             type="submit"
-            className={`w-full px-4 py-2 text-white font-bold rounded-md shadow ${
-              loading ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
-            }`}
             disabled={loading}
           >
-            {loading ? "Registering..." : "Register"}
-          </button>
+            {loading ? "Registering..." : "Registrer"}
+          </Button>
           <h4 className="text-center mt-4">Har du allerede en bruger?</h4>
           <Link
             href="/"
