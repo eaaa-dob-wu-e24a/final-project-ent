@@ -1,25 +1,26 @@
-// product-list.jsx or card.jsx
+// Card.jsx
 "use client";
 import React from "react";
+import Image from "next/image";
 
-export default function ProductList({ products, loading, error }) {
+export default function ProductList({ posts, loading, error }) {
   if (loading) {
-    return <p className="text-center">Indlæser produkter...</p>;
+    return <p className="text-center">Indlæser opslag...</p>;
   }
 
   if (error) {
     return <p className="text-center text-red-500">{error}</p>;
   }
 
-  if (products.length === 0) {
-    return <p className="text-center">Ingen produkter fundet.</p>;
+  if (!posts || posts.length === 0) {
+    return <p className="text-center">Ingen opslag fundet.</p>;
   }
 
   return (
     <div className="w-full z-0 flex px-5 flex-col space-y-4 mx-auto">
-      {products.map((product) => (
+      {posts.map((post) => (
         <div
-          key={product.id}
+          key={post.id}
           className="relative py-3 bg-white rounded-lg shadow-lg flex flex-col items-start overflow-hidden"
         >
           {/* Decorative SVG */}
@@ -32,42 +33,50 @@ export default function ProductList({ products, loading, error }) {
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M79.4404 105.271C79.4404 103.566 79.0981 102.458 78.4135 101.947C77.9001 101.265 77.3012 100.412 76.6165 99.3891C70.6267 102.97 62.3265 104.76 51.716 104.76C37.5116 104.76 25.7033 100.071 16.2907 90.6939C6.02242 80.9756 0.888306 68.5294 0.888306 53.3554C0.888306 34.4304 6.79255 19.6825 18.601 9.1118C30.5806 -1.62939 45.8974 -7 64.5514 -7C86.2858 -7 103.399 0.416556 115.893 15.2496C128.557 30.0827 134.888 48.8373 134.888 71.5132C134.888 99.6448 127.273 121.468 112.042 136.983C96.9819 152.328 78.9269 160 57.877 160C44.6995 160 34.089 157.102 26.0455 151.306C18.0021 145.337 13.9803 137.154 13.9803 126.754C13.9803 118.74 16.034 112.347 20.1413 107.573C29.5537 113.37 39.1375 116.268 48.8923 116.268C58.8183 116.268 66.3483 115.33 71.4825 113.455C76.7876 111.58 79.4404 108.852 79.4404 105.271Z"
+              d="M79.4404 105.271C79.4404 103.566 79.0981 102.458 78.4135 101.947C77.9001 101.265 77.3012 100.412 76.6165 99.3891C70.6267 102.97 62.3265 104.76 51.716 104.76C37.5116 104.76 25.7033 100.071 16.2907 90.6939C6.02242 80.9756 0.888306 68.5294 0.888306 53.3554C0.888306 34.4304 6.79255 19.6825 18.601 9.1118C30.5806 -1.62939 45.8974 -7 64.5514 -7C86.2858 -7 103 8.28583 103 30.8571C103 53.4284 86.2858 68.7143 64.5514 68.7143C45.8974 68.7143 30.5806 63.3439 18.601 52.6027C6.79255 41.8615 0.888306 27.1136 0.888306 8.18857C0.888306 -6.98543 6.02242 -19.4316 16.2907 -29.1499C25.7033 -38.527 37.5116 -43.216 51.716 -43.216C62.3265 -43.216 70.6267 -41.426 76.6165 -37.8449C77.3012 -38.8678 77.9001 -39.7201 78.4135 -40.4029C79.0981 -40.9138 79.4404 -42.0216 79.4404 -43.7266V-7.00001H103V105.271H79.4404Z"
               fill="#FF7127"
             />
           </svg>
-          {/* ... (Your existing SVG code) ... */}
+
+          {/* Product Image */}
+          <div className="absolute right-[10px] h-[100px] top-4 z-10 w-[100px] flex-shrink-0">
+            <Image
+              src={post.image}
+              alt={post.title}
+              className="object-cover h-full w-full rounded-[30px]"
+              width={100}
+              height={100}
+            />
+          </div>
 
           {/* Product Details */}
           <div className="pl-5 p-1 grid gap-4 relative z-10">
             <h3 className="text-xl pt-2 text-[#060606] font-bold">
-              {product.title}
+              {post.title}
             </h3>
             <div className="grid gap-1">
               <p className="text-[#888D96] text-xs">
-                <span className="font-medium">Tilstand:</span>{" "}
-                {product.condition}
+                <span className="font-medium">Tilstand:</span> {post.condition}
               </p>
               <p className="text-[#888D96] text-xs">
-                <span className="font-medium">Størrelse:</span> {product.size}
+                <span className="font-medium">Størrelse:</span> {post.size}
               </p>
               <p className="flex items-center text-gray-600 text-xs">
                 <span
                   className="w-3 h-3 rounded-full inline-block mr-2"
-                  style={{ backgroundColor: product.colorCode }}
+                  style={{ backgroundColor: post.colorCode }}
                 ></span>
-                {product.colorLabel}
+                {post.colorLabel}
+              </p>
+              <p className="text-[#888D96] text-xs">
+                <span className="font-medium">Pris pr. dag:</span>{" "}
+                {post.price_per_day} kr.
+              </p>
+              <p className="text-[#888D96] text-xs">
+                <span className="font-medium">Beskrivelse:</span>{" "}
+                {post.description}
               </p>
             </div>
-          </div>
-
-          {/* Product Image */}
-          <div className="absolute right-[10px] h-[100px] top-4 z-10 w-[100px] flex-shrink-0">
-            <img
-              src={product.image}
-              alt={product.title}
-              className="object-cover h-full w-full rounded-[30px]"
-            />
           </div>
         </div>
       ))}

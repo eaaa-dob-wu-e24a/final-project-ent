@@ -27,3 +27,25 @@ export async function createPost(data) {
     throw new Error(error.message || "Failed to create post");
   }
 }
+
+export async function getPosts() {
+  try {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_API_URL + "/api/post/read/",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Failed to fetch posts");
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(error.message || "Failed to fetch posts");
+  }
+}

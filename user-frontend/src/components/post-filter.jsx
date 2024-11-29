@@ -1,20 +1,25 @@
-// product-filter.jsx
+// post-filter.jsx
 "use client";
 import React from "react";
 import Image from "next/image";
 import { CiSearch } from "react-icons/ci";
 
-export default function ProductFilter({
-  products,
+export default function PostFilter({
+  posts = [],
   onFilter,
   selectedProductType,
   searchQuery,
   onSearch,
 }) {
   const uniqueProductTypes = [
-    ...new Set(products.map((product) => product.product_type)),
+    ...new Set(
+      posts
+        .map(
+          (post) => post.product_type && post.product_type.trim().toLowerCase()
+        )
+        .filter(Boolean)
+    ),
   ];
-
   const productTypeLabels = {
     kuffert: "Kuffert",
     vandrerygsaek: "Vandrerygsæk",
@@ -32,7 +37,7 @@ export default function ProductFilter({
             className="w-full h-full pl-10 pr-4 py-2 rounded-[20px] focus:outline-none"
             type="search"
             value={searchQuery}
-            onChange={(e) => onSearch(e.target.value)} // Update search query
+            onChange={(e) => onSearch(e.target.value)}
           />
         </div>
         <Image

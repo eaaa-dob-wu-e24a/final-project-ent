@@ -66,7 +66,7 @@ function upload_image($image){
     }
 
     // Return the relative path of the uploaded image
-    return './uploads/' . $file_name;
+    return 'uploads/' . $file_name;
 }
 
 try {
