@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { RiEdit2Fill } from "react-icons/ri";
 import { FiLogOut } from "react-icons/fi";
 import { Input } from "../../components/ui/input"; // Importing shadcn Input component
+import { logout } from "@/actions/auth.actions";
 
 const Profile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -37,6 +38,16 @@ const Profile = () => {
 
     fetchUserProfile(); // Trigger fetch when component mounts
   }, []);
+
+  const handleLogout = async () => {
+    const result = await logout();
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      router.push("/");
+    }
+  };
 
   // Update the user profile
   const handleUpdateProfile = async () => {
@@ -189,6 +200,7 @@ const Profile = () => {
         <div className="mt-7 text-center">
           <button
             type="button"
+            onClick={handleLogout}
             className="text-gray-600 flex items-center justify-center space-x-2"
           >
             <FiLogOut className="h-5 w-5 text-[#53BF6D]" /> {/* Logout Icon */}
