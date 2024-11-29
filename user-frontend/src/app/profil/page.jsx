@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiEdit2Fill } from "react-icons/ri";
@@ -7,37 +8,112 @@ import { Input } from "../../components/ui/input"; // Importing shadcn Input com
 import { logout } from "@/actions/auth.actions";
 
 const Profile = () => {
-  const [userProfile, setUserProfile] = useState(null);
+  const [originalUserProfile, setOriginalUserProfile] = useState(null); // Store the original state
+  const [userProfile, setUserProfile] = useState(null); // Editable profile
+  const [imagePreview, setImagePreview] = useState("/dummypicture.webp");
+  const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null); // State for success message
+  const [successMessage, setSuccessMessage] = useState(null);
   const router = useRouter();
 
   // Fetch user profile from the backend
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await fetch(
-          process.env.NEXT_PUBLIC_API_URL + "/api/user/read/",
-          {
-            method: "GET",
-            credentials: "include", // Include cookies for authorization
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/api/user/read/",
+        {
+          method: "GET",
+          credentials: "include", // Include cookies for authorization
         }
+      );
 
-        const data = await response.json();
-        setUserProfile(data);
-      } catch (err) {
-        console.error("Error fetching user profile:", err);
-        setError("An error occurred while fetching user data.");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    };
 
+      const data = await response.json();
+      setOriginalUserProfile(data); // Store the original profile
+      setUserProfile(data); // Set the editable profile
+      setImagePreview(
+        data.profile_picture
+          ? `${process.env.NEXT_PUBLIC_API_URL}/api/user/update/${data.profile_picture}`
+          : "/dummypicture.webp"
+      );
+    } catch (err) {
+      console.error("Error fetching user profile:", err);
+      setError("An error occurred while fetching user data.");
+    }
+  };
+
+  useEffect(() => {
     fetchUserProfile(); // Trigger fetch when component mounts
   }, []);
+
+  // Handle file selection and preview
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file)); // Update preview immediately
+    }
+  };
+
+  // Update profile
+  const handleUpdateProfile = async () => {
+    try {
+      if (!userProfile) return;
+
+      const formData = new FormData();
+
+      // Add only changed fields to the FormData
+      if (userProfile.username !== originalUserProfile.username) {
+        formData.append("username", userProfile.username);
+      }
+      if (userProfile.phone_number !== originalUserProfile.phone_number) {
+        formData.append("phone_number", userProfile.phone_number);
+      }
+      if (userProfile.email !== originalUserProfile.email) {
+        formData.append("email", userProfile.email);
+      }
+      if (imageFile) {
+        formData.append("profile_picture", imageFile);
+      }
+
+      // If no changes, exit early
+      if (!Array.from(formData.entries()).length) {
+        setError("No changes detected.");
+        return;
+      }
+
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/api/user/update/",
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text(); // Read full response as text
+        try {
+          const errorData = JSON.parse(errorText); // Attempt to parse as JSON
+          throw new Error(errorData.error || "Failed to update profile");
+        } catch (e) {
+          throw new Error("Unexpected response: " + errorText); // HTML or non-JSON response
+        }
+      }
+
+      // Refresh profile after successful update
+      await fetchUserProfile(); // Immediately refetch the updated profile
+
+      setSuccessMessage("Profile updated successfully!");
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch (err) {
+      console.error("Error updating profile:", err.message);
+      setError(err.message);
+    }
+  };
 
   const handleLogout = async () => {
     const result = await logout();
@@ -49,63 +125,6 @@ const Profile = () => {
     }
   };
 
-  // Update the user profile
-  const handleUpdateProfile = async () => {
-    try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/api/user/update/",
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: userProfile.username,
-            email: userProfile.email,
-            phone_number: userProfile.phone_number,
-            profile_picture: userProfile.profile_picture, // Update with new picture if changed
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! Status: ${response.status}`
-        );
-      }
-
-      const updatedProfile = await response.json();
-      setUserProfile(updatedProfile);
-
-      // Display success message
-      setSuccessMessage("Your profile was updated successfully!");
-
-      // Clear the success message after 5 seconds
-      setTimeout(() => setSuccessMessage(null), 5000);
-
-      console.log("Profile updated successfully:", updatedProfile);
-    } catch (err) {
-      console.error("Error updating user profile:", err.message);
-      setError(err.message);
-    }
-  };
-
-  // Handle profile picture update via button
-  const handleProfilePictureUpdate = () => {
-    const newPictureUrl = prompt("Enter the new profile picture URL:");
-    if (newPictureUrl) {
-      setUserProfile({ ...userProfile, profile_picture: newPictureUrl });
-    }
-  };
-
-  // If no data yet, show loading message
-  if (!userProfile) {
-    return <div>Loading...</div>;
-  }
-
-  // Render user profile once data is available
   return (
     <div className="container mx-auto p-6">
       <div className="max-w-lg mx-auto bg-gray-100 shadow-md rounded-lg p-6">
@@ -113,23 +132,31 @@ const Profile = () => {
         <div className="relative justify-center items-center mb-6 flex">
           <div className="relative">
             <img
-              src={userProfile.profile_picture || "/default-profile.png"}
+              src={imagePreview}
               alt="Profile Picture"
               className="w-24 h-24 rounded-full border-2 border-gray-300"
             />
-            <button
-              onClick={handleProfilePictureUpdate}
-              className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full shadow-md border border-gray-300 flex items-center justify-center"
+            <label
+              htmlFor="profile-upload"
+              className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full shadow-md border border-gray-300 flex items-center justify-center cursor-pointer"
               aria-label="Change Picture"
             >
               <RiEdit2Fill className="h-5 w-5 text-[#53BF6D]" />{" "}
               {/* Edit Icon */}
-            </button>
+            </label>
+            <input
+              type="file"
+              name="profile_picture"
+              id="profile-upload"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden" // Hidden input element
+            />
           </div>
         </div>
 
         {/* User Info Form */}
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
           <div>
             <label
               htmlFor="username"
@@ -141,7 +168,7 @@ const Profile = () => {
               id="username"
               name="username"
               type="text"
-              value={userProfile.username}
+              value={userProfile?.username || ""}
               onChange={(e) =>
                 setUserProfile({ ...userProfile, username: e.target.value })
               }
@@ -160,7 +187,7 @@ const Profile = () => {
               id="email"
               name="email"
               type="email"
-              value={userProfile.email || ""}
+              value={userProfile?.email || ""}
               onChange={(e) =>
                 setUserProfile({ ...userProfile, email: e.target.value })
               }
@@ -179,9 +206,12 @@ const Profile = () => {
               id="phone"
               name="phone"
               type="text"
-              value={userProfile.phone_number || ""}
+              value={userProfile?.phone_number || ""}
               onChange={(e) =>
-                setUserProfile({ ...userProfile, phone_number: e.target.value })
+                setUserProfile({
+                  ...userProfile,
+                  phone_number: e.target.value,
+                })
               }
               className="mt-1"
             />
