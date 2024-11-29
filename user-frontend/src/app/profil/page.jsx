@@ -1,12 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { RiEdit2Fill } from "react-icons/ri";
 import { FiLogOut } from "react-icons/fi";
 import { Input } from "../../components/ui/input"; // Importing shadcn Input component
+import { logout } from "@/actions/auth.actions";
 
 const Profile = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null); // State for success message
+  const router = useRouter();
 
   // Fetch user profile from the backend
   useEffect(() => {
@@ -34,6 +38,16 @@ const Profile = () => {
 
     fetchUserProfile(); // Trigger fetch when component mounts
   }, []);
+
+  const handleLogout = async () => {
+    const result = await logout();
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      router.push("/");
+    }
+  };
 
   // Update the user profile
   const handleUpdateProfile = async () => {
@@ -64,6 +78,13 @@ const Profile = () => {
 
       const updatedProfile = await response.json();
       setUserProfile(updatedProfile);
+
+      // Display success message
+      setSuccessMessage("Your profile was updated successfully!");
+
+      // Clear the success message after 5 seconds
+      setTimeout(() => setSuccessMessage(null), 5000);
+
       console.log("Profile updated successfully:", updatedProfile);
     } catch (err) {
       console.error("Error updating user profile:", err.message);
@@ -79,11 +100,6 @@ const Profile = () => {
     }
   };
 
-  // If an error occurred, display the error message
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
-
   // If no data yet, show loading message
   if (!userProfile) {
     return <div>Loading...</div>;
@@ -94,7 +110,7 @@ const Profile = () => {
     <div className="container mx-auto p-6">
       <div className="max-w-lg mx-auto bg-gray-100 shadow-md rounded-lg p-6">
         {/* Profile Picture */}
-        <div className="relative flex justify-center items-center mb-6">
+        <div className="relative justify-center items-center mb-6 flex">
           <div className="relative">
             <img
               src={userProfile.profile_picture || "/default-profile.png"}
@@ -184,11 +200,16 @@ const Profile = () => {
         <div className="mt-7 text-center">
           <button
             type="button"
+            onClick={handleLogout}
             className="text-gray-600 flex items-center justify-center space-x-2"
           >
             <FiLogOut className="h-5 w-5 text-[#53BF6D]" /> {/* Logout Icon */}
             <span>Log ud</span>
           </button>
+          {successMessage && (
+            <div className="mt-2 text-green-600">{successMessage}</div>
+          )}
+          {error && <div className="mt-2 text-red-600">{error}</div>}
         </div>
       </div>
     </div>

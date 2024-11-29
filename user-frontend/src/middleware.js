@@ -4,7 +4,7 @@ export function middleware(request) {
   const { cookies } = request;
   const accessToken = cookies.get("access_token")?.value;
 
-  const protectedPaths = ["/hjem", "/profil", "/products"]; // Add all protected paths
+  const protectedPaths = ["/hjem", "/profil", "/ordre-og-opslag"]; // Add all protected paths
   const currentPath = request.nextUrl.pathname;
 
   // If trying to access a protected route without being authenticated, redirect to login
@@ -17,5 +17,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/hjem/:path*", "/profile/:path*", "/products/:path*"], // Protect these routes
+  matcher: ["/hjem/:path*", "/profil/:path*", "/ordre-og-opslag/:path*"], // Protect these routes
 };
