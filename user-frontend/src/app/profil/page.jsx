@@ -6,6 +6,7 @@ import { RiEdit2Fill } from "react-icons/ri";
 import { FiLogOut } from "react-icons/fi";
 import { Input } from "../../components/ui/input"; // Importing shadcn Input component
 import { logout } from "@/actions/auth.actions";
+import { fetchUserProfile, updateUserProfile } from "@/actions/user.actions";
 
 const Profile = () => {
   const [originalUserProfile, setOriginalUserProfile] = useState(null); // Store the original state
@@ -14,39 +15,29 @@ const Profile = () => {
   const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [loading, setLoading] = useState(true); // Loading state for skeleton UI
   const router = useRouter();
 
   // Fetch user profile from the backend
-  const fetchUserProfile = async () => {
-    try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/api/user/read/",
-        {
-          method: "GET",
-          credentials: "include", // Include cookies for authorization
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setOriginalUserProfile(data); // Store the original profile
-      setUserProfile(data); // Set the editable profile
-      setImagePreview(
-        data.profile_picture
-          ? `${process.env.NEXT_PUBLIC_API_URL}/api/user/update/${data.profile_picture}`
-          : "/dummypicture.webp"
-      );
-    } catch (err) {
-      console.error("Error fetching user profile:", err);
-      setError("An error occurred while fetching user data.");
-    }
-  };
-
   useEffect(() => {
-    fetchUserProfile(); // Trigger fetch when component mounts
+    const fetchData = async () => {
+      try {
+        const data = await fetchUserProfile();
+        setOriginalUserProfile(data);
+        setUserProfile(data);
+        setImagePreview(
+          data.profile_picture
+            ? `${process.env.NEXT_PUBLIC_API_URL}/api/user/update/${data.profile_picture}`
+            : "/dummypicture.webp"
+        );
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false); // Set loading to false after fetching
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Handle file selection and preview
@@ -54,7 +45,7 @@ const Profile = () => {
     const file = e.target.files[0];
     if (file) {
       setImageFile(file);
-      setImagePreview(URL.createObjectURL(file)); // Update preview immediately
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -79,39 +70,32 @@ const Profile = () => {
         formData.append("profile_picture", imageFile);
       }
 
-      // If no changes, exit early
       if (!Array.from(formData.entries()).length) {
         setError("No changes detected.");
         return;
       }
 
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/api/user/update/",
-        {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text(); // Read full response as text
-        try {
-          const errorData = JSON.parse(errorText); // Attempt to parse as JSON
-          throw new Error(errorData.error || "Failed to update profile");
-        } catch (e) {
-          throw new Error("Unexpected response: " + errorText); // HTML or non-JSON response
-        }
-      }
-
-      // Refresh profile after successful update
-      await fetchUserProfile(); // Immediately refetch the updated profile
-
+      await updateUserProfile(formData); // Call the action
       setSuccessMessage("Profile updated successfully!");
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
-      console.error("Error updating profile:", err.message);
       setError(err.message);
+    }
+  };
+
+  const handleFetchUserProfile = async () => {
+    const result = await fetchUserProfile();
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      setOriginalUserProfile(result);
+      setUserProfile(result);
+      setImagePreview(
+        result.profile_picture
+          ? `${process.env.NEXT_PUBLIC_API_URL}/api/user/update/${result.profile_picture}`
+          : "/dummypicture.webp"
+      );
     }
   };
 
@@ -124,6 +108,22 @@ const Profile = () => {
       router.push("/");
     }
   };
+
+  if (loading) {
+    // Show skeleton UI while loading
+    return (
+      <div className="container mx-auto p-6">
+        <div className="max-w-lg mx-auto bg-gray-100 shadow-md rounded-lg p-6">
+          <div className="w-24 h-24 rounded-full bg-gray-300 animate-pulse mx-auto mb-4" />
+          <div className="space-y-4">
+            <div className="h-4 bg-gray-300 animate-pulse rounded" />
+            <div className="h-4 bg-gray-300 animate-pulse rounded" />
+            <div className="h-4 bg-gray-300 animate-pulse rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -141,8 +141,7 @@ const Profile = () => {
               className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full shadow-md border border-gray-300 flex items-center justify-center cursor-pointer"
               aria-label="Change Picture"
             >
-              <RiEdit2Fill className="h-5 w-5 text-[#53BF6D]" />{" "}
-              {/* Edit Icon */}
+              <RiEdit2Fill className="h-5 w-5 text-[#53BF6D]" />
             </label>
             <input
               type="file"
@@ -150,7 +149,7 @@ const Profile = () => {
               id="profile-upload"
               accept="image/*"
               onChange={handleFileChange}
-              className="hidden" // Hidden input element
+              className="hidden"
             />
           </div>
         </div>
@@ -233,7 +232,7 @@ const Profile = () => {
             onClick={handleLogout}
             className="text-gray-600 flex items-center justify-center space-x-2"
           >
-            <FiLogOut className="h-5 w-5 text-[#53BF6D]" /> {/* Logout Icon */}
+            <FiLogOut className="h-5 w-5 text-[#53BF6D]" />
             <span>Log ud</span>
           </button>
           {successMessage && (
