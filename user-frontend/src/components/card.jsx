@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { IoLocationOutline } from "react-icons/io5";
 
 export default function ProductList({ posts, loading, error }) {
   if (loading) {
@@ -18,15 +19,15 @@ export default function ProductList({ posts, loading, error }) {
   }
 
   return (
-    <div className="w-full z-0 flex px-5 flex-col space-y-4 mx-auto">
+    <div className="w-10/12 z-0 flex px-5 flex-col space-y-4 mx-auto">
       {posts.map((post) => (
         <Link
           href={`/hjem/${post.id}`}
           key={post.id}
-          className="relative py-3 bg-white rounded-lg shadow-lg flex flex-col items-start overflow-hidden"
+          className="relative py-6 bg-white rounded-lg shadow-lg flex flex-col items-start overflow-hidden"
         >
           <svg
-            className="absolute -right-14 -top-3 object-cover h-60 w-52"
+            className="absolute -right-14 -top-3 object-cover h-56 w-56"
             width="115"
             height="142"
             viewBox="0 0 115 142"
@@ -49,6 +50,12 @@ export default function ProductList({ posts, loading, error }) {
               height={100}
             />
           </div>
+
+          <p className="text-white flex absolute gap-1 right-[60px] bottom-[5px] items-center text-base">
+            {" "}
+            <IoLocationOutline />
+            {post.location}
+          </p>
 
           {/* Product Details */}
           <div className="pl-5 p-1 grid gap-4 relative z-10">

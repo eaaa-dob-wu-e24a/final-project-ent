@@ -1,3 +1,4 @@
+// src/components/post-form.jsx
 "use client";
 
 import { useState } from "react";
@@ -10,13 +11,14 @@ function PostForm() {
     description: "",
     price_per_day: "",
     product_id: "",
+    location: "",
   });
 
   const { myProducts, loading, error } = useMyProducts();
 
   const [message, setMessage] = useState({ text: "", type: "" });
 
-  // Handler for input changes (description and price_per_day)
+  // Handler for input changes (description, price_per_day, and location)
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -35,7 +37,8 @@ function PostForm() {
     if (
       !formData.description ||
       !formData.price_per_day ||
-      !formData.product_id
+      !formData.product_id ||
+      !formData.location
     ) {
       setMessage({
         text: "Please fill out all required fields.",
@@ -61,6 +64,7 @@ function PostForm() {
         description: "",
         price_per_day: "",
         product_id: "",
+        location: "",
       });
     } catch (error) {
       setMessage({
@@ -135,7 +139,6 @@ function PostForm() {
             rows="4"
           ></textarea>
         </div>
-
         {/* Price per day */}
         <div>
           <input
@@ -151,6 +154,18 @@ function PostForm() {
           />
         </div>
 
+        {/* Location */}
+        <div>
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleInputChange}
+            placeholder="Location"
+            required
+            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
         {/* Submit button */}
         <Button
           type="submit"
@@ -160,7 +175,6 @@ function PostForm() {
         >
           Create Post
         </Button>
-
         {/* Message */}
         {message.text && (
           <p
