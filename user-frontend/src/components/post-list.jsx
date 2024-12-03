@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPosts } from "../actions/post.actions";
+import { getPosts } from "../helpers/post.helper";
 
 function PostList() {
   const [posts, setPosts] = useState([]);

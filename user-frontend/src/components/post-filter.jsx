@@ -24,7 +24,6 @@ export default function PostFilter({
     kuffert: "Kuffert",
     vandrerygsaek: "Vandrerygsæk",
     rygsaek: "Rygsæk",
-    // Add other mappings as needed
   };
 
   return (
