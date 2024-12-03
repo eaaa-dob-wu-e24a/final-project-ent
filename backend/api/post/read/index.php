@@ -16,6 +16,7 @@
                 p.PK_ID AS post_id,
                 p.description,
                 p.price_per_day,
+                p.location,
                 p.product_id,
                 pr.name AS product_name,
                 pr.product_type,
@@ -58,6 +59,7 @@
                     'post_id' => $post_id,
                     'description' => $row['description'],
                     'price_per_day' => $row['price_per_day'],
+                    'location' => $row['location'],
                     'product' => [
                         'product_id' => $product_id,
                         'name' => $row['product_name'],

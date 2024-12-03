@@ -28,8 +28,8 @@ export default function PostFilter({
 
   return (
     <>
-      <div className="flex gap-4">
-        <div className="relative w-[275px]">
+      <div className="flex gap-4 w-10/12 justify-between">
+        <div className="relative w-full">
           <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
           <input
             placeholder="Søg efter produkter"
@@ -46,7 +46,7 @@ export default function PostFilter({
           height={58}
         />
       </div>
-      <div className="flex gap-3 mb-20 w-[350px]">
+      <div className="flex w-10/12 gap-3 mb-20 min-w[350px]">
         <div
           onClick={() => onFilter(null)}
           className={`cursor-pointer w-auto px-4 h-11 flex items-center justify-center rounded-[10px] ${

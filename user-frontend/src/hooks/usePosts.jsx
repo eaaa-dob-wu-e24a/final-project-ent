@@ -53,6 +53,7 @@ export default function usePosts() {
             colorCode: post.product.color,
             brand: post.product.brand,
             description: post.description,
+            location: post.location,
             price_per_day: post.price_per_day,
             image: imageUrl,
           };
