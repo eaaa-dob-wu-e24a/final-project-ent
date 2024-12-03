@@ -1,4 +1,6 @@
 <?php
+// backend/api/post/create/index.php
+
 
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
@@ -14,7 +16,7 @@ handle_api_request('POST', 'Request method must be POST', 405);
 $input = handle_json_request();
 
 // Validate that all required fields are provided in the input
-if (!isset($input['description']) || !isset($input['price_per_day']) || !isset($input['product_id'])) {
+if (!isset($input['description']) || !isset($input['price_per_day']) || !isset($input['product_id']) || !isset($input['location'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Please fill out all required fields']);
     exit();
@@ -24,10 +26,11 @@ if (!isset($input['description']) || !isset($input['price_per_day']) || !isset($
 $description = $input['description'];
 $price_per_day = $input['price_per_day'];
 $product_id = $input['product_id'];
+$location = $input['location'];
 
 // prepare statement and bind parameters
-$stmt = $mySQL->prepare("INSERT INTO post (description, price_per_day, product_id, user_login_id) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("ssis", $description, $price_per_day, $product_id, $user_login_id);
+$stmt = $mySQL->prepare("INSERT INTO post (description, price_per_day, product_id, user_login_id, location) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("ssiss", $description, $price_per_day, $product_id, $user_login_id, $location);
 
 // try catch block to catch any database errors that may occur
 try {
@@ -45,7 +48,8 @@ try {
             'description' => $description,
             'price_per_day' => $price_per_day,
             'product_id' => $product_id,
-            'user_login_id' => $user_login_id
+            'user_login_id' => $user_login_id,
+            'location' => $location
         ]);
     }
 

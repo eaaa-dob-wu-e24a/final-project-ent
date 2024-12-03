@@ -1,7 +1,7 @@
-// src/actions/post.actions.js
+// src/helpers/posts.js
 
 export async function createPost(data) {
-  const { description, price_per_day, product_id } = data;
+  const { description, price_per_day, product_id, location } = data;
 
   try {
     const response = await fetch(
@@ -12,7 +12,12 @@ export async function createPost(data) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ description, price_per_day, product_id }),
+        body: JSON.stringify({
+          description,
+          price_per_day,
+          product_id,
+          location,
+        }),
       }
     );
 
@@ -27,7 +32,6 @@ export async function createPost(data) {
     throw new Error(error.message || "Failed to create post");
   }
 }
-
 export async function getPosts() {
   try {
     const response = await fetch(

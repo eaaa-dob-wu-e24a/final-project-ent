@@ -1,17 +1,16 @@
 import Image from "next/image";
-import ColorLabel from "./color-label";
+import ColorLabel from "../../../components/color-label";
 
 export default function UserPosts({ posts }) {
-
-    if (!posts || posts.length === 0) {
-        return (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <p className="text-gray-600 text-lg font-medium">
-              Der er ingen opslag at vise.
-            </p>
-          </div>
-        );
-      }
+  if (!posts || posts.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center">
+        <p className="text-gray-600 text-lg font-medium">
+          Der er ingen opslag at vise.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,7 +33,7 @@ export default function UserPosts({ posts }) {
             />
           </svg>
 
-          <div className="absolute right-6 top-4 w-20">
+          <div className="absolute right-6 h-[85px] top-4 w-20">
             <Image
               src={`${process.env.NEXT_PUBLIC_API_URL}/api/product/create/${post.product["pictures"][0]}`}
               alt={post.product["name"]}

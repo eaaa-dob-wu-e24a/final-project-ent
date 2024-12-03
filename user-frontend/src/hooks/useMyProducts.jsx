@@ -25,7 +25,7 @@ export default function useMyProducts() {
     const fetchMyProducts = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/product/my-products/read/`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/product/read/user-products`,
           {
             method: "GET",
             credentials: "include", // Include cookies for authentication if using sessions
