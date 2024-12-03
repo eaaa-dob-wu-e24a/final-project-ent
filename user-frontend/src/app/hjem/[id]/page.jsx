@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 export default async function PostPage({ params }) {
   const { id } = params;
@@ -32,12 +33,14 @@ export default async function PostPage({ params }) {
     return (
       <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md">
         <div className="grid grid-cols-3 items-center justify-center">
-          <button className="justify-self-start text-gray-500">
-            ← Tilbage
-          </button>
-          <h2 className="text-3xl font-bold text-gray-900 col-span-1 text-center">
+          <Link href={"/hjem"}>
+            <button className="justify-self-start text-gray-500 text-xs">
+              ← Tilbage
+            </button>
+          </Link>
+          <h4 className="text-xl font-bold text-gray-900 col-span-1 text-center text-nowrap justify-self-center truncate max-w-40">
             {post.product_name}
-          </h2>
+          </h4>
         </div>
 
         <div className="mt-4">
