@@ -90,7 +90,7 @@ export default async function PostPage({ params }) {
             {/* Location */}
             <div>
               <p className="font-semibold">Lokation</p>
-              <p>København</p>
+              <p>{post.location}</p>
             </div>
             <Separator orientation="vertical" className="h-8 mx-auto" />
 

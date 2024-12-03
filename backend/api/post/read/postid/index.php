@@ -19,6 +19,7 @@ try {
             p.PK_ID AS post_id,
             p.description,
             p.price_per_day,
+            p.location,
             pr.PK_ID AS product_id,
             pr.name AS product_name,
             pr.brand,
