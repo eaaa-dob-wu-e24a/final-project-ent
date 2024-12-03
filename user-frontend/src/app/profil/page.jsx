@@ -134,14 +134,14 @@ const Profile = () => {
             <img
               src={imagePreview}
               alt="Profile Picture"
-              className="w-24 h-24 rounded-full border-2 object-cover border-gray-300"
+              className="w-44 h-44 rounded-full border-2 object-cover border-gray-300"
             />
             <label
               htmlFor="profile-upload"
-              className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full shadow-md border border-gray-300 flex items-center justify-center cursor-pointer"
+              className="absolute bottom-3 right-4 transform translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full shadow-md border border-gray-300 flex items-center justify-center cursor-pointer"
               aria-label="Change Picture"
             >
-              <RiEdit2Fill className="h-5 w-5 text-[#53BF6D]" />
+              <RiEdit2Fill className="h-6 w-6 text-darkgreen" />
             </label>
             <input
               type="file"
@@ -219,7 +219,7 @@ const Profile = () => {
           <button
             type="button"
             onClick={handleUpdateProfile}
-            className="w-full bg-[#53BF6D] text-white py-2 px-4 rounded-md shadow hover:bg-green-600"
+            className="w-full bg-darkgreen text-white py-2 px-4 rounded-md shadow hover:bg-green-600"
           >
             Opdater profil
           </button>
@@ -232,11 +232,11 @@ const Profile = () => {
             onClick={handleLogout}
             className="text-gray-600 flex items-center justify-center space-x-2"
           >
-            <FiLogOut className="h-5 w-5 text-[#53BF6D]" />
+            <FiLogOut className="h-5 w-5 text-darkgreen" />
             <span>Log ud</span>
           </button>
           {successMessage && (
-            <div className="mt-2 text-green-600">{successMessage}</div>
+            <div className="mt-2 text-lightgreen">{successMessage}</div>
           )}
           {error && <div className="mt-2 text-red-600">{error}</div>}
         </div>
