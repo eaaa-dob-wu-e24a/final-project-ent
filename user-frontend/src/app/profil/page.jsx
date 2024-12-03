@@ -1,43 +1,103 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiEdit2Fill } from "react-icons/ri";
 import { FiLogOut } from "react-icons/fi";
 import { Input } from "../../components/ui/input"; // Importing shadcn Input component
 import { logout } from "@/actions/auth.actions";
+import { fetchUserProfile, updateUserProfile } from "@/actions/user.actions";
 
 const Profile = () => {
-  const [userProfile, setUserProfile] = useState(null);
+  const [originalUserProfile, setOriginalUserProfile] = useState(null); // Store the original state
+  const [userProfile, setUserProfile] = useState(null); // Editable profile
+  const [imagePreview, setImagePreview] = useState("/dummypicture.webp");
+  const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null); // State for success message
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [loading, setLoading] = useState(true); // Loading state for skeleton UI
   const router = useRouter();
 
   // Fetch user profile from the backend
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          process.env.NEXT_PUBLIC_API_URL + "/api/user/read/",
-          {
-            method: "GET",
-            credentials: "include", // Include cookies for authorization
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await fetchUserProfile();
+        setOriginalUserProfile(data);
         setUserProfile(data);
+        setImagePreview(
+          data.profile_picture
+            ? `${process.env.NEXT_PUBLIC_API_URL}/api/user/update/${data.profile_picture}`
+            : "/dummypicture.webp"
+        );
       } catch (err) {
-        console.error("Error fetching user profile:", err);
-        setError("An error occurred while fetching user data.");
+        setError(err.message);
+      } finally {
+        setLoading(false); // Set loading to false after fetching
       }
     };
 
-    fetchUserProfile(); // Trigger fetch when component mounts
+    fetchData();
   }, []);
+
+  // Handle file selection and preview
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  // Update profile
+  const handleUpdateProfile = async () => {
+    try {
+      if (!userProfile) return;
+
+      const formData = new FormData();
+
+      // Add only changed fields to the FormData
+      if (userProfile.username !== originalUserProfile.username) {
+        formData.append("username", userProfile.username);
+      }
+      if (userProfile.phone_number !== originalUserProfile.phone_number) {
+        formData.append("phone_number", userProfile.phone_number);
+      }
+      if (userProfile.email !== originalUserProfile.email) {
+        formData.append("email", userProfile.email);
+      }
+      if (imageFile) {
+        formData.append("profile_picture", imageFile);
+      }
+
+      if (!Array.from(formData.entries()).length) {
+        setError("No changes detected.");
+        return;
+      }
+
+      await updateUserProfile(formData); // Call the action
+      setSuccessMessage("Profile updated successfully!");
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleFetchUserProfile = async () => {
+    const result = await fetchUserProfile();
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      setOriginalUserProfile(result);
+      setUserProfile(result);
+      setImagePreview(
+        result.profile_picture
+          ? `${process.env.NEXT_PUBLIC_API_URL}/api/user/update/${result.profile_picture}`
+          : "/dummypicture.webp"
+      );
+    }
+  };
 
   const handleLogout = async () => {
     const result = await logout();
@@ -49,63 +109,22 @@ const Profile = () => {
     }
   };
 
-  // Update the user profile
-  const handleUpdateProfile = async () => {
-    try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/api/user/update/",
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: userProfile.username,
-            email: userProfile.email,
-            phone_number: userProfile.phone_number,
-            profile_picture: userProfile.profile_picture, // Update with new picture if changed
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! Status: ${response.status}`
-        );
-      }
-
-      const updatedProfile = await response.json();
-      setUserProfile(updatedProfile);
-
-      // Display success message
-      setSuccessMessage("Your profile was updated successfully!");
-
-      // Clear the success message after 5 seconds
-      setTimeout(() => setSuccessMessage(null), 5000);
-
-      console.log("Profile updated successfully:", updatedProfile);
-    } catch (err) {
-      console.error("Error updating user profile:", err.message);
-      setError(err.message);
-    }
-  };
-
-  // Handle profile picture update via button
-  const handleProfilePictureUpdate = () => {
-    const newPictureUrl = prompt("Enter the new profile picture URL:");
-    if (newPictureUrl) {
-      setUserProfile({ ...userProfile, profile_picture: newPictureUrl });
-    }
-  };
-
-  // If no data yet, show loading message
-  if (!userProfile) {
-    return <div>Loading...</div>;
+  if (loading) {
+    // Show skeleton UI while loading
+    return (
+      <div className="container mx-auto p-6">
+        <div className="max-w-lg mx-auto bg-gray-100 shadow-md rounded-lg p-6">
+          <div className="w-24 h-24 rounded-full bg-gray-300 animate-pulse mx-auto mb-4" />
+          <div className="space-y-4">
+            <div className="h-4 bg-gray-300 animate-pulse rounded" />
+            <div className="h-4 bg-gray-300 animate-pulse rounded" />
+            <div className="h-4 bg-gray-300 animate-pulse rounded" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  // Render user profile once data is available
   return (
     <div className="container mx-auto p-6">
       <div className="max-w-lg mx-auto bg-gray-100 shadow-md rounded-lg p-6">
@@ -113,23 +132,30 @@ const Profile = () => {
         <div className="relative justify-center items-center mb-6 flex">
           <div className="relative">
             <img
-              src={userProfile.profile_picture || "/default-profile.png"}
+              src={imagePreview}
               alt="Profile Picture"
               className="w-24 h-24 rounded-full border-2 object-cover border-gray-300"
             />
-            <button
-              onClick={handleProfilePictureUpdate}
-              className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full shadow-md border border-gray-300 flex items-center justify-center"
+            <label
+              htmlFor="profile-upload"
+              className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full shadow-md border border-gray-300 flex items-center justify-center cursor-pointer"
               aria-label="Change Picture"
             >
-              <RiEdit2Fill className="h-5 w-5 text-[#53BF6D]" />{" "}
-              {/* Edit Icon */}
-            </button>
+              <RiEdit2Fill className="h-5 w-5 text-[#53BF6D]" />
+            </label>
+            <input
+              type="file"
+              name="profile_picture"
+              id="profile-upload"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
           </div>
         </div>
 
         {/* User Info Form */}
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
           <div>
             <label
               htmlFor="username"
@@ -141,7 +167,7 @@ const Profile = () => {
               id="username"
               name="username"
               type="text"
-              value={userProfile.username}
+              value={userProfile?.username || ""}
               onChange={(e) =>
                 setUserProfile({ ...userProfile, username: e.target.value })
               }
@@ -160,7 +186,7 @@ const Profile = () => {
               id="email"
               name="email"
               type="email"
-              value={userProfile.email || ""}
+              value={userProfile?.email || ""}
               onChange={(e) =>
                 setUserProfile({ ...userProfile, email: e.target.value })
               }
@@ -179,9 +205,12 @@ const Profile = () => {
               id="phone"
               name="phone"
               type="text"
-              value={userProfile.phone_number || ""}
+              value={userProfile?.phone_number || ""}
               onChange={(e) =>
-                setUserProfile({ ...userProfile, phone_number: e.target.value })
+                setUserProfile({
+                  ...userProfile,
+                  phone_number: e.target.value,
+                })
               }
               className="mt-1"
             />
@@ -203,7 +232,7 @@ const Profile = () => {
             onClick={handleLogout}
             className="text-gray-600 flex items-center justify-center space-x-2"
           >
-            <FiLogOut className="h-5 w-5 text-[#53BF6D]" /> {/* Logout Icon */}
+            <FiLogOut className="h-5 w-5 text-[#53BF6D]" />
             <span>Log ud</span>
           </button>
           {successMessage && (

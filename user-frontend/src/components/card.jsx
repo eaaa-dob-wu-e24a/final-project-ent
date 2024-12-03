@@ -2,6 +2,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ProductList({ posts, loading, error }) {
   if (loading) {
@@ -19,7 +20,8 @@ export default function ProductList({ posts, loading, error }) {
   return (
     <div className="w-full z-0 flex px-5 flex-col space-y-4 mx-auto">
       {posts.map((post) => (
-        <div
+        <Link
+          href={`/hjem/${post.id}`}
           key={post.id}
           className="relative py-3 bg-white rounded-lg shadow-lg flex flex-col items-start overflow-hidden"
         >
@@ -70,7 +72,7 @@ export default function ProductList({ posts, loading, error }) {
               </p>
               <p className="text-[#888D96] text-xs">
                 <span className="font-medium">Pris pr. dag:</span>{" "}
-                {post.price_per_day} kr.
+                {post.price_per_day}
               </p>
               <p className="text-[#888D96] text-xs">
                 <span className="font-medium">Beskrivelse:</span>{" "}
@@ -78,7 +80,7 @@ export default function ProductList({ posts, loading, error }) {
               </p>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

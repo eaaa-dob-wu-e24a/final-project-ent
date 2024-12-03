@@ -7,7 +7,6 @@ export default function useMyProducts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Optional: Mapping color codes to labels
   const colorLabels = {
     "#000000": "Sort",
     "#5337FF": "Blå",
