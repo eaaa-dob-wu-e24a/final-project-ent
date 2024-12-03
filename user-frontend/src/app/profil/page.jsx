@@ -115,7 +115,7 @@ const Profile = () => {
             <img
               src={userProfile.profile_picture || "/default-profile.png"}
               alt="Profile Picture"
-              className="w-24 h-24 rounded-full border-2 border-gray-300"
+              className="w-24 h-24 rounded-full border-2 object-cover border-gray-300"
             />
             <button
               onClick={handleProfilePictureUpdate}
