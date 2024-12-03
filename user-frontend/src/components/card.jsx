@@ -51,7 +51,7 @@ export default function ProductList({ posts, loading, error }) {
             />
           </div>
 
-          <p className="text-white flex absolute gap-1 right-[60px] bottom-[5px] items-center text-base">
+          <p className="text-white flex absolute gap-1 right-[45px] bottom-[5px] items-center text-base">
             {" "}
             <IoLocationOutline />
             {post.location}

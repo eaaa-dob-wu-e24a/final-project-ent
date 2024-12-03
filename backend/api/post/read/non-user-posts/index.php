@@ -16,6 +16,7 @@ try {
             p.PK_ID AS post_id,
             p.user_login_id AS user_id,
             p.description,
+            p.location,
             p.price_per_day,
             pr.PK_ID AS product_id,
             pr.name AS product_name,
@@ -58,6 +59,7 @@ try {
             $posts[$post_id] = [
                 'post_id' => $post_id,
                 'description' => $row['description'],
+                'location' => $row['location'],
                 'price_per_day' => $row['price_per_day'],
                 'user' => $row['user_id'],
                 'product' => [
