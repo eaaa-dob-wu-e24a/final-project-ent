@@ -3,7 +3,7 @@
 import { useState } from "react";
 import useMyProducts from "../hooks/useMyProducts"; // Adjust the path if necessary
 import { Button } from "./ui/button";
-import { createPost } from "../helpers/post.helper"; // Import createPost
+import { createPost } from "../helpers/posts"; // Import createPost
 
 function PostForm() {
   const [formData, setFormData] = useState({
