@@ -6,7 +6,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { createProduct } from "../actions/product.actions"; // Import the createProduct function
+import { createProduct } from "../actions/products.actions"; // Corrected import statement
 
 function ProductForm() {
   // Form data state for managing product fields
@@ -108,22 +108,27 @@ function ProductForm() {
   // Handle form submission to send data to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       // Pass the form data and image directly to createProduct
       const result = await createProduct({
         ...formData,
         image: imageFile,
       });
-  
+
       // Handle success and error messages
-      setMessage({ text: result.message || "Product created successfully!", type: "success" });
+      setMessage({
+        text: result.message || "Product created successfully!",
+        type: "success",
+      });
     } catch (error) {
-      setMessage({ text: error.message || "Failed to create product", type: "error" });
+      setMessage({
+        text: error.message || "Failed to create product",
+        type: "error",
+      });
       console.error("Error:", error);
     }
   };
-  
 
   return (
     <div className="mx-auto">
@@ -197,11 +202,11 @@ function ProductForm() {
         {/* Size and Product Condition */}
         <div className="grid grid-cols-2 gap-4">
           <input
-            type="text"
+            type="number"
             name="size"
             value={formData.size}
             onChange={handleChange}
-            placeholder="Size"
+            placeholder="Size in Liters"
             required
             className="w-full h-[49px] text-center bg-white rounded-[10px] text-[#808080]"
           />

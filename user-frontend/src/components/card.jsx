@@ -67,7 +67,8 @@ export default function ProductList({ posts, loading, error }) {
                 <span className="font-medium">Tilstand:</span> {post.condition}
               </p>
               <p className="text-[#888D96] text-xs">
-                <span className="font-medium">Størrelse:</span> {post.size}
+                <span className="font-medium">Størrelse:</span> {post.size}{" "}
+                Liter
               </p>
               <p className="flex items-center text-gray-600 text-xs">
                 <span
