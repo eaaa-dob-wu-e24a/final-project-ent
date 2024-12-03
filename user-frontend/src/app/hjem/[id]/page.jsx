@@ -38,14 +38,15 @@ export default async function PostPage({ params }) {
               ← Tilbage
             </button>
           </Link>
-          <h4 className="text-xl font-bold text-gray-900 col-span-1 text-center text-nowrap justify-self-center truncate max-w-40">
+          <h4 className="text-xl font-bold text-gray-900 col-span-1 text-center truncate max-w-40">
             {post.product_name}
           </h4>
         </div>
 
         <div className="mt-4">
-          <div className="bg-gray">
-            <div className="w-full h-64 bg-gray-500 rounded-lg overflow-hidden">
+          {/* Wrapper with override padding and background color */}
+          <div className="rounded-xl bg-gray-100 p-4">
+            <div className="w-full h-64 bg-graybg rounded-lg overflow-hidden">
               <Image
                 src={`${process.env.NEXT_PUBLIC_API_URL}/api/product/create/${post.picture_path}`}
                 alt={post.product_name}
@@ -54,7 +55,7 @@ export default async function PostPage({ params }) {
                 className="object-cover w-full h-full"
               />
             </div>
-            <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-row gap-2 items-center mt-2">
               {/* Condition at the start */}
               <div className="flex items-center gap-1">
                 <p className="font-semibold">Stand: </p>
@@ -65,7 +66,7 @@ export default async function PostPage({ params }) {
               <div className="flex-grow"></div>
 
               {/* Color information at the end */}
-              <div className="flex items-center justify-end rounded-lg px-4 py-2 mt-2">
+              <div className="flex items-center justify-end rounded-lg px-4 py-2">
                 <span
                   className="w-3 h-3 rounded-full inline-block mr-2"
                   style={{
@@ -103,14 +104,15 @@ export default async function PostPage({ params }) {
 
           <div className="mt-6">
             <p className="font-semibold">Beskrivelse:</p>
-            <div className="flex justify-center">
-              <p className="mt-2 text-gray-700">{post.description}</p>
+            <div className="flex">
+              <p className="mt-2 text-gray-500">{post.description}</p>
             </div>
           </div>
         </div>
       </div>
     );
   } catch (error) {
-    return <p className="text-red-500">Error loading post details.</p>;
+    console.error(error);
+    return <div>Failed to fetch post details</div>;
   }
 }
