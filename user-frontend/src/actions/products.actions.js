@@ -9,7 +9,7 @@ export async function getProducts() {
 
   try {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + "/api/product/my-products/read/",
+      process.env.NEXT_PUBLIC_API_URL + "/api/product/read/user-products/",
       {
         method: "GET",
         headers: {
