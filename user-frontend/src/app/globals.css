@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @font-face {
   font-family: "Modak";
   src: url("fonts/Modak-Regular.ttf") format("truetype");
@@ -112,7 +111,12 @@ p {
   font-family: "Synonym", sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Amulya", sans-serif;
 }
 
@@ -183,4 +187,28 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom styles for react-calendar */
+.react-calendar {
+  width: 100%;
+}
+
+.react-calendar__tile {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.react-calendar__tile--active {
+  background-color: #3b82f6; /* Change active date background color */
+  color: white;
+}
+
+.react-calendar__tile--now {
+  background-color: #5bad86; /* Change current date background color */
+  color: white;
+}
+
+.react-calendar__navigation button {
+  padding: 0.5rem;
 }
