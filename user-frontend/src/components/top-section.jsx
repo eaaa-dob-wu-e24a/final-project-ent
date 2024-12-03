@@ -1,8 +1,8 @@
-// top-section.jsx
+// src/components/top-section.jsx
 "use client";
 import React from "react";
-import Image from "next/image";
 import PostFilter from "./post-filter";
+import ProfilePicture from "./profile-picture"; // Import the ProfilePicture component
 
 export default function TopUI({
   title,
@@ -22,13 +22,7 @@ export default function TopUI({
         <h3 className="text-[#0e0c11] w-[240px] text-[30px] font-bold">
           {title}
         </h3>
-        <Image
-          className="rounded-full bg-white object-cover h-[100px] w-25"
-          src="/images/noavatar.png"
-          alt="User Avatar"
-          width={100}
-          height={100}
-        />
+        <ProfilePicture /> {/* Use the ProfilePicture component */}
       </div>
       <PostFilter
         posts={posts}
