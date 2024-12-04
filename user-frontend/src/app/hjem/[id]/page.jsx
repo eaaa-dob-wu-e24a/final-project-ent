@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import MyCalendar from "@/components/my-calendar"; // Correct the import statement
+import MyDatePicker from "@/components/my-calendar"; // Correct the import statement
 
 async function fetchPostData(id) {
   const res = await fetch(
@@ -15,7 +15,7 @@ async function fetchPostData(id) {
 }
 
 export default async function PostPage({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const post = await fetchPostData(id);
 
   // Mapping for color labels
@@ -113,9 +113,19 @@ function PostDetails({ post, colorLabels }) {
           <div className="flex">
             <p className="mt-2 text-gray-500">{post.description}</p>
           </div>
+          <br />
+        </div>
+        <div className="shadow-sm p-2">
+          <MyDatePicker />
+        </div>
+        <div className="pt-5">
+          <Link href="hjem">
+            <button className="w-full bg-darkgreen text-white rounded-lg p-2 mt-4">
+              Send Forespørgsel
+            </button>
+          </Link>
         </div>
       </div>
-      <MyCalendar />
     </div>
   );
 }
