@@ -3,7 +3,7 @@
 export const fetchUserProfile = async () => {
   try {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + "/api/user/read/",
+      process.env.NEXT_PUBLIC_API_URL + "/api/user/read/logged-in-user/",
       {
         method: "GET",
         credentials: "include", // Include cookies for authorization

@@ -9,7 +9,7 @@ export async function getPosts() {
 
   try {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + "/api/post/read/",
+      process.env.NEXT_PUBLIC_API_URL + "/api/post/read/user-posts/",
       {
         method: "GET",
         headers: {
