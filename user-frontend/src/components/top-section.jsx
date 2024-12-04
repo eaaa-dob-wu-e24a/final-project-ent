@@ -1,81 +1,34 @@
+// src/components/top-section.jsx
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import PostFilter from "./post-filter";
+import ProfilePicture from "./profile-picture"; // Import the ProfilePicture component
 
-export default function TopUi() {
-  const [products, setProducts] = useState([]); // State to hold fetched products
-  const [loading, setLoading] = useState(true); // State to manage loading
-  const [error, setError] = useState(""); // State to handle errors
-
-  useEffect(() => {
-    // Function to fetch products from the backend
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:4000/api/product/read/",
-          {
-            method: "GET",
-            credentials: "include", // Include credentials if needed
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch products.");
-        }
-
-        const data = await response.json();
-
-        // Transform the fetched data to match the frontend structure
-        const transformedProducts = data.map((product) => ({
-          id: product.PK_ID,
-          type: product.product_type, // Corrected typo from 'tpye' to 'type'
-          // Adjust based on your server setup
-        }));
-
-        setProducts(transformedProducts);
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setError(
-          err.message || "Der skete en fejl under hentning af produkter."
-        );
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []); // Empty dependency array ensures this runs once on mount
-
-  // Handle loading state
-  if (loading) {
-    return <p className="text-center">Indlæser produkter...</p>;
-  }
-
-  // Handle error state
-  if (error) {
-    return <p className="text-center text-red-500">{error}</p>;
-  }
-
-  // Handle no products found
-  if (products.length === 0) {
-    return <p className="text-center">Ingen produkter fundet.</p>;
-  }
-
-  // Get unique product types
-  const uniqueProductTypes = [
-    ...new Set(products.map((product) => product.type)),
-  ];
-
+export default function TopUI({
+  title,
+  marginBottom = "unset",
+  posts,
+  onFilter,
+  selectedProductType,
+  searchQuery,
+  onSearch,
+}) {
   return (
-    <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-      {uniqueProductTypes.map((type, index) => (
-        <div
-          key={index}
-          className="product-item p-2 my-2 bg-white rounded-md shadow-sm hover:bg-gray-50 transition duration-200"
-        >
-          <span className="font-medium text-blue-600">Produkt type:</span>{" "}
-          {type}
-        </div>
-      ))}
-    </div>
+    <section
+      className="bg-[#e2f0e9] flex flex-col pt-10 items-center gap-6 px-5"
+      style={{ marginBottom }}
+    >
+      <div className="flex items-center justify-between w-10/12">
+        <h3 className="text-[#0e0c11] w-2/3 text-[30px] font-bold">{title}</h3>
+        <ProfilePicture /> {/* Use the ProfilePicture component */}
+      </div>
+      <PostFilter
+        posts={posts}
+        onFilter={onFilter}
+        selectedProductType={selectedProductType}
+        searchQuery={searchQuery}
+        onSearch={onSearch}
+      />
+    </section>
   );
 }

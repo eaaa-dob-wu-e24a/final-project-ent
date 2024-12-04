@@ -1,19 +1,13 @@
 <?php
 // function to generally handle the API request
-define("BASE_PATH", dirname(__DIR__, 1)); // Adjust if necessary
-include(BASE_PATH . "/mysql.php");
+include($_SERVER["DOCUMENT_ROOT"] . "/mysql.php");
 
-function handle_api_request($method, $error_message, $error_code)
-{
-    // Remove header declarations from here
-
+function handle_api_request($method, $error_message, $error_code) {
+    // Check if the request method matches
     if ($_SERVER["REQUEST_METHOD"] !== $method) {
         http_response_code($error_code);
         echo json_encode(["error" => $error_message]);
         exit();
     }
 
-    $input = json_decode(file_get_contents("php://input"), true);
-
-    return $input;
 }

@@ -1,8 +1,15 @@
 "use client";
+
+/*===============================================
+=   This component creates product for user - Its imported in the navigation.jsx  =
+===============================================*/
+
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { createProduct } from "../helpers/products"; // Corrected import statement
 
 function ProductForm() {
+  // Form data state for managing product fields
   const [formData, setFormData] = useState({
     name: "",
     product_type: "",
@@ -12,12 +19,23 @@ function ProductForm() {
     brand: "",
   });
 
+  // Image file state for handling the uploaded image
   const [imageFile, setImageFile] = useState(null);
-  const [message, setMessage] = useState("");
 
-  const productTypes = ["kuffert", "vandrerygsæk", "rygsæk"];
+  // Message state for displaying success or error messages
+  const [message, setMessage] = useState({ text: "", type: "" });
+
+  // Predefined options for product types
+  const productTypes = [
+    { value: "kuffert", label: "Kuffert" },
+    { value: "vandrerygsaek", label: "Vandrerygsæk" },
+    { value: "rygsaek", label: "Rygsæk" },
+  ];
+
+  // Predefined options for product conditions
   const productConditions = ["som ny", "let brugt", "brugt", "slidt"];
 
+  // Predefined color options for the color picker
   const colors = [
     "#000000",
     "#5337FF",
@@ -32,25 +50,30 @@ function ProductForm() {
     "#FFFFFF",
   ];
 
+  // Refs for managing drag behavior on the color picker
   const colorsRef = useRef(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
+  // Handle mouse down event for drag interaction
   const handleMouseDown = (e) => {
     isDragging.current = true;
     startX.current = e.pageX - colorsRef.current.offsetLeft;
     scrollLeft.current = colorsRef.current.scrollLeft;
   };
 
+  // Handle mouse leave event to stop drag interaction
   const handleMouseLeave = () => {
     isDragging.current = false;
   };
 
+  // Handle mouse up event to end drag interaction
   const handleMouseUp = () => {
     isDragging.current = false;
   };
 
+  // Handle mouse move event for drag scrolling
   const handleMouseMove = (e) => {
     if (!isDragging.current) return;
     e.preventDefault();
@@ -59,6 +82,7 @@ function ProductForm() {
     colorsRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
+  // Handle input changes for text fields
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -68,6 +92,7 @@ function ProductForm() {
     }));
   };
 
+  // Handle color selection for the color picker
   const handleColorSelect = (color) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -75,55 +100,33 @@ function ProductForm() {
     }));
   };
 
+  // Handle file change for the image upload
   const handleFileChange = (e) => {
     setImageFile(e.target.files[0]);
   };
 
+  // Handle form submission to send data to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Create a FormData object to send form data and the image file
-    const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("product_type", formData.product_type);
-    formDataToSend.append("size", formData.size);
-    formDataToSend.append("color", formData.color);
-    formDataToSend.append("product_condition", formData.product_condition);
-    formDataToSend.append("brand", formData.brand || "");
-    formDataToSend.append("image", imageFile);
-
     try {
-      const response = await fetch(
-        "http://localhost:4000/api/product/create/",
-        {
-          method: "POST",
-          credentials: "include",
-          body: formDataToSend,
-          // Note: Do not set the Content-Type header; the browser will set it automatically
-        }
-      );
+      // Pass the form data and image directly to createProduct
+      const result = await createProduct({
+        ...formData,
+        image: imageFile,
+      });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setMessage(result.message);
-        setFormData({
-          name: "",
-          product_type: "",
-          size: "",
-          color: "",
-          product_condition: "",
-          brand: "",
-        });
-        setImageFile(null);
-      } else {
-        setMessage(result.error);
-      }
+      // Handle success and error messages
+      setMessage({
+        text: result.message || "Product created successfully!",
+        type: "success",
+      });
     } catch (error) {
-      console.error("An error occurred:", error);
-      setMessage(
-        "An error occurred while creating the product. Please try again later."
-      );
+      setMessage({
+        text: error.message || "Failed to create product",
+        type: "error",
+      });
+      console.error("Error:", error);
     }
   };
 
@@ -139,7 +142,15 @@ function ProductForm() {
       <div className="text-center text-black text-2xl my-5 font-bold font-['Amulya']">
         Opret produkt
       </div>
-      {message && <p className="mb-4 text-red-500">{message}</p>}
+      {message.text && (
+        <p
+          className={`mb-4 ${
+            message.type === "success" ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {message.text}
+        </p>
+      )}
 
       <form
         onSubmit={handleSubmit}
@@ -158,11 +169,12 @@ function ProductForm() {
         >
           <option value="">Produkt type</option>
           {productTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
+            <option key={type.value} value={type.value}>
+              {type.label}
             </option>
           ))}
         </select>
+
         <h4 className="text-black text-lg font-bold font-['Amulya']">
           Indtast oplysninger
         </h4>
@@ -190,11 +202,11 @@ function ProductForm() {
         {/* Size and Product Condition */}
         <div className="grid grid-cols-2 gap-4">
           <input
-            type="text"
+            type="number"
             name="size"
             value={formData.size}
             onChange={handleChange}
-            placeholder="Size"
+            placeholder="Size in Liters"
             required
             className="w-full h-[49px] text-center bg-white rounded-[10px] text-[#808080]"
           />
