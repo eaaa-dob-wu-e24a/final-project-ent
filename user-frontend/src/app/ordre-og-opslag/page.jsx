@@ -1,10 +1,10 @@
 import FilterSquare from "./components/filter-square";
-import { getProducts } from "@/actions/products.actions";
+import { getUserProducts } from "@/actions/products.actions";
 import { getPosts } from "@/actions/posts.actions";
 import ProfilePicture from "@/components/profile-picture";
 
 export default async function Page() {
-  const products = await getProducts();
+  const products = await getUserProducts();
   const posts = await getPosts();
 
   return (
