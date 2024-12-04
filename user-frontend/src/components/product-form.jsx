@@ -6,7 +6,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { createProduct } from "../actions/products.actions"; // Corrected import statement
+import { createProduct } from "../helpers/products"; // Corrected import statement
 
 function ProductForm() {
   // Form data state for managing product fields
