@@ -1,7 +1,4 @@
 <?php
-// Start output buffering
-ob_start();
-
 // Include necessary files
 include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 
@@ -87,5 +84,4 @@ try {
     echo json_encode(["error" => "Der skete en fejl under hentning af produktdata"]);
 }
 
-ob_end_flush();
 ?>

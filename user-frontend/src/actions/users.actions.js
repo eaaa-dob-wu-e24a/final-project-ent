@@ -8,7 +8,7 @@ export async function getUser() {
 
   try {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + "/api/user/read/",
+      process.env.NEXT_PUBLIC_API_URL + "/api/user/read/logged-in-user",
       {
         method: "GET",
         headers: {
