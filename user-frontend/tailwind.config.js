@@ -17,6 +17,7 @@ module.exports = {
   			lightgreen: '#E2F0E9',
   			graybg: '#F7F9FD',
   			graybtn: '#E6E6E6',
+			whitebg: '#F7F9FD',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
