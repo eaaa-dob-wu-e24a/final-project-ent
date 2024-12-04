@@ -111,7 +111,7 @@ try {
         $product_id = $row['product_id']; // Extract product ID
 
         // Build the product data structure
-        $productData = [
+        $product_data = [
             'product_id' => $product_id,
             'name' => $row['name'],
             'product_type' => $row['product_type'],
@@ -125,11 +125,11 @@ try {
 
         // Add the picture path if available
         if (!empty($row['picture_path'])) {
-            $productData['pictures'][] = $row['picture_path'];
+            $product_data['pictures'][] = $row['picture_path'];
         }
 
         // Append the product data to the array
-        $products[] = $productData;
+        $products[] = $product_data;
     }
 
     // Return the products array as a JSON response
