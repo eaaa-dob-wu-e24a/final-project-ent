@@ -2,14 +2,14 @@
 
 import { cookies } from "next/headers";
 
-export async function getProducts() {
+export async function getUserProducts() {
   // Await and get cookies
   const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
 
   try {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + "/api/product/read/user-products/",
+      process.env.NEXT_PUBLIC_API_URL + "/api/product/read/?user_only=true",
       {
         method: "GET",
         headers: {
@@ -51,7 +51,7 @@ export async function getSpecificProduct(product_id) {
 
   try {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + `/api/product/read/product_id/?product_id=${product_id}`,
+      process.env.NEXT_PUBLIC_API_URL + `/api/product/read/?product_id=${product_id}&user_only=true`,
       {
         method: "GET",
         headers: {
@@ -77,9 +77,15 @@ export async function getSpecificProduct(product_id) {
   }
 }
 
-
-export async function updateProduct(data) {
-  const cookiesStore = cookies();
+export async function updateProduct({
+  productId,
+  name,
+  brand,
+  color,
+  size,
+  image,
+}) {
+  const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
 
   if (!accessToken) {
@@ -87,21 +93,35 @@ export async function updateProduct(data) {
   }
 
   try {
-    // Send the data as a POST request to the PHP endpoint
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/update/`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${accessToken}`,
-      },
-      body: data, // FormData instance or JSON string, depending on the PHP endpoint expectations
-    });
+    const formData = new FormData();
+    formData.append("product_id", productId);
+
+    if (name) formData.append("name", name);
+    if (brand) formData.append("brand", brand);
+    if (color) formData.append("color", color);
+    if (size) formData.append("size", size);
+
+     if (image) {
+      formData.append("image", image); 
+    }
+
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_API_URL + "/api/product/update/",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`, 
+        },
+        body: formData, 
+      }
+    );
 
     if (!response.ok) {
       const errorResponse = await response.json();
       throw new Error(errorResponse.error || "Failed to update product");
     }
 
-    return await response.json(); // Successful response
+    return await response.json(); 
   } catch (error) {
     console.error("Error updating product:", error);
     throw error;
