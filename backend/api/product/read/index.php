@@ -1,87 +1,141 @@
 <?php
-// Include necessary files
-include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 
-// Bring $mySQL into the current scope
-global $mySQL;
+//include necessary files
+include($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
+include_once($_SERVER['DOCUMENT_ROOT'] . '/functions/handle_api_request.php');
 
 try {
-    // Only allow GET requests
-    if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-        http_response_code(405);
-        echo json_encode(["error" => "Method Not Allowed"]);
-        ob_end_flush();
+
+    // handle the api request
+    handle_api_request('GET', 'Request must be GET', 405);
+
+    // authenticate the user
+    $user_login_id = authorize($mySQL);
+
+    // check for query parameters
+    $product_id = $_GET['product_id'] ?? null;
+    $user_only = ($_GET['user_only'] ?? 'false') === 'true';
+
+    // SQL query and parameters
+    if ($product_id) {
+
+        // fetch a specific product for a authenticated user
+        $sql = "
+            SELECT 
+                p.PK_ID AS product_id,
+                p.brand,
+                p.name,
+                p.product_type,
+                p.size,
+                p.color,
+                p.product_condition,
+                p.user_login_id,
+                pp.picture_path
+            FROM 
+                product p
+            LEFT JOIN 
+                product_pictures pp ON p.PK_ID = pp.product_id
+            WHERE 
+                p.user_login_id = ? AND p.PK_ID = ?
+        ";
+
+        $stmt = $mySQL->prepare($sql);
+        $stmt->bind_param('ii', $user_login_id, $product_id);
+    } else if ($user_only) {
+
+        // fetch all products for a authenticated user
+        $sql = "
+            SELECT 
+                p.PK_ID AS product_id,
+                p.name,
+                p.product_type,
+                p.size,
+                p.color,
+                p.product_condition,
+                p.brand,
+                p.user_login_id,
+                pp.picture_path
+            FROM 
+                product p
+            LEFT JOIN 
+                product_pictures pp ON p.PK_ID = pp.product_id
+            WHERE 
+                p.user_login_id = ?
+            ORDER BY 
+                p.PK_ID ASC
+        ";
+
+        $stmt = $mySQL->prepare($sql);
+        $stmt->bind_param("i", $user_login_id);
+    } else {
+        // fetch all products using no filter (for admin)
+
+        $sql = "
+            SELECT 
+                p.PK_ID AS product_id,
+                p.name,
+                p.product_type,
+                p.size,
+                p.color,
+                p.product_condition,
+                p.brand,
+                p.user_login_id,
+                pp.picture_path
+            FROM 
+                product p
+            LEFT JOIN 
+                product_pictures pp ON p.PK_ID = pp.product_id
+            ORDER BY 
+                p.PK_ID ASC
+        ";
+
+        $stmt = $mySQL->prepare($sql);
+    }
+
+    // execute the query and get the result
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // If no products are found, respond with a 404 error
+    if ($result->num_rows === 0) {
+        http_response_code(404);
+        echo json_encode(["error" => "No products found for the specified criteria."]);
         exit();
     }
 
-    // SQL query to fetch all products and their associated images
-    $query = "
-        SELECT 
-            p.PK_ID,
-            p.name,
-            p.product_type,
-            p.size,
-            p.color,
-            p.product_condition,
-            p.brand,
-            p.user_login_id,
-            pp.picture_path
-        FROM 
-            product p
-        LEFT JOIN 
-            product_pictures pp ON p.PK_ID = pp.product_id
-        ORDER BY 
-            p.PK_ID ASC
-    ";
-
-    $result = $mySQL->query($query);
-
-    if (!$result) {
-        throw new Exception("Database query failed: " . $mySQL->error);
-    }
-
+    // process the results
+    // Initialize an empty array to store products
     $products = [];
 
     while ($row = $result->fetch_assoc()) {
-        $product_id = $row['PK_ID'];
+        $product_id = $row['product_id']; // Extract product ID
 
-        // Initialize the product entry if not already set
-        if (!isset($products[$product_id])) {
-            $products[$product_id] = [
-                'PK_ID' => $product_id,
-                'name' => $row['name'],
-                'product_type' => $row['product_type'],
-                'size' => $row['size'],
-                'color' => $row['color'],
-                'product_condition' => $row['product_condition'],
-                'brand' => $row['brand'],
-                'user_id' => $row['user_login_id'],
-                'pictures' => []
-            ];
-        }
+        // Build the product data structure
+        $product_data = [
+            'product_id' => $product_id,
+            'name' => $row['name'],
+            'product_type' => $row['product_type'],
+            'size' => $row['size'],
+            'color' => $row['color'],
+            'product_condition' => $row['product_condition'],
+            'brand' => $row['brand'],
+            'user_id' => $row['user_login_id'],
+            'pictures' => []
+        ];
 
         // Add the picture path if available
         if (!empty($row['picture_path'])) {
-            $products[$product_id]['pictures'][] = $row['picture_path'];
+            $product_data['pictures'][] = $row['picture_path'];
         }
+
+        // Append the product data to the array
+        $products[] = $product_data;
     }
 
-    // Re-index the products array to have sequential numeric keys
-    $products = array_values($products);
-
-    // Close the database connection
-    $mySQL->close();
-
-    // Send the response as JSON
-    echo json_encode($products, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-
+    // Return the products array as a JSON response
+    echo json_encode($products);
 } catch (Exception $e) {
-    // Log the error message
-    error_log($e->getMessage());
-
-    // Send error response
+    // Respond with a 500 error for any server-side issues
     http_response_code(500);
-    echo json_encode(["error" => "Der skete en fejl under hentning af produktdata"]);
+    echo json_encode(["error" => "An error occurred while fetching products."]);
 }
-
-?>
