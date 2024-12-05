@@ -1,18 +1,18 @@
 // app/utils/session.server.js
-import { createCookie } from "@remix-run/node";
-import { redirect } from "@remix-run/react";
+import { createCookie, redirect } from "@remix-run/node";
 
 export const accessTokenCookie = createCookie("access_token", {
   httpOnly: true,
   path: "/",
   sameSite: "lax",
+  // Uncomment the next line in production
   // secure: process.env.NODE_ENV === "production",
 });
 
 export async function getAccessToken(request) {
   const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await accessTokenCookie.parse(cookieHeader)) || null;
-  return cookie;
+  const accessToken = (await accessTokenCookie.parse(cookieHeader)) || null;
+  return accessToken;
 }
 
 export async function requireAdmin(request) {
@@ -35,13 +35,14 @@ export async function requireAdmin(request) {
   );
 
   if (response.status === 401) {
+    // Invalid or expired token
     throw redirect("/login");
   }
 
   const data = await response.json();
 
   if (!data.is_admin) {
-    throw redirect("/unauthorized");
+    throw redirect("/login");
   }
 
   return accessToken;

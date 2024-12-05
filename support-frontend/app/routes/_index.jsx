@@ -1,12 +1,42 @@
-// app/routes/index.jsx
-import { Link } from "@remix-run/react";
+// app/routes/_index.jsx
+import { useLoaderData } from "@remix-run/react";
+import Users from "../components/users";
+import { json } from "@remix-run/node";
+import { requireAdmin } from "./utils/session.server";
 
-export default function Index() {
+export const loader = async ({ request }) => {
+  const accessToken = await requireAdmin(request);
+
+  // Fetch users from the backend
+  const response = await fetch(
+    `${process.env.BACKEND_URL}/api/user/read/?user_list=true`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    console.error("Failed to fetch admin data:", await response.text());
+    throw new Response("Failed to fetch admin data", {
+      status: response.status,
+    });
+  }
+
+  const users = await response.json();
+  return json(users);
+};
+
+export default function AdminDashboard() {
+  const users = useLoaderData();
+
   return (
     <div>
-      <h1>Welcome to the Front Page</h1>
-      <p>This is a public page.</p>
-      <Link to="/login">Admin Login</Link>
+      <h1>Admin Dashboard</h1>
+      <Users users={users} />
     </div>
   );
 }
