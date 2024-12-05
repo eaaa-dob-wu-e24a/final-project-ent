@@ -2,21 +2,13 @@ import React from "react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import MyDatePicker from "@/components/my-calendar"; // Correct the import statement
-
-async function fetchPostData(id) {
-  const res = await fetch(
-    `http://localhost:4000/api/post/read/postid/index.php?id=${id}`
-  );
-  if (!res.ok) {
-    throw new Error("Failed to fetch post details");
-  }
-  return res.json();
-}
+import MyCalendar from "@/components/my-calendar"; // Correct the import statement
+import { getSpecificNonUserPost } from "@/actions/posts.actions";
 
 export default async function PostPage({ params }) {
   const { id } = await params;
-  const post = await fetchPostData(id);
+  const posts = await getSpecificNonUserPost(id);
+  const post = posts[0];
 
   // Mapping for color labels
   const colorLabels = {
@@ -46,7 +38,7 @@ function PostDetails({ post, colorLabels }) {
           </button>
         </Link>
         <h4 className="text-xl font-bold text-gray-900 col-span-1 text-center truncate max-w-40">
-          {post.product_name}
+          {post.product.name}
         </h4>
       </div>
       <div className="mt-4">
@@ -54,8 +46,8 @@ function PostDetails({ post, colorLabels }) {
         <div className="rounded-xl bg-gray-100 p-4">
           <div className="w-full h-64 bg-graybg rounded-lg overflow-hidden">
             <Image
-              src={`${process.env.NEXT_PUBLIC_API_URL}/api/product/create/${post.picture_path}`}
-              alt={post.product_name}
+              src={`${process.env.NEXT_PUBLIC_API_URL}/api/product/create/${post.product.pictures[0]}`}
+              alt={post.product.name}
               width={300}
               height={300}
               className="object-cover w-full h-full"
@@ -65,7 +57,7 @@ function PostDetails({ post, colorLabels }) {
             {/* Condition at the start */}
             <div className="flex items-center gap-1">
               <p className="font-semibold">Stand: </p>
-              <p>{post.product_condition}</p>
+              <p>{post.product.product_condition}</p>
             </div>
 
             {/* Spacer to create separation */}
@@ -76,11 +68,11 @@ function PostDetails({ post, colorLabels }) {
               <span
                 className="w-3 h-3 rounded-full inline-block mr-2"
                 style={{
-                  backgroundColor: post.color,
+                  backgroundColor: post.product.color,
                 }}
               ></span>
               <span className="text-gray-600 text-sm">
-                {colorLabels[post.color]}
+                {colorLabels[post.product.color]}
               </span>
             </div>
           </div>
@@ -104,7 +96,7 @@ function PostDetails({ post, colorLabels }) {
           {/* Size */}
           <div>
             <p className="font-semibold">Størrelse</p>
-            <p>{post.size}</p>
+            <p>{post.product.size}</p>
           </div>
         </div>
 

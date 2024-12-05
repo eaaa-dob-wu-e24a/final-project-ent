@@ -37,7 +37,7 @@ export default function UserProducts({ products }) {
 
             <div className="absolute right-6 top-4 w-20 h-[85px]">
               <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}/api/product/create/${product.pictures[0]}`} // product.picture_path is using other endpoint. Should split read/ up in user/read and all/read.
+                src={`${process.env.NEXT_PUBLIC_API_URL}/api/product/create/${product.pictures[0]}`}
                 alt={product.name}
                 className="object-cover h-full w-full rounded-2xl"
                 width={100}
