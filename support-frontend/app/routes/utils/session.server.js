@@ -24,7 +24,7 @@ export async function requireAdmin(request) {
 
   // Verify admin status with the backend
   const response = await fetch(
-    `${process.env.BACKEND_URL}/api/user/check_admin.php`,
+    `${process.env.BACKEND_URL}/functions/check_admin.php`,
     {
       method: "GET",
       headers: {

@@ -8,7 +8,7 @@ export const action = async ({ request }) => {
   const email = formData.get("email");
   const password = formData.get("password");
 
-  const response = await fetch(`${process.env.BACKEND_URL}/signin/index.php`, {
+  const response = await fetch(`${process.env.BACKEND_URL}/api/auth/signin/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -18,6 +18,7 @@ export const action = async ({ request }) => {
   });
 
   const data = await response.json();
+  console.log("Fetching URL:", `${process.env.BACKEND_URL}/signin/index.php`);
 
   if (!response.ok) {
     return json({ error: data.error || "Login failed" }, { status: 400 });

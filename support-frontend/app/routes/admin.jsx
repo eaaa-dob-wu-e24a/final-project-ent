@@ -1,5 +1,6 @@
 // app/routes/admin.jsx
-import { useLoaderData, Outlet } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
+import Users from "../components/users";
 import { json } from "@remix-run/node";
 import { requireAdmin } from "./utils/session.server";
 
@@ -34,18 +35,7 @@ export default function AdminDashboard() {
   return (
     <div>
       <h1>Admin Dashboard</h1>
-      <Outlet />
-      {/* Display users or other admin-specific content */}
-      <h2>All Users</h2>
-      <ul>
-        {users.map((user) => (
-          <li key={user.PK_ID}>
-            <p>Username: {user.username}</p>
-            <p>Phone Number: {user.phone_number}</p>
-            {/* Display other user details */}
-          </li>
-        ))}
-      </ul>
+      <Users users={users} />
     </div>
   );
 }
