@@ -1,38 +1,55 @@
 <?php
 
 // Include necessary files
-
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_multipart_request.php");
 
-// Authorize the user and get the user_login_id
+// Authorize the user and retrieve the user login ID
 $user_login_id = authorize($mySQL);
 
-// Get JSON input
+// Handle the API request
 handle_api_request('POST', 'Request method must be POST', 405);
+
+// Handle the multipart request
 $input = handle_multipart_request();
 
-function upload_image($image)
-{
+// Initialize an array to hold the response
+$response = [];
 
-    // check for upload errors
+// Function to upload the image and delete the old profile picture
+function upload_image($image, $user_login_id, $mySQL)
+{
+    // Check for upload errors
     if ($image['error'] !== UPLOAD_ERR_OK) {
         throw new Exception('An error occurred while uploading the image');
     }
 
-    // Validate the image file type (only allow PNG and JPEG images)
+    // Validate file type
     $allowed_types = ['image/png', 'image/jpeg'];
     if (!in_array($image['type'], $allowed_types)) {
         throw new Exception('Only PNG and JPEG images are allowed');
     }
 
-    // Limit file size to 2MB
+    // Validate file size
     if ($image['size'] > 2 * 1024 * 1024) {
         throw new Exception('Image must be less than 2MB');
     }
 
-    // Generate a unique filename for the image
+    // Delete the old profile picture if it exists
+    $stmt = $mySQL->prepare("SELECT profile_picture FROM user_profile WHERE user_login_id = ?");
+    $stmt->bind_param("i", $user_login_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $old_image_path = __DIR__ . '/' . $row['profile_picture'];
+        if (file_exists($old_image_path)) {
+            unlink($old_image_path); // Delete the old file
+        }
+    }
+
+    // Get file extension and create a unique file name
     $extension = pathinfo($image['name'], PATHINFO_EXTENSION);
     $file_name = uniqid() . '.' . $extension;
 
@@ -42,69 +59,71 @@ function upload_image($image)
         mkdir($upload_dir, 0755, true);
     }
 
-    // Move the uploaded file to the upload directory
+    // Construct the destination path
     $destination = $upload_dir . $file_name;
+
+    // Move the uploaded file to the destination
     if (!move_uploaded_file($image['tmp_name'], $destination)) {
         throw new Exception('Failed to move uploaded file');
     }
 
-    // Return the relative path of the uploaded image
-    return './uploads/' . $file_name;
+    return 'uploads/' . $file_name;
 }
 
-if (isset($input['username'])) {
-    $username = $input['username'];
-
-    $stmt = $mySQL->prepare("UPDATE user_profile SET username = ? WHERE user_login_id = ?");
-    $stmt->bind_param("si", $username, $user_login_id);
-
-    if ($stmt->execute() && $stmt->affected_rows > 0) {
-
-        echo json_encode(['success' => 'Username updated successfully']);
-    } else {
-        http_response_code(404);
-        echo json_encode(['error' => 'User not found or you do not have permission to update this user']);
-    }
-}
-
+// Update the profile picture
 if (isset($input['files']['profile_picture'])) {
-    $profile_picture = upload_image($input['files']['profile_picture']);
+    try {
+        $image = $input['files']['profile_picture'];
+        $profile_picture_path = upload_image($image, $user_login_id, $mySQL);
 
-    $stmt = $mySQL->prepare("UPDATE user_profile SET profile_picture = ? WHERE user_login_id = ?");
-    $stmt->bind_param("si", $profile_picture, $user_login_id);
+        $stmt = $mySQL->prepare("UPDATE user_profile SET profile_picture = ? WHERE user_login_id = ?");
+        $stmt->bind_param("si", $profile_picture_path, $user_login_id);
 
-    if ($stmt->execute() && $stmt->affected_rows > 0) {
-        echo json_encode(['success' => 'Profile picture updated successfully']);
-    } else {
-        http_response_code(404);
-        echo json_encode(['error' => 'User not found or you do not have permission to update this user']);
+        if ($stmt->execute() && $stmt->affected_rows > 0) {
+            $response['profile_picture'] = 'Profile picture updated successfully';
+        } else {
+            $response['profile_picture'] = 'Profile picture update failed';
+        }
+    } catch (Exception $e) {
+        $response['profile_picture_error'] = $e->getMessage();
     }
 }
 
+// Update other fields. The key is on the left and the value is on the right
+$fields = [
+    'username' => 'username',
+    'phone_number' => 'phone_number',
+];
+
+foreach ($fields as $field_key => $table_column) {
+    if (isset($input[$field_key])) {
+        $field_value = $input[$field_key];
+        $update_stmt = $mySQL->prepare("UPDATE user_profile SET $table_column = ? WHERE user_login_id = ?");
+        $update_stmt->bind_param("si", $field_value, $user_login_id);
+
+        if ($update_stmt->execute() && $update_stmt->affected_rows > 0) {
+            $response[$field_key] = ucfirst($table_column) . ' updated successfully';
+        } else {
+            $response[$field_key] = ucfirst($table_column) . ' update failed';
+        }
+    }
+}
+
+// Update the email field in the user_login table
 if (isset($input['email'])) {
     $email = $input['email'];
+    $email_stmt = $mySQL->prepare("UPDATE user_login SET email = ? WHERE PK_ID = ?");
+    $email_stmt->bind_param("si", $email, $user_login_id);
 
-    $stmt = $mySQL->prepare("UPDATE user_login SET email = ? WHERE PK_ID = ?");
-    $stmt->bind_param("si", $email, $user_login_id);
-
-    if ($stmt->execute() && $stmt->affected_rows > 0) {
-        echo json_encode(['success' => 'Email updated successfully']);
+    if ($email_stmt->execute() && $email_stmt->affected_rows > 0) {
+        $response['email'] = 'Email updated successfully';
     } else {
-        http_response_code(404);
-        echo json_encode(['error' => 'User not found or you do not have permission to update this user']);
+        $response['email'] = 'Email update failed';
     }
 }
 
-if (isset($input['phone_number'])) {
-    $phone_number = $input['phone_number'];
+// Return the response
+echo json_encode($response);
 
-    $stmt = $mySQL->prepare("UPDATE user_profile SET phone_number = ? WHERE user_login_id = ?");
-    $stmt->bind_param("si", $phone_number, $user_login_id);
-
-    if ($stmt->execute() && $stmt->affected_rows > 0) {
-        echo json_encode(['success' => 'Phone number updated successfully']);
-    } else {
-        http_response_code(404);
-        echo json_encode(['error' => 'User not found or you do not have permission to update this user']);
-    }
-}
+// Close the database connection
+$mySQL->close();
