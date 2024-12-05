@@ -41,11 +41,16 @@ function upload_image($image, $user_login_id, $mySQL)
     $stmt->bind_param("i", $user_login_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
+
+    if ($result->num_rows > 0) { // If the user has a profile picture
         $row = $result->fetch_assoc();
-        $old_image_path = __DIR__ . '/' . $row['profile_picture'];
-        if (file_exists($old_image_path)) {
-            unlink($old_image_path); // Delete the old file
+        $old_image_path = __DIR__ . '/' . $row['profile_picture']; // Construct the old image path
+        
+        if ($row['profile_picture'] && file_exists($old_image_path)) { // Check if the old image exists
+            // Delete the old file if it exists
+            if (!unlink($old_image_path)) {
+                error_log("Failed to delete old profile picture: $old_image_path");
+            }
         }
     }
 

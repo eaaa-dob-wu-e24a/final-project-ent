@@ -6,20 +6,32 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { logout } from "@/actions/auth.actions";
 
-export default function ({ user, updateUser }) {
+export default function UpdateProfile({ user, updateUser }) {
+  // State for user data
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
   const [phone_number, setPhoneNumber] = useState(user.phone_number);
   const [profile_picture, setProfilePicture] = useState(null);
+  const [imagePreview, setImagePreview] = useState(
+    user.profile_picture
+      ? `${process.env.NEXT_PUBLIC_API_URL}/api/user/update/${user.profile_picture}`
+      : "/images/noavatar.png"
+  );
   const [message, setMessage] = useState("");
+
+  // Router to redirect
   const router = useRouter();
 
+  // Handle file change
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setProfilePicture(file);
+    setImagePreview(URL.createObjectURL(file));
   };
 
+  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -40,11 +52,17 @@ export default function ({ user, updateUser }) {
     }
   };
 
+  // Handle logout
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+  }
+
   // set timer for message
   if (message) {
     setTimeout(() => {
       setMessage("");
-    }, 5000);
+    }, 3000);
   }
 
   return (
@@ -54,7 +72,7 @@ export default function ({ user, updateUser }) {
           <div className="relative justify-center items-center mb-6 flex">
             <div className="relative">
               <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}/api/user/update/${user.profile_picture}`}
+                src={imagePreview}
                 alt="Profile Picture"
                 className="w-44 h-44 rounded-full border-2 object-cover border-gray-300"
                 width={100}
@@ -143,6 +161,7 @@ export default function ({ user, updateUser }) {
           <button
             type="button"
             className="text-gray-600 flex items-center justify-center space-x-2"
+            onClick={handleLogout}
           >
             <FiLogOut className="h-5 w-5 text-darkgreen" />
             <span>Log ud</span>

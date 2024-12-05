@@ -1,50 +1,47 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function logout() {
-  // Retrieve the access token from cookies
-  const accessToken = cookies().get("access_token")?.value;
+  // Get cookies object
+  const cookiesStore = await cookies();
 
-  // Return an error if no access token is found
+  // Get access token from cookies
+  const accessToken = cookiesStore.get("access_token")?.value;
+
   if (!accessToken) {
     console.error("No access token found in cookies.");
     return { error: "No access token found in cookies." };
   }
 
-  // Send a request to the backend to log out the user
   try {
+    // Send a request to the backend to log out the user
     const response = await fetch(
       process.env.NEXT_PUBLIC_API_URL + "/api/auth/signout/",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`, // Attach the access token in the Authorization header
+          Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({ access_token: accessToken }), // Include the token in the request body
+        body: JSON.stringify({ access_token: accessToken }),
       }
     );
 
-    // If the request fails, return an error
     if (!response.ok) {
-      const errorData = await response.json(); // Parse the error response from the backend
+      const errorData = await response.json();
       console.error("Failed to log out:", errorData.error);
       return { error: errorData.error || "Failed to log out." };
     }
 
     // Clear the access token cookie
-    cookies().set("access_token", "", { expires: new Date(0) }); // Set the cookie to expire immediately
+    await cookiesStore.set("access_token", "", { expires: new Date(0) }); // Correct use of `await`
 
-    // Return a success message
-    return { success: true, message: "Logged out successfully." };
-
-    // If an error occurs during the request, return an error
+    // Redirect to the homepage or login page
+    redirect("/");
   } catch (error) {
     console.error("Failed to log out:", error);
     return { error: "An error occurred while logging out." };
   }
 }
-
-// Note: The login function is currently client-side.
-// To move it server-side, ensure the access token cookie is also set server-side.
