@@ -1,16 +1,28 @@
+// components/my-calendar.jsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { da } from "date-fns/locale";
 
-function CalenderComponent() {
+function CalenderComponent({ onRentalPeriodChange }) {
   const [selectedRange, setSelectedRange] = useState({ from: null, to: null });
+
+  // Calculate the rental period whenever the selected range changes
+  useEffect(() => {
+    if (selectedRange.from && selectedRange.to) {
+      const timeDiff = Math.abs(selectedRange.to - selectedRange.from);
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // Include both start and end dates
+      onRentalPeriodChange(daysDiff);
+    } else {
+      onRentalPeriodChange(0);
+    }
+  }, [selectedRange, onRentalPeriodChange]);
 
   return (
     <div className="flex justify-center ">
       <DayPicker
-        locale={da} // Replace with 'da' for Danish localization
+        locale={da}
         mode="range"
         classNames={{
           selected: `rounded-none`,
@@ -19,7 +31,7 @@ function CalenderComponent() {
           range_end: `bg-lightgreen text-darkgreen font-bold !rounded-full`,
           today: `text-black font-semibold underline underline-offset-4 `,
           caption_label: `text-black flex items-center`,
-          chevron: `fill-black`, // Add your custom color class here
+          chevron: `fill-black`,
           weekday: `text-gray-400 font-normal`,
           footer: `text-black font-semibold justify-center pt-5 flex items-center`,
         }}
@@ -27,11 +39,10 @@ function CalenderComponent() {
         onSelect={setSelectedRange}
         footer={
           selectedRange.from && selectedRange.to
-            ? `  fra d. 
-             ${selectedRange.from.toLocaleDateString()} til d. ${selectedRange.to.toLocaleDateString()}`
+            ? `Fra d. ${selectedRange.from.toLocaleDateString()} til d. ${selectedRange.to.toLocaleDateString()}`
             : selectedRange.from
-            ? `Starts dato: ${selectedRange.from.toLocaleDateString()}`
-            : "Vælg en starts dato"
+            ? `Startdato: ${selectedRange.from.toLocaleDateString()}`
+            : "Vælg en startdato"
         }
       />
     </div>
