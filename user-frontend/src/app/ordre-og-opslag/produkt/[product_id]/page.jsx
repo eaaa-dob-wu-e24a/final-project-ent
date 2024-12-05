@@ -10,7 +10,8 @@ export default async function Page({ params }) {
   const { product_id } = await params;
 
   // Fetch specific product using product_id
-  const product = await getSpecificProduct(product_id);
+  const products = await getSpecificProduct(product_id);
+  const product = products[0];
 
   return (
     <div className="flex flex-col gap-6 bg-whitebg">
@@ -27,7 +28,7 @@ export default async function Page({ params }) {
           <div className="w-full shadow-md rounded-lg">
             <Image
               className="rounded-lg w-full h-60 object-cover"
-              src={`${process.env.NEXT_PUBLIC_API_URL}/api/product/create/${product.picture_path}`}
+              src={`${process.env.NEXT_PUBLIC_API_URL}/api/product/create/${product.pictures[0]}`}
               alt={product.name}
               width={100}
               height={100}

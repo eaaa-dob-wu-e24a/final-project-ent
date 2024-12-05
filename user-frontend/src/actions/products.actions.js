@@ -2,14 +2,14 @@
 
 import { cookies } from "next/headers";
 
-export async function getProducts() {
+export async function getUserProducts() {
   // Await and get cookies
   const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
 
   try {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + "/api/product/read/user-products/",
+      process.env.NEXT_PUBLIC_API_URL + "/api/product/read/?user_only=true",
       {
         method: "GET",
         headers: {
@@ -51,7 +51,7 @@ export async function getSpecificProduct(product_id) {
 
   try {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + `/api/product/read/product_id/?product_id=${product_id}`,
+      process.env.NEXT_PUBLIC_API_URL + `/api/product/read/?product_id=${product_id}&user_only=true`,
       {
         method: "GET",
         headers: {
