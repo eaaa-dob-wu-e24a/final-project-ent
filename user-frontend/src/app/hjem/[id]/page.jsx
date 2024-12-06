@@ -4,8 +4,7 @@ import PostDetails from "../components/post-details";
 
 export default async function PostPage({ params }) {
   const { id } = await params;
-  const posts = await getSpecificNonUserPost(id);
-  const post = posts[0];
+  const post = await getSpecificNonUserPost(id);
 
   // Mapping for color labels
   const colorLabels = {
