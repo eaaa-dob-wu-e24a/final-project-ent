@@ -10,8 +10,7 @@ export default async function Page({ params }) {
   const { product_id } = await params;
 
   // Fetch specific product using product_id
-  const products = await getSpecificProduct(product_id);
-  const product = products[0];
+  const product = await getSpecificProduct(product_id);
 
   return (
     <div className="flex flex-col gap-6 bg-whitebg">
