@@ -1,10 +1,7 @@
 <?php
-// /auth/signin/index.php
-
-// Include necessary files
-include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
-include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_json_request.php");
-include($_SERVER["DOCUMENT_ROOT"] . "/functions/common.php"); // Contains is_admin()
+require_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
+require_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_json_request.php");
+require_once($_SERVER["DOCUMENT_ROOT"] . "/functions/common.php"); // Contains is_admin()
 
 // Set the default timezone
 date_default_timezone_set('Europe/Copenhagen');
@@ -26,7 +23,7 @@ try {
 
     $email = $input["email"];
     $password = $input["password"];
-    $adminRequest = isset($input['admin']) && $input['admin'] === true;
+    $adminRequest = isset($input['admin']) && $input['admin'] === true; // True if this is an admin site login
 
     // Enable exceptions for MySQLi
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -58,10 +55,17 @@ try {
         exit();
     }
 
-    // If this is an admin-requested login, ensure the user is actually admin
-    if ($adminRequest && !is_admin($PK_ID, $mySQL)) {
+    // Ensure users and admins only log into their respective frontends
+    if ($adminRequest && !$is_admin) {
+        // User attempting to log into the admin site
         http_response_code(403); // Forbidden
-        echo json_encode(["error" => "Insufficient privileges"]);
+        echo json_encode(["error" => "Insufficient privileges for admin site", "admin" => false]);
+        ob_end_flush();
+        exit();
+    } elseif (!$adminRequest && $is_admin) {
+        // Admin attempting to log into the user site
+        http_response_code(403); // Forbidden
+        echo json_encode(["error" => "Admins cannot log into the user site", "admin" => false]);
         ob_end_flush();
         exit();
     }
@@ -113,4 +117,3 @@ try {
 }
 
 ob_end_flush();
-?>

@@ -1,11 +1,10 @@
-// app/routes/_index.jsx
 import { useLoaderData } from "@remix-run/react";
 import Users from "../components/users";
 import { json } from "@remix-run/node";
-import { requireAdmin } from "./utils/session.server";
+import { getAccessToken } from "../utils/setCookies";
 
 export const loader = async ({ request }) => {
-  const accessToken = await requireAdmin(request);
+  const accessToken = await getAccessToken(request);
 
   // Fetch users from the backend
   const response = await fetch(
@@ -34,9 +33,11 @@ export default function AdminDashboard() {
   const users = useLoaderData();
 
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
-      <Users users={users} />
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+        <Users users={users} />
+      </div>
     </div>
   );
 }
