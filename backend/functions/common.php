@@ -1,12 +1,16 @@
 <?php
-function is_admin($user_login_id, $mySQL) {
-    $sql = "SELECT is_admin FROM user_login WHERE PK_ID = ?";
-    $stmt = $mySQL->prepare($sql);
+// /functions/common.php
+
+function is_admin($user_login_id, $mySQL)
+{
+    // Prepare statement to get is_admin status
+    $stmt = $mySQL->prepare("SELECT is_admin FROM user_login WHERE PK_ID = ?");
     $stmt->bind_param("i", $user_login_id);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
+    $stmt->bind_result($is_admin);
+    $stmt->fetch();
+    $stmt->close();
 
-    return isset($user['is_admin']) && $user['is_admin'] == 1;
+    return (bool)$is_admin;
 }
 ?>

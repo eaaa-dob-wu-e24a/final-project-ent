@@ -1,7 +1,6 @@
 // app/routes/login.jsx
 import { useActionData, Form } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
-import { accessTokenCookie } from "./utils/session.server";
 
 export const action = async ({ request }) => {
   try {
@@ -9,6 +8,7 @@ export const action = async ({ request }) => {
     const email = formData.get("email");
     const password = formData.get("password");
 
+    // Include admin: true to indicate an admin-level login request
     const response = await fetch(
       `${process.env.BACKEND_URL}/api/auth/signin/`,
       {
@@ -16,8 +16,8 @@ export const action = async ({ request }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
+        body: JSON.stringify({ email, password, admin: true }),
+        credentials: "include", // Ensure cookies are included in the request
       }
     );
 
@@ -28,12 +28,16 @@ export const action = async ({ request }) => {
 
     const data = await response.json();
 
-    // Set the access_token as an HTTP-only cookie
-    return redirect("/", {
-      headers: {
-        "Set-Cookie": await accessTokenCookie.serialize(data.access_token),
-      },
-    });
+    // Optionally, you can verify if the response includes is_admin
+    if (!data.is_admin) {
+      return json(
+        { error: "You do not have admin privileges." },
+        { status: 403 }
+      );
+    }
+
+    // Redirect to the admin dashboard or desired page upon successful login
+    return redirect("/admin/dashboard");
   } catch (error) {
     console.error("Login error:", error);
     return json({ error: "An error occurred during login." }, { status: 500 });
@@ -49,7 +53,7 @@ export default function Login() {
         method="post"
         className="w-full max-w-md bg-white p-8 rounded-lg shadow"
       >
-        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+        <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700 mb-2">
             Email
