@@ -154,13 +154,13 @@ function ProductForm({ closeModal }) {
         width={200}
         height={300}
       />
-      <div className="text-center text-text text-2xl my-5 font-bold font-heading">
+      <h2 className="text-center text-text text-2xl my-5 font-bold font-heading">
         Opret produkt
-      </div>
+      </h2>
 
       <form
         onSubmit={handleSubmit}
-        className="grid gap-6 px-8 pb-[150px] pt-10 rounded-t-3xl bg-[#E2F0E9]"
+        className="grid gap-6 px-8 pb-[150px] pt-10 rounded-t-3xl bg-lightgreen"
       >
         {/* <h2 className="text-center text-text text-lg font-semibold">
           Vælg type af produkt

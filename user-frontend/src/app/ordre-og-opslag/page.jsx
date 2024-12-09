@@ -20,7 +20,7 @@ export default async function Page() {
         </div>
       </section>
       <section className="bg-graybg pt-10 rounded-t-3xl -mt-4">
-        <div className="w-10/12 mx-auto flex flex-col gap-2">
+        <div className="w-11/12 mx-auto flex flex-col gap-2">
           <h2 className="font-bold">Tjek dine:</h2>
           <FilterSquare products={products} posts={posts} />
         </div>

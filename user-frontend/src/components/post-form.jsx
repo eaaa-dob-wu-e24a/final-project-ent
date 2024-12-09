@@ -6,6 +6,9 @@ import useMyProducts from "../hooks/useMyProducts"; // Adjust the path if necess
 import { Button } from "./ui/button";
 import { createPost } from "../helpers/posts"; // Import createPost
 import { toast } from "react-hot-toast";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 function PostForm({ closeModal }) {
   const [formData, setFormData] = useState({
@@ -69,15 +72,26 @@ function PostForm({ closeModal }) {
   };
 
   return (
-    <div className="flex flex-col py-12 items-center h-screen overflow-y-auto">
-      <h2 className="text-2xl font-bold text-green-600">Create a Post</h2>
+    <div className="">
+      <Image
+        className="mx-auto my-8"
+        src="/images/lendrlogo.png"
+        alt="Product Image"
+        width={200}
+        height={300}
+      />
+      <h2 className="text-center text-text text-2xl my-5 font-bold font-heading">
+        Opret opslag
+      </h2>
       <form
-        className="flex flex-col gap-4 w-96 p-6 bg-white rounded shadow-md mt-4"
+        className="flex flex-col gap-4 w-full p-6 pb-40 rounded shadow-md mt-4 rounded-t-3xl bg-lightgreen"
         onSubmit={handleSubmit}
       >
         {/* Product selection as a clickable list */}
         <div>
-          <label className="block mb-2 font-semibold">Select a Product:</label>
+          <p className="font-semibold mb-6 text-xl text-center">
+            Vælg produkt:
+          </p>
           {loading ? (
             <p>Loading your products...</p>
           ) : error ? (
@@ -85,78 +99,69 @@ function PostForm({ closeModal }) {
           ) : myProducts.length === 0 ? (
             <p>You have no products to create a post for.</p>
           ) : (
-            <ul className="grid grid-cols-1 gap-4 max-h-64 overflow-y-auto">
+            <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
               {myProducts.map((product) => (
-                <li
+                <div
                   key={product.id}
                   onClick={() => handleProductSelect(product.id)}
-                  className={`flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-100 ${
+                  className={`flex items-center border rounded-lg cursor-pointer bg-white h-20 gap-4 ${
                     formData.product_id === product.id
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-300"
+                      ? "border-darkgreen"
+                      : "border-none"
                   }`}
                 >
-                  {/* Product Image */}
-                  <div className="w-16 h-16 relative mr-4 flex-shrink-0">
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      className="object-cover h-full w-full rounded-[30px]"
-                    />
-                  </div>
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    className="object-cover h-full w-20 rounded-l-lg"
+                    width={64}
+                    height={64}
+                  />
 
                   {/* Product Details */}
                   <div className="flex flex-col">
                     <span className="font-semibold">{product.name}</span>
                     <span className="text-sm text-gray-600">
-                      Size: {product.size} | Color: {product.colorLabel}
+                      Størrelse: {product.size} | Farve: {product.colorLabel}
                     </span>
                     <span className="text-sm text-gray-600">
                       Brand: {product.brand}
                     </span>
                   </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
-        {/* Description */}
+        <Input
+          type="number"
+          name="price_per_day"
+          value={formData.price_per_day}
+          onChange={handleInputChange}
+          placeholder="Pris pr. dag"
+          required
+          className="w-full py-2 h-12 placeholder-gray-500 text-text"
+          min="0"
+          step="0.01"
+        />
+        <Input
+          type="text"
+          name="location"
+          value={formData.location}
+          onChange={handleInputChange}
+          placeholder="Lokalitet"
+          required
+          className="w-full py-2 h-12 placeholder-gray-500 text-text"
+        />
         <div>
-          <textarea
+          <Textarea
             name="description"
             value={formData.description}
             onChange={handleInputChange}
-            placeholder="Description"
+            placeholder="Skriv din beskrivelse her..."
             required
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full"
             rows="4"
-          ></textarea>
-        </div>
-        {/* Price per day */}
-        <div>
-          <input
-            type="number"
-            name="price_per_day"
-            value={formData.price_per_day}
-            onChange={handleInputChange}
-            placeholder="Price per day"
-            required
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            min="0"
-            step="0.01"
-          />
-        </div>
-
-        {/* Location */}
-        <div>
-          <input
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-            placeholder="Location"
-            required
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         {/* Submit button */}
@@ -166,7 +171,7 @@ function PostForm({ closeModal }) {
           size="lg"
           disabled={loading || myProducts.length === 0}
         >
-          Create Post
+          Opret opslag
         </Button>
       </form>
     </div>

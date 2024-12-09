@@ -121,7 +121,8 @@ h6 {
   font-family: "Amulya", sans-serif;
 }
 
-input {
+input,
+textarea {
   font-family: "Synonym", sans-serif;
 }
 
