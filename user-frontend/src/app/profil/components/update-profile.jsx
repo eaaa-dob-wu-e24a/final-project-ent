@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { logout } from "@/actions/auth.actions";
+import { toast } from "react-hot-toast";
 
 export default function UpdateProfile({ user, updateUser }) {
   // State for user data
@@ -19,7 +20,6 @@ export default function UpdateProfile({ user, updateUser }) {
       ? `${process.env.NEXT_PUBLIC_API_URL}/api/user/update/${user.profile_picture}`
       : "/images/noavatar.png"
   );
-  const [message, setMessage] = useState("");
 
   // Router to redirect
   const router = useRouter();
@@ -41,14 +41,11 @@ export default function UpdateProfile({ user, updateUser }) {
         phone_number,
         profile_picture,
       });
-      setMessage({ type: "success", content: "Profilen er opdateret." });
+      toast.success("Profilen er opdateret!");
       router.push("/profil");
     } catch (error) {
       console.error("Error updating user:", error);
-      setMessage({
-        type: "error",
-        content: "En fejl opstod under opdatering af profilen.",
-      });
+      toast.error("Noget gik galt. Prøv igen.");
     }
   };
 
@@ -56,14 +53,7 @@ export default function UpdateProfile({ user, updateUser }) {
   const handleLogout = async () => {
     await logout();
     router.push("/");
-  }
-
-  // set timer for message
-  if (message) {
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
-  }
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -167,17 +157,6 @@ export default function UpdateProfile({ user, updateUser }) {
             <span>Log ud</span>
           </button>
         </div>
-        {message && (
-          <div
-            className={`mt-4 p-4 rounded-md ${
-              message.type === "success" ? "bg-green-100" : "bg-red-100"
-            }`}
-          >
-            <p className="text-sm text-center text-[#060606]">
-              {message.content}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

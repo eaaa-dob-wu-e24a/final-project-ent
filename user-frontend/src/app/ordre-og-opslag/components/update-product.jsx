@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-hot-toast";
 
 export default function UpdateProduct({ product, updateProduct }) {
   const [name, setName] = useState(product.name);
@@ -18,7 +19,6 @@ export default function UpdateProduct({ product, updateProduct }) {
   const [color, setColor] = useState(product.color);
   const [size, setSize] = useState(product.size);
   const [image, setImage] = useState(null);
-  const [message, setMessage] = useState("");
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -52,21 +52,12 @@ export default function UpdateProduct({ product, updateProduct }) {
         size,
         image,
       });
-      setMessage({ type: "success", content: "Produktet er opdateret." });
+      toast.success("Produktet er opdateret!");
     } catch (error) {
       console.error("Error updating product:", error);
-      setMessage({
-        type: "error",
-        content: "En fejl opstod under opdatering af produktet.",
-      });
+      toast.error("Noget gik galt. Prøv igen.");
     }
   };
-
-  if (message) {
-    setTimeout(() => {
-      setMessage("");
-    }, 5000);
-  }
 
   return (
     <>
@@ -222,15 +213,6 @@ export default function UpdateProduct({ product, updateProduct }) {
           Opdater Produkt
         </Button>
       </form>
-      {message && (
-        <div
-          className={`text-base text-center mt-4 ${
-            message.type === "success" ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {message.content}
-        </div>
-      )}
     </>
   );
 }
