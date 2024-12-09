@@ -10,6 +10,7 @@ import Link from "next/link";
 import LendrLogo from "./lendr-logo";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import Image from "next/image";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -59,7 +60,13 @@ function LoginForm() {
   return (
     <div className="bg-white min-w-[385px] min-h-svh max-w-lg mx-auto p-6 rounded-lg shadow-md">
       <div className="mx-auto mt-5 p-6 rounded-lg">
-        <LendrLogo />
+        <Image
+          className="mx-auto my-8"
+          src="/images/lendrlogo.png"
+          alt="Product Image"
+          width={200}
+          height={300}
+        />
         <h1 className="text-2xl font-bold text-center mb-4">Login</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -98,7 +105,7 @@ function LoginForm() {
             />
           </div>
 
-          <Button variant="default" size="default" type="submit">
+          <Button variant="default" size="lg" type="submit">
             Login
           </Button>
           <h4 className="text-center mt-4">Har du ikke en bruger?</h4>

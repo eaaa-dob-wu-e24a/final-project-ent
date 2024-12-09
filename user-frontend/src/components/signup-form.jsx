@@ -8,6 +8,7 @@ import LendrLogo from "./lendr-logo";
 import Link from "next/link";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import Image from "next/image";
 
 export default function SignupForm() {
   const [formData, setFormData] = useState({
@@ -74,7 +75,13 @@ export default function SignupForm() {
   return (
     <div className="bg-white min-w-[385px] min-h-svh max-w-lg mx-auto p-6 rounded-lg shadow-md">
       <div className="mx-auto mt-5 p-6 rounded-lg">
-        <LendrLogo />
+        <Image
+          className="mx-auto my-8"
+          src="/images/lendrlogo.png"
+          alt="Product Image"
+          width={200}
+          height={300}
+        />
         <h2 className="text-2xl font-bold text-center mb-4">Registrer</h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         {successMessage && (
@@ -153,12 +160,7 @@ export default function SignupForm() {
             />
           </div>
 
-          <Button
-            variant="default"
-            size="default"
-            type="submit"
-            disabled={loading}
-          >
+          <Button variant="default" size="lg" type="submit" disabled={loading}>
             {loading ? "Registering..." : "Registrer"}
           </Button>
           <h4 className="text-center mt-4">Har du allerede en bruger?</h4>
