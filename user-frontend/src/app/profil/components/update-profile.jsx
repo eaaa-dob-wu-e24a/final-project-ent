@@ -56,8 +56,8 @@ export default function UpdateProfile({ user, updateUser }) {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="max-w-lg mx-auto bg-gray-100 shadow-md rounded-lg p-6">
+    <div className="w-11/12 mx-auto pt-14">
+      <div className="max-w-lg mx-auto">
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="relative justify-center items-center mb-6 flex">
             <div className="relative">
