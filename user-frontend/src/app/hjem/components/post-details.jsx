@@ -1,9 +1,59 @@
+"use client";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import MyCalendar from "@/components/my-calendar";
+import { useRouter } from "next/navigation";
 
-export default function PostDetails({ post, colorLabels }) {
+export default function PostDetails({ post, colorLabels, createOrder }) {
+  const [rentalPeriod, setRentalPeriod] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const postId = post.post_id;
+  console.log(postId);
+  const router = useRouter();
+
+  const handleRentalPeriodChange = (days) => {
+    setRentalPeriod(days);
+  };
+
+  const handleSendRequest = async () => {
+    if (rentalPeriod <= 0) {
+      setError("Vælg venligst en gyldig lejeperiode.");
+      return;
+    }
+
+    if (!postId) {
+      setError("Post ID er ugyldigt.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    console.log("Creating order with:", {
+      rental_period: rentalPeriod,
+      order_status: "afventer",
+      post_id: postId,
+    });
+
+    const result = await createOrder({
+      rental_period: rentalPeriod,
+      order_status: "afventer",
+      post_id: postId,
+    });
+
+    setIsLoading(false);
+
+    if (result.error) {
+      setError(result.error);
+    } else {
+      // Order created successfully
+      router.push("/ordreoversigt");
+    }
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md">
       <div className="grid grid-cols-3 items-center justify-center">
@@ -70,8 +120,22 @@ export default function PostDetails({ post, colorLabels }) {
             <p className="mt-2 text-gray-500">{post.description}</p>
           </div>
         </div>
+
+        {/* Pass the handleRentalPeriodChange function to the calendar */}
+        <MyCalendar onRentalPeriodChange={handleRentalPeriodChange} />
+
+        {error && <div className="text-red-500 text-center mt-4">{error}</div>}
+
+        <div className="pt-5">
+          <button
+            className="w-full bg-darkgreen text-white rounded-lg p-2 mt-4"
+            onClick={handleSendRequest}
+            disabled={isLoading}
+          >
+            {isLoading ? "Sender forespørgsel..." : "Send Forespørgsel"}
+          </button>
+        </div>
       </div>
-      <MyCalendar />
     </div>
   );
 }

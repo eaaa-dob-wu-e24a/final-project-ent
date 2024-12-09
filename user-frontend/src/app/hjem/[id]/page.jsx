@@ -1,5 +1,6 @@
 import React from "react";
 import { getSpecificNonUserPost } from "@/actions/posts.actions";
+import { createOrder } from "@/actions/orders.actions";
 import PostDetails from "../components/post-details";
 
 export default async function PostPage({ params }) {
@@ -21,5 +22,11 @@ export default async function PostPage({ params }) {
     "#FFFFFF": "Hvid",
   };
 
-  return <PostDetails post={post} colorLabels={colorLabels} />;
+  return (
+    <PostDetails
+      post={post}
+      colorLabels={colorLabels}
+      createOrder={createOrder}
+    />
+  );
 }
