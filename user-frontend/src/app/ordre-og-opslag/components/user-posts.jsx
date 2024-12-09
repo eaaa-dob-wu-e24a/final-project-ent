@@ -1,5 +1,6 @@
 import Image from "next/image";
 import ColorLabel from "../../../components/color-label";
+import Link from "next/link";
 
 export default function UserPosts({ posts }) {
   if (!posts || posts.length === 0) {
@@ -15,7 +16,8 @@ export default function UserPosts({ posts }) {
   return (
     <div className="flex flex-col gap-4">
       {posts.map((post) => (
-        <div
+        <Link
+          href={`/ordre-og-opslag/opslag/${post.post_id}`}
           key={post.post_id}
           className="relative py-3 bg-white rounded-lg shadow-lg overflow-hidden h-40"
         >
@@ -58,7 +60,7 @@ export default function UserPosts({ posts }) {
               <ColorLabel colorCode={post.product["color"]} />
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
