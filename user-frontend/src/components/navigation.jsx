@@ -12,11 +12,17 @@ import ProductForm from "./product-form"; // Ensure the path and casing are corr
 import PostForm from "./post-form"; // Import the PostForm component
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import LendrLogo from "./lendr-logo";
 
 export default function Navigation() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("default"); // State to track modal content
+
+  const pathname = usePathname();
+  const getIconColor = (path) => {
+    return pathname === path ? "text-activegreen" : "text-gray-400";
+  };
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -90,12 +96,17 @@ export default function Navigation() {
 
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 w-full bg-white shadow-md flex items-center justify-between px-4 py-2">
-        <Link className="flex flex-col items-center text-gray-400" href="/hjem">
+        <Link
+          className={`flex flex-col items-center ${getIconColor("/hjem")}`}
+          href="/hjem"
+        >
           <FaHouse size={30} />
         </Link>
 
         <Link
-          className="flex flex-col items-center text-gray-400"
+          className={`flex flex-col items-center ${getIconColor(
+            "/favoritter"
+          )}`}
           href="/favoritter"
         >
           <FaBookmark size={25} />
@@ -117,14 +128,16 @@ export default function Navigation() {
         </button>
 
         <Link
-          className="flex flex-col items-center text-gray-400"
+          className={`flex flex-col items-center ${getIconColor(
+            "/ordre-og-opslag"
+          )}`}
           href="/ordre-og-opslag"
         >
           <PiHandbagSimpleFill size={30} />
         </Link>
 
         <Link
-          className="flex flex-col items-center text-gray-400"
+          className={`flex flex-col items-center ${getIconColor("/profil")}`}
           href="/profil"
         >
           <FaUserLarge size={24} />

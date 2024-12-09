@@ -11,7 +11,7 @@ export default async function Page() {
     <>
       <section className="pt-10 pb-14 bg-lightgreen">
         <div className="flex w-10/12 mx-auto items-center justify-between">
-          <h1 className="text-text font-bold text-4xl">
+          <h1 className="text-text font-semibold text-4xl">
             <span>Ordre og</span>
             <br />
             <span>opslag</span>
