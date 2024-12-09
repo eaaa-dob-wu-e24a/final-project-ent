@@ -73,10 +73,10 @@ export default function Navigation() {
             </div>
           ) : modalContent === "productForm" ? (
             // Render ProductForm
-            <ProductForm />
+            <ProductForm closeModal={() => setIsModalOpen(false)} />
           ) : (
             // Render PostForm
-            <PostForm />
+            <PostForm closeModal={() => setIsModalOpen(false)} />
           )}
         </div>
       </div>

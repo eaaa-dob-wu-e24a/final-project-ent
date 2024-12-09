@@ -1,3 +1,4 @@
+import Toast from "@/components/toast";
 import "./globals.css";
 import NavWrapper from "@/components/nav-wrapper";
 
@@ -10,6 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <Toast />
         <main className="flex flex-col min-h-screen pb-48 bg-[#F7F9FD]">
           {children}
         </main>

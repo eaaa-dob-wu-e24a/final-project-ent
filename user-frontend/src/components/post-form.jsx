@@ -5,8 +5,9 @@ import { useState } from "react";
 import useMyProducts from "../hooks/useMyProducts"; // Adjust the path if necessary
 import { Button } from "./ui/button";
 import { createPost } from "../helpers/posts"; // Import createPost
+import { toast } from "react-hot-toast";
 
-function PostForm() {
+function PostForm({ closeModal }) {
   const [formData, setFormData] = useState({
     description: "",
     price_per_day: "",
@@ -15,8 +16,6 @@ function PostForm() {
   });
 
   const { myProducts, loading, error } = useMyProducts();
-
-  const [message, setMessage] = useState({ text: "", type: "" });
 
   // Handler for input changes (description, price_per_day, and location)
   const handleInputChange = (e) => {
@@ -27,7 +26,6 @@ function PostForm() {
   // Handler for selecting a product
   const handleProductSelect = (productId) => {
     setFormData({ ...formData, product_id: productId });
-    setMessage({ text: "", type: "" }); // Clear any existing messages
   };
 
   const handleSubmit = async (e) => {
@@ -40,24 +38,18 @@ function PostForm() {
       !formData.product_id ||
       !formData.location
     ) {
-      setMessage({
-        text: "Please fill out all required fields.",
-        type: "error",
-      });
+      toast.error("Please fill out all fields.");
       return;
     }
 
     try {
       // Pass the form data directly to createPost
-      const result = await createPost({
+      await createPost({
         ...formData,
       });
 
       // Handle success messages
-      setMessage({
-        text: result.success || "Post created successfully!",
-        type: "success",
-      });
+      toast.success("Opslag oprettet!");
 
       // Optionally, reset the form
       setFormData({
@@ -66,11 +58,12 @@ function PostForm() {
         product_id: "",
         location: "",
       });
+
+      if (closeModal) {
+        closeModal();
+      }
     } catch (error) {
-      setMessage({
-        text: error.message || "Failed to create post.",
-        type: "error",
-      });
+      toast.error("Noget gik galt. Prøv igen.");
       console.error("An error occurred:", error);
     }
   };
@@ -175,16 +168,6 @@ function PostForm() {
         >
           Create Post
         </Button>
-        {/* Message */}
-        {message.text && (
-          <p
-            className={`mt-4 ${
-              message.type === "success" ? "text-green-500" : "text-red-500"
-            }`}
-          >
-            {message.text}
-          </p>
-        )}
       </form>
     </div>
   );

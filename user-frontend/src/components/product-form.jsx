@@ -7,8 +7,9 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { createProduct } from "../helpers/products"; // Corrected import statement
+import { toast } from "react-hot-toast";
 
-function ProductForm() {
+function ProductForm({ closeModal }) {
   // Form data state for managing product fields
   const [formData, setFormData] = useState({
     name: "",
@@ -109,24 +110,33 @@ function ProductForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setMessage({ text: "", type: "" });
+
     try {
       // Pass the form data and image directly to createProduct
-      const result = await createProduct({
+      await createProduct({
         ...formData,
         image: imageFile,
       });
 
-      // Handle success and error messages
-      setMessage({
-        text: result.message || "Product created successfully!",
-        type: "success",
+      toast.success("Produkt oprettet!");
+
+      if (closeModal) {
+        closeModal();
+      }
+
+      setFormData({
+        name: "",
+        product_type: "",
+        size: "",
+        color: "",
+        product_condition: "",
+        brand: "",
       });
+      setImageFile(null);
     } catch (error) {
-      setMessage({
-        text: error.message || "Failed to create product",
-        type: "error",
-      });
-      console.error("Error:", error);
+      toast.error("Noget gik galt. Prøv igen.");
+      console.error("Error", error);
     }
   };
 
