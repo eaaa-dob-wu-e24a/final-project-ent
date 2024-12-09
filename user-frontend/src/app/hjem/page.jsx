@@ -2,7 +2,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import TopUI from "@/components/top-section";
-import ProductList from "../../components/Card"; // Ensure the correct import path
+import ProductList from "../../components/card";
 import usePosts from "../../hooks/usePosts";
 
 export default function Page() {

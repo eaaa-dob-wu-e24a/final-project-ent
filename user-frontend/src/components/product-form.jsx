@@ -8,6 +8,16 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { createProduct } from "../helpers/products"; // Corrected import statement
 import { toast } from "react-hot-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 function ProductForm({ closeModal }) {
   // Form data state for managing product fields
@@ -22,9 +32,6 @@ function ProductForm({ closeModal }) {
 
   // Image file state for handling the uploaded image
   const [imageFile, setImageFile] = useState(null);
-
-  // Message state for displaying success or error messages
-  const [message, setMessage] = useState({ text: "", type: "" });
 
   // Predefined options for product types
   const productTypes = [
@@ -110,8 +117,6 @@ function ProductForm({ closeModal }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setMessage({ text: "", type: "" });
-
     try {
       // Pass the form data and image directly to createProduct
       await createProduct({
@@ -149,152 +154,160 @@ function ProductForm({ closeModal }) {
         width={200}
         height={300}
       />
-      <div className="text-center text-black text-2xl my-5 font-bold font-['Amulya']">
+      <div className="text-center text-text text-2xl my-5 font-bold font-heading">
         Opret produkt
       </div>
-      {message.text && (
-        <p
-          className={`mb-4 ${
-            message.type === "success" ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {message.text}
-        </p>
-      )}
 
       <form
         onSubmit={handleSubmit}
-        className="grid gap-6 px-10 pb-[150px] pt-10 rounded-t-[50px] bg-[#E2F0E9]"
+        className="grid gap-6 px-8 pb-[150px] pt-10 rounded-t-3xl bg-[#E2F0E9]"
       >
-        <h2 className="text-center text-black text-lg font-bold font-['Poppins']">
+        {/* <h2 className="text-center text-text text-lg font-semibold">
           Vælg type af produkt
-        </h2>
-        {/* Product Type */}
-        <select
-          name="product_type"
-          value={formData.product_type}
-          onChange={handleChange}
-          required
-          className="w-full h-[49px] bg-white rounded-[10px] text-center text-[#808080]"
-        >
-          <option value="">Produkt type</option>
-          {productTypes.map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label}
-            </option>
-          ))}
-        </select>
+        </h2> */}
+        <SelectGroup>
+          <Select
+            value={formData.product_type}
+            onValueChange={(value) =>
+              setFormData((prevData) => ({
+                ...prevData,
+                product_type: value,
+              }))
+            }
+          >
+            <SelectTrigger className="h-12">
+              <SelectValue placeholder="Produkt type" />
+            </SelectTrigger>
+            <SelectContent className="text-gray-500">
+              {productTypes.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </SelectGroup>
 
-        <h4 className="text-black text-lg font-bold font-['Amulya']">
+        {/* <h4 className="text-text text-lg font-semibold text-center ">
           Indtast oplysninger
-        </h4>
-        {/* Name */}
-        <input
+        </h4> */}
+        {/* Product Name */}
+        <Input
           type="text"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder="Name"
+          placeholder="Produkt navn"
           required
-          className="w-full mt-[-5px] h-[49px] pl-6 bg-white rounded-[10px] placeholder-[#808080] text-black"
+          className="w-full mt-[-5px] h-12 bg-white placeholder-gray-500 text-text"
         />
-
         {/* Brand */}
-        <input
+        <Input
           type="text"
           name="brand"
           value={formData.brand}
           onChange={handleChange}
-          placeholder="Brand"
-          className="w-full h-[49px] pl-6 bg-white rounded-[10px] placeholder-[#808080] text-black"
+          placeholder="Produkt brand"
+          className="w-full bg-white h-12 placeholder-gray-500 text-text"
         />
 
         {/* Size and Product Condition */}
         <div className="grid grid-cols-2 gap-4">
-          <input
+          <Input
             type="number"
             name="size"
             value={formData.size}
             onChange={handleChange}
-            placeholder="Size in Liters"
+            placeholder="Størrelse i liter"
             required
-            className="w-full h-[49px] text-center bg-white rounded-[10px] text-[#808080]"
+            className="w-full h-12 bg-white text-text placeholder-gray-500"
           />
-          <select
-            name="product_condition"
-            value={formData.product_condition}
-            onChange={handleChange}
-            required
-            className="w-full h-[49px] text-center bg-white rounded-[10px] text-[#808080]"
-          >
-            <option value="">Tilstand</option>
-            {productConditions.map((condition) => (
-              <option key={condition} value={condition}>
-                {condition}
-              </option>
-            ))}
-          </select>
+          <SelectGroup>
+            <Select
+              value={formData.product_condition}
+              onValueChange={(value) =>
+                setFormData((prevData) => ({
+                  ...prevData,
+                  product_condition: value,
+                }))
+              }
+            >
+              <SelectTrigger className="h-12">
+                <SelectValue placeholder="Tilstand" />
+              </SelectTrigger>
+              <SelectContent className="text-gray-500">
+                {productConditions.map((condition) => (
+                  <SelectItem key={condition} value={condition}>
+                    {condition}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </SelectGroup>
         </div>
 
         {/* Color Picker */}
-        <h4 className="text-[#031926] text-[17px] font-medium font-['Amulya']">
-          Farve
-        </h4>
+        <div className="overflow-hidden flex flex-col gap-2">
+          <h4 className="text-[#031926] text-lg font-semibold">Farve</h4>
 
-        <div
-          ref={colorsRef}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-          className="flex items-center overflow-x-auto space-x-4 w-full h-14 cursor-grab"
-        >
-          {colors.map((colorOption) => (
-            <div
-              key={colorOption}
-              onClick={() => handleColorSelect(colorOption)}
-              className={`w-12 h-12 rounded-full cursor-pointer flex-shrink-0 border ${
-                formData.color === colorOption
-                  ? "border-black"
-                  : "border-gray-300"
-              }`}
-              style={{ backgroundColor: colorOption }}
-            ></div>
-          ))}
+          <div
+            ref={colorsRef}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            className="flex items-center overflow-x-auto space-x-2 w-full h-14 cursor-grab no-scrollbar"
+          >
+            {colors.map((colorOption) => (
+              <div
+                key={colorOption}
+                onClick={() => handleColorSelect(colorOption)}
+                className={`w-10 h-10 rounded-full cursor-pointer flex-shrink-0 border ${
+                  formData.color === colorOption
+                    ? "border-black"
+                    : "border-gray-300"
+                }`}
+                style={{ backgroundColor: colorOption }}
+              ></div>
+            ))}
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="italic text-sm text-text">Scroll til siden...</p>
+            {formData.color && (
+              <p className=" text-text text-sm flex gap-2 items-center">
+                Valgt farve:
+                <span
+                  className="inline-block w-4 h-4 rounded-full"
+                  style={{ backgroundColor: formData.color }}
+                ></span>
+              </p>
+            )}
+          </div>
         </div>
-        {formData.color && (
-          <p className="mt-2 text-black flex gap-2 items-center">
-            Valgte farve:{" "}
-            <span
-              className="inline-block w-5 h-5 rounded-full"
-              style={{ backgroundColor: formData.color }}
-            ></span>
-          </p>
-        )}
 
         {/* Image Upload Field */}
-        <h4 className="text-black text-lg font-bold font-['Amulya']">
-          Upload billede
-        </h4>
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleFileChange}
-          required
-          className="w-full h-[49px] bg-white rounded-[10px] text-center text-[#808080]"
-        />
-        {imageFile && (
-          <p className="mt-2 text-black">Selected file: {imageFile.name}</p>
-        )}
+        <div className="flex flex-col gap-2">
+          <h4 className="text-text text-lg font-bold font-['Amulya']">
+            Upload billede
+          </h4>
+          <Input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleFileChange}
+            required
+            className="w-full text-sm h-12 text-gray-500 p-0
+              file:mr-2 file:py-2 file:px-4
+              file:rounded-md file:border-0
+              file:text-sm
+              file:bg-white file:text-text bg-transparent border-none"
+          />
+        </div>
 
         {/* Submit Button */}
-        <button
-          type="submit"
-          className="h-[61px] mt-8 bg-[#5bad86] rounded-[20px] transition"
-        >
-          Create Product
-        </button>
+        <Button variant="default" size="lg" type="submit" className="">
+          Opret produkt
+        </Button>
       </form>
     </div>
   );

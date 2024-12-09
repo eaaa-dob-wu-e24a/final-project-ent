@@ -22,7 +22,7 @@ export default function UserProducts({ products }) {
         >
           <div className="relative py-3 bg-white rounded-lg shadow-lg overflow-hidden h-40">
             <svg
-              className="absolute -right-14 -top-5 object-cover h-52 w-52"
+              className="absolute -right-16 -top-5 object-cover h-52 w-52"
               width="115"
               height="142"
               viewBox="0 0 115 142"
@@ -35,7 +35,7 @@ export default function UserProducts({ products }) {
               />
             </svg>
 
-            <div className="absolute right-6 top-4 w-20 h-[85px]">
+            <div className="absolute right-4 top-4 w-20 h-[85px]">
               <Image
                 src={`${process.env.NEXT_PUBLIC_API_URL}/api/product/create/${product.pictures[0]}`}
                 alt={product.name}
@@ -44,17 +44,17 @@ export default function UserProducts({ products }) {
                 height={100}
               />
             </div>
-            <div className="w-11/12 mx-auto flex flex-col gap-4">
-              <h3 className="text-xl pt-2 text-text font-bold">
+            <div className="pl-5 flex flex-col gap-4 w-[60%]">
+              <h3 className="text-xl pt-2 text-text font-bold truncate">
                 {product.name}
               </h3>
               <div className="flex flex-col gap-2">
                 <p className="text-gray-600 text-xs">
-                  <span className="font-medium">Tilstand: </span>
+                  <span className="font-semibold">Tilstand: </span>
                   {product.product_condition}
                 </p>
                 <p className="text-gray-600 text-xs">
-                  <span className="font-medium">Størrelse: </span>
+                  <span className="font-semibold">Størrelse: </span>
                   {product.size}
                 </p>
                 <ColorLabel colorCode={product.color} />

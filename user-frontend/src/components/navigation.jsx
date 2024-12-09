@@ -11,6 +11,7 @@ import { FaTimes } from "react-icons/fa";
 import ProductForm from "./product-form"; // Ensure the path and casing are correct
 import PostForm from "./post-form"; // Import the PostForm component
 import Link from "next/link";
+import Image from "next/image";
 import LendrLogo from "./lendr-logo";
 
 export default function Navigation() {
@@ -52,7 +53,13 @@ export default function Navigation() {
           {modalContent === "default" ? (
             // Default modal content
             <div className="flex items-center mt-5 flex-col h-full">
-              <LendrLogo />
+              <Image
+                className="mx-auto my-8"
+                src="/images/lendrlogo.png"
+                alt="Product Image"
+                width={200}
+                height={300}
+              />
               <p className="text-xl font-semibold text-center text-[#060606] mb-6">
                 Opret opslag eller produkt
               </p>

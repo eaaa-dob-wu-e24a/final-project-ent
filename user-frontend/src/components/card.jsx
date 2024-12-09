@@ -19,15 +19,15 @@ export default function ProductList({ posts, loading, error }) {
   }
 
   return (
-    <div className="w-10/12 z-0 flex px-5 flex-col space-y-4 mx-auto">
+    <div className="w-full z-0 flex px-5 flex-col space-y-4 mx-auto">
       {posts.map((post) => (
         <Link
           href={`/hjem/${post.id}`}
           key={post.id}
-          className="relative py-6 bg-white rounded-lg shadow-lg flex flex-col items-start overflow-hidden"
+          className="relative py-4 bg-white rounded-lg shadow-lg flex flex-col items-start overflow-hidden"
         >
           <svg
-            className="absolute -right-14 -top-3 object-cover h-56 w-56"
+            className="absolute -right-16 -top-3 object-cover h-56 w-56"
             width="115"
             height="142"
             viewBox="0 0 115 142"
@@ -51,24 +51,29 @@ export default function ProductList({ posts, loading, error }) {
             />
           </div>
 
-          <p className="text-white flex absolute gap-1 right-[30px] bottom-[5px] items-center text-base">
+          <p className="text-white text-sm flex absolute gap-1 end-3 bottom-[5px] items-center w-24">
             {" "}
-            <IoLocationOutline />
+            <IoLocationOutline className="text-base mb-[2px]" />
             {post.location}
           </p>
 
           {/* Product Details */}
-          <div className="pl-5 p-1 grid gap-4 relative z-10">
-            <h3 className="text-xl pt-2 text-[#060606] font-bold">
+          <div className="pl-5 p-1 grid gap-4 relative z-10 w-[60%]">
+            <h3 className="text-xl pt-2 text-[#060606] font-bold truncate">
               {post.title}
             </h3>
-            <div className="grid gap-1">
-              <p className="text-[#888D96] text-xs">
-                <span className="font-medium">Tilstand:</span> {post.condition}
+            <div className="grid gap-2">
+              <p className="text-gray-600 text-xs">
+                <span className="font-semibold">Tilstand:</span>{" "}
+                {post.condition}
               </p>
-              <p className="text-[#888D96] text-xs">
-                <span className="font-medium">Størrelse:</span> {post.size}{" "}
+              <p className="text-gray-600 text-xs">
+                <span className="font-semibold">Størrelse:</span> {post.size}{" "}
                 Liter
+              </p>
+              <p className="text-gray-600 text-xs">
+                <span className="font-semibold">Pris pr. dag:</span>{" "}
+                {post.price_per_day} kr
               </p>
               <p className="flex items-center text-gray-600 text-xs">
                 <span
@@ -76,10 +81,6 @@ export default function ProductList({ posts, loading, error }) {
                   style={{ backgroundColor: post.colorCode }}
                 ></span>
                 {post.colorLabel}
-              </p>
-              <p className="text-[#888D96] text-xs">
-                <span className="font-medium">Pris pr. dag:</span>{" "}
-                {post.price_per_day}
               </p>
             </div>
           </div>

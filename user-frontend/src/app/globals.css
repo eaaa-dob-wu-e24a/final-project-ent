@@ -107,7 +107,8 @@
   font-style: normal;
 }
 
-p {
+p,
+span {
   font-family: "Synonym", sans-serif;
 }
 
@@ -120,8 +121,25 @@ h6 {
   font-family: "Amulya", sans-serif;
 }
 
+input {
+  font-family: "Synonym", sans-serif;
+}
+
+select {
+  font-family: "Synonym", sans-serif;
+}
+
 body {
   /* color: var(--foreground); */
+}
+
+.no-scrollbar {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For IE and Edge */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
 }
 
 @layer base {
