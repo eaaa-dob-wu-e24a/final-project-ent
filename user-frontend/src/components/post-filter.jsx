@@ -11,15 +11,7 @@ export default function PostFilter({
   searchQuery,
   onSearch,
 }) {
-  const uniqueProductTypes = [
-    ...new Set(
-      posts
-        .map(
-          (post) => post.product_type && post.product_type.trim().toLowerCase()
-        )
-        .filter(Boolean)
-    ),
-  ];
+  const predefinedProductTypes = ["kuffert", "vandrerygsaek", "rygsaek"];
   const productTypeLabels = {
     kuffert: "Kuffert",
     vandrerygsaek: "Vandrerygsæk",
@@ -28,7 +20,7 @@ export default function PostFilter({
 
   return (
     <>
-      <div className="flex gap-4 w-10/12 justify-between">
+      <div className="flex gap-4 w-full justify-between">
         <div className="relative w-full">
           <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
           <input
@@ -46,30 +38,33 @@ export default function PostFilter({
           height={58}
         />
       </div>
-      <div className="flex w-10/12 gap-3 mb-20 min-w[350px]">
-        <div
-          onClick={() => onFilter(null)}
-          className={`cursor-pointer w-auto px-4 h-11 flex items-center justify-center rounded-[10px] ${
-            selectedProductType === null
-              ? "bg-[#1BBB66] text-white"
-              : "bg-white text-[#8c8c8c]"
-          }`}
-        >
-          Alle
-        </div>
-        {uniqueProductTypes.map((productType, index) => (
+      <div className="w-full flex flex-col gap-2">
+        <p className="text-sm italic text-text">scroll til siden</p>
+        <div className="flex w-full mb-20 justify-between gap-2 text-sm overflow-x-auto no-scrollbar">
           <div
-            key={index}
-            onClick={() => onFilter(productType)}
+            onClick={() => onFilter(null)}
             className={`cursor-pointer w-auto px-4 h-11 flex items-center justify-center rounded-[10px] ${
-              selectedProductType === productType
+              selectedProductType === null
                 ? "bg-[#1BBB66] text-white"
                 : "bg-white text-[#8c8c8c]"
             }`}
           >
-            {productTypeLabels[productType] || productType}
+            Alle
           </div>
-        ))}
+          {predefinedProductTypes.map((productType, index) => (
+            <div
+              key={index}
+              onClick={() => onFilter(productType)}
+              className={`cursor-pointer w-auto px-4 h-11 flex items-center justify-center rounded-[10px] ${
+                selectedProductType === productType
+                  ? "bg-[#1BBB66] text-white"
+                  : "bg-white text-[#8c8c8c]"
+              }`}
+            >
+              {productTypeLabels[productType] || productType}
+            </div>
+          ))}
+        </div>
       </div>
     </>
   );

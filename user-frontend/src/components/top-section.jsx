@@ -15,11 +15,11 @@ export default function TopUI({
 }) {
   return (
     <section
-      className="bg-[#e2f0e9] flex flex-col pt-10 items-center gap-6 px-5"
+      className="bg-lightgreen flex flex-col pt-10 items-center gap-6 px-5"
       style={{ marginBottom }}
     >
-      <div className="flex items-center justify-between w-10/12">
-        <h3 className="text-[#0e0c11] w-2/3 text-[30px] font-bold">{title}</h3>
+      <div className="flex items-center justify-between w-11/12">
+        <h3 className="text-text w-2/3 text-[30px] font-bold">{title}</h3>
         <ProfilePicture /> {/* Use the ProfilePicture component */}
       </div>
       <PostFilter
