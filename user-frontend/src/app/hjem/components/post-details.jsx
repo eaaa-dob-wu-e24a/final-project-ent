@@ -5,17 +5,31 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import MyCalendar from "@/components/my-calendar";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 export default function PostDetails({ post, colorLabels, createOrder }) {
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [rentalPeriod, setRentalPeriod] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const postId = post.post_id;
-  console.log(postId);
   const router = useRouter();
 
   const handleRentalPeriodChange = (days) => {
     setRentalPeriod(days);
+  };
+
+  const handleDateRangeChange = (from, to) => {
+    setStartDate(from);
+    setEndDate(to);
+
+    if (from && to) {
+      const daysDiff = Math.ceil((to - from) / (1000 * 3600 * 24)) + 1;
+      setRentalPeriod(daysDiff);
+    } else {
+      setRentalPeriod(0);
+    }
   };
 
   const handleSendRequest = async () => {
@@ -32,16 +46,12 @@ export default function PostDetails({ post, colorLabels, createOrder }) {
     setIsLoading(true);
     setError(null);
 
-    console.log("Creating order with:", {
-      rental_period: rentalPeriod,
-      order_status: "afventer",
-      post_id: postId,
-    });
-
     const result = await createOrder({
       rental_period: rentalPeriod,
       order_status: "afventer",
       post_id: postId,
+      start_date: startDate.toLocaleDateString("da-DK"),
+      end_date: endDate.toLocaleDateString("da-DK"),
     });
 
     setIsLoading(false);
@@ -49,8 +59,8 @@ export default function PostDetails({ post, colorLabels, createOrder }) {
     if (result.error) {
       setError(result.error);
     } else {
-      // Order created successfully
-      router.push("/ordreoversigt");
+      toast.success("Forespørgsel sendt!");
+      router.push("/hjem");
     }
   };
 
@@ -122,7 +132,10 @@ export default function PostDetails({ post, colorLabels, createOrder }) {
               <p className="mt-2 text-gray-500">{post.description}</p>
             </div>
           </div>
-          <MyCalendar onRentalPeriodChange={handleRentalPeriodChange} />
+          <MyCalendar
+            onRentalPeriodChange={handleRentalPeriodChange}
+            onDateRangeChange={handleDateRangeChange}
+          />
 
           {error && (
             <div className="text-red-500 text-center mt-4">{error}</div>

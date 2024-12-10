@@ -5,7 +5,7 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { da } from "date-fns/locale";
 
-function CalenderComponent({ onRentalPeriodChange }) {
+function CalenderComponent({ onRentalPeriodChange, onDateRangeChange }) {
   const [selectedRange, setSelectedRange] = useState({ from: null, to: null });
 
   // Calculate the rental period whenever the selected range changes
@@ -18,6 +18,10 @@ function CalenderComponent({ onRentalPeriodChange }) {
       onRentalPeriodChange(0);
     }
   }, [selectedRange, onRentalPeriodChange]);
+
+  useEffect(() => {
+    onDateRangeChange(selectedRange.from, selectedRange.to);
+  }, [selectedRange, onDateRangeChange]);
 
   return (
     <div className="flex justify-center ">
