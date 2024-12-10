@@ -1,42 +1,50 @@
 import { useLoaderData } from "@remix-run/react";
 import Users from "../components/users";
+import Posts from "../components/posts";
 import { json } from "@remix-run/node";
-import { getAccessToken } from "../utils/setCookies";
+
+import { fetchUsers } from "../utils/user";
+import { fetchPosts } from "../utils/post";
 
 export const loader = async ({ request }) => {
-  const accessToken = await getAccessToken(request);
+  const [users, posts] = await Promise.all([
+    fetchUsers(request),
+    fetchPosts(request),
+  ]);
 
-  // Fetch users from the backend
-  const response = await fetch(
-    `${process.env.BACKEND_URL}/api/user/read/?user_list=true`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  if (!response.ok) {
-    console.error("Failed to fetch admin data:", await response.text());
-    throw new Response("Failed to fetch admin data", {
-      status: response.status,
-    });
-  }
-
-  const users = await response.json();
-  return json(users);
+  return json({ users, posts });
 };
 
 export default function AdminDashboard() {
-  const users = useLoaderData();
+  const { users, posts } = useLoaderData();
+  // Amount of users and posts currently active
+  const totalUsers = users.length;
+  const totalPosts = posts.length;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-md">
+    <div>
+      {/* Main Content */}
+      <div className="flex-grow py-4">
         <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-        <Users users={users} />
+        <div className="flex gap-4 justify-between">
+          <div className="bg-white shadow w-full rounded-lg p-6 text-center">
+            <h3 className="text-lg font-semibold text-gray-700">
+              Total brugere registreret
+            </h3>
+            <p className="text-3xl font-bold text-gray-900">{totalUsers}</p>
+          </div>
+          <div className="bg-white w-full shadow rounded-lg p-6 text-center">
+            <h3 className="text-lg font-semibold text-gray-700">
+              Total Online Opslag
+            </h3>
+            <p className="text-3xl font-bold text-gray-900">{totalPosts}</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <Users users={users} layout="flex" />
+          <Posts posts={posts} />
+        </div>
       </div>
     </div>
   );

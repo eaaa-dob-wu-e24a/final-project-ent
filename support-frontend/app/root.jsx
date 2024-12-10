@@ -1,11 +1,6 @@
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "@remix-run/react";
+import { Links, Meta, Scripts, ScrollRestoration } from "@remix-run/react";
 
+import Aside from "./components/layout";
 import "./tailwind.css";
 
 export const links = () => [
@@ -30,7 +25,8 @@ export function Layout({ children }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="">
+        <Aside />
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -40,5 +36,5 @@ export function Layout({ children }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return;
 }
