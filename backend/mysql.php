@@ -8,10 +8,21 @@ $username = getenv('DB_USERNAME');
 $password = getenv('DB_PASSWORD');
 $database = getenv('DB_DATABASE');
 
-// Set headers (if not already set)
+// Allowed origins
+$allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:3000"
+];
+
+// Check the Origin header and set the appropriate CORS headers
 if (!headers_sent()) {
-    $origin = "http://localhost:3000"; // Adjust if necessary
-    header("Access-Control-Allow-Origin: $origin");
+    $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+    // Verify if the origin is allowed
+    if (in_array($origin, $allowedOrigins)) {
+        header("Access-Control-Allow-Origin: $origin");
+    }
+
     header("Access-Control-Allow-Credentials: true");
     header("Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS");
     header("Access-Control-Allow-Headers: Content-Type, Authorization");

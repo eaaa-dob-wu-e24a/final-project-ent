@@ -1,5 +1,6 @@
 <?php
-// authorize.php
+// /functions/authorize.php
+
 include("handle_api_request.php");
 
 function authorize($mySQL)
@@ -12,7 +13,7 @@ function authorize($mySQL)
 
     // Check if the Authorization header is set 
     if (isset($headers['Authorization'])) {
-        $authHeader = $headers['Authorization']; // extract the value of the Authorization header
+        $authHeader = $headers['Authorization']; // Extract the value of the Authorization header
 
         // Extract the access token from the Authorization header
         // Match the Authorization header against the Bearer token
@@ -33,9 +34,8 @@ function authorize($mySQL)
         exit();
     }
 
-
     // Validate the access token
-    // Prepare sql query to check if the access token exists in the session table
+    // Prepare SQL query to check if the access token exists in the session table
     $stmt = $mySQL->prepare("SELECT user_login_id, access_token_expiry FROM session WHERE access_token = ?");
     // Bind the access token to the query
     $stmt->bind_param("s", $access_token);
@@ -54,12 +54,11 @@ function authorize($mySQL)
     $user_login_id = null;
     $access_token_expiry = "";
 
-    // Retrive the user_login_id and access_token_expiry from the session table
+    // Retrieve the user_login_id and access_token_expiry from the session table
     $stmt->bind_result($user_login_id, $access_token_expiry);
     $stmt->fetch();
     $stmt->close();
 
-    
     // Check if the access token has expired
     $currentDateTime = new DateTime();
     $expiryDateTime = new DateTime($access_token_expiry);
@@ -73,3 +72,4 @@ function authorize($mySQL)
     // Return the user_login_id
     return $user_login_id;
 }
+?>

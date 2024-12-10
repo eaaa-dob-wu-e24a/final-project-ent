@@ -23,9 +23,8 @@ function LoginForm() {
     const data = {
       email: email,
       password: password,
+      admin: false,
     };
-
-    console.log("Submitting login form with data:", data);
 
     try {
       const response = await fetch("http://localhost:4000/api/auth/signin/", {

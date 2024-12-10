@@ -1,31 +1,41 @@
 <?php
-
-// include the necessary files
+// Include necessary files
 include_once($_SERVER['DOCUMENT_ROOT'] . '/functions/authorize.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/functions/handle_api_request.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/functions/common.php'); // Contains is_admin()
 
 try {
-
-    // handle the api request
+    // Handle the API request
     handle_api_request('GET', 'Request method must be GET', 405);
 
-    // authenticate the user
+    // Authenticate the user
     $user_login_id = authorize($mySQL);
 
-    // check for query parameters
-    $target_user_id = $_GET['target_user_id'] ?? null; // admin fetches a specific user
-    $user_list = ($_GET['user_list'] ?? 'false') === 'true'; // admin fetches all normal users
+    // Check for query parameters
+    $target_user_id = $_GET['target_user_id'] ?? null; // Admin fetches a specific user
+    $user_list = ($_GET['user_list'] ?? 'false') === 'true'; // Admin fetches all users
 
     if ($target_user_id) {
+        // Admin fetching a specific user
+        if (!is_admin($user_login_id, $mySQL)) {
+            throw new Exception('Unauthorized access');
+        }
 
-        // Logic goes here for fetching a specific user by the admin
+        $sql = "CALL get_user_profile(?)";
+        $stmt = $mySQL->prepare($sql);
+        $stmt->bind_param("i", $target_user_id);
 
     } else if ($user_list) {
+        // Admin fetching all users
+        if (!is_admin($user_login_id, $mySQL)) {
+            throw new Exception('Unauthorized access');
+        }
 
-        // Logic goes here for fetching all normal users by the admin
+        $sql = "SELECT * FROM user_profile";
+        $stmt = $mySQL->prepare($sql);
 
     } else if ($user_login_id) {
-
+        // Normal user fetching their own profile
         $sql = "CALL get_user_profile(?)";
         $stmt = $mySQL->prepare($sql);
         $stmt->bind_param("i", $user_login_id);
@@ -43,10 +53,9 @@ try {
         exit();
     }
 
-    // handle the result
-    if ($target_user_id || $user_login_id) {
-        // single user cases
-
+    // Handle the result
+    if ($target_user_id || ($user_login_id && !$user_list)) {
+        // Single user cases
         $user = $result->fetch_assoc();
         if (!$user) {
             http_response_code(404);
@@ -56,13 +65,13 @@ try {
         echo json_encode($user);
 
     } else {
-        // multiple user cases
+        // Multiple user cases
         $users = [];
         while ($user = $result->fetch_assoc()) {
             $users[] = $user;
         }
 
-        if(empty($users)) {
+        if (empty($users)) {
             http_response_code(404);
             echo json_encode(['error' => 'No users found']);
             exit();

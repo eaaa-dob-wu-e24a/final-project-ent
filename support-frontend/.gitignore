@@ -1,8 +1,5 @@
-# igonore env files
-.env
-
-# ignore node_modules
 node_modules
 
-# ignore dist 
-dist
+/.cache
+/build
+.env
