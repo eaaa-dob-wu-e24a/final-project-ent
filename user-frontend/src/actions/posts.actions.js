@@ -115,7 +115,7 @@ export async function getSpecificPost(post_id) {
 }
 
 // Function to update a post
-export async function updatePost({ post_id, description, price }) {
+export async function updatePost({ post_id, description, price, image }) {
   // Await and get cookies
   const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
@@ -132,6 +132,10 @@ export async function updatePost({ post_id, description, price }) {
 
     if (description) formData.append("description", description);
     if (price) formData.append("price", price);
+
+    if (image) {
+      formData.append("image", image);
+    }
 
     const response = await fetch(
       process.env.NEXT_PUBLIC_API_URL + "/api/post/update/",
