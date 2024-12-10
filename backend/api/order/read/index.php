@@ -24,6 +24,7 @@ try {
                 o.order_status,
                 o.start_date,
                 o.end_date,
+                o.destination,
                 o.post_id,
                 p.description,
                 p.price_per_day,
@@ -78,6 +79,7 @@ try {
                 o.order_status,
                 o.start_date,
                 o.end_date,
+                o.destination,
                 o.post_id,
                 p.description,
                 p.price_per_day,
@@ -119,6 +121,7 @@ try {
                 o.order_status,
                 o.start_date,
                 o.end_date,
+                o.destination,
                 o.post_id,
                 p.description,
                 p.price_per_day,
@@ -161,6 +164,7 @@ try {
                 o.order_status,
                 o.start_date,
                 o.end_date,
+                o.destination,
                 o.post_id,
                 p.description,
                 p.price_per_day,
@@ -192,8 +196,8 @@ try {
     $result = $stmt->get_result();
 
     if ($result->num_rows === 0) {
-        http_response_code(404);
-        echo json_encode(['error' => 'No orders found']);
+        http_response_code(200);
+        echo json_encode([]);
         exit();
     }
 
@@ -208,6 +212,7 @@ try {
             'order_status' => $row['order_status'],
             'start_date' => $row['start_date'],
             'end_date' => $row['end_date'],
+            'destination' => $row['destination'],
             'post_id' => $row['post_id'],
             'description' => $row['description'],
             'price_per_day' => $row['price_per_day'],
@@ -236,6 +241,7 @@ try {
                 'order_status' => $row['order_status'],
                 'start_date' => $row['start_date'],
                 'end_date' => $row['end_date'],
+                'destination' => $row['destination'],
                 'post_id' => $row['post_id'],
                 'description' => $row['description'],
                 'price_per_day' => $row['price_per_day'],

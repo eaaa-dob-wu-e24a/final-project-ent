@@ -1,11 +1,23 @@
 import FilterSquare from "./components/filter-square";
 import { getUserProducts } from "@/actions/products.actions";
 import { getUserPosts } from "@/actions/posts.actions";
+import {
+  getUserOwnerOrders,
+  getUserRenterOrders,
+} from "@/actions/orders.actions";
+
 import ProfilePicture from "@/components/profile-picture";
 
 export default async function Page() {
   const products = await getUserProducts();
   const posts = await getUserPosts();
+  const ownerOrders = await getUserOwnerOrders();
+  const renterOrders = await getUserRenterOrders();
+
+  const orders = {
+    owner: ownerOrders,
+    renter: renterOrders,
+  };
 
   return (
     <>
@@ -22,7 +34,7 @@ export default async function Page() {
       <section className="bg-graybg pt-10 rounded-t-3xl -mt-4">
         <div className="w-11/12 mx-auto flex flex-col gap-2">
           <h2 className="font-bold">Tjek dine:</h2>
-          <FilterSquare products={products} posts={posts} />
+          <FilterSquare products={products} posts={posts} orders={orders} />
         </div>
       </section>
     </>

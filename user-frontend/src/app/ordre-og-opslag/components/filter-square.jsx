@@ -3,18 +3,19 @@
 import { useState } from "react";
 import UserProducts from "./user-products";
 import UserPosts from "./user-posts";
+import UserOrders from "./user-orders";
 
-export default function FilterSquare({ products, posts }) {
+export default function FilterSquare({ products, posts, orders }) {
   const [activeFilter, setActiveFilter] = useState("Ordre");
 
   const filteredContent = () => {
     switch (activeFilter) {
       case "Ordre":
-        return <div>Content for Ordre</div>;
+        return <UserOrders orders={orders} />;
       case "Produkter":
         return <UserProducts products={products} />;
       case "Opslag":
-        return <UserPosts posts={posts}/>;
+        return <UserPosts posts={posts} />;
       default:
         return null;
     }
@@ -25,7 +26,9 @@ export default function FilterSquare({ products, posts }) {
       <div className="flex justify-between gap-4 text-center">
         <div
           className={`${
-            activeFilter === "Ordre" ? "bg-activegreen text-white" : "bg-graybtn text-text"
+            activeFilter === "Ordre"
+              ? "bg-activegreen text-white"
+              : "bg-graybtn text-text"
           } py-2 px-4 rounded-lg w-1/3`}
           onClick={() => setActiveFilter("Ordre")}
         >
@@ -33,7 +36,9 @@ export default function FilterSquare({ products, posts }) {
         </div>
         <div
           className={`${
-            activeFilter === "Produkter" ? "bg-activegreen text-white" : "bg-graybtn text-text"
+            activeFilter === "Produkter"
+              ? "bg-activegreen text-white"
+              : "bg-graybtn text-text"
           } py-2 px-4 rounded-lg w-1/3`}
           onClick={() => setActiveFilter("Produkter")}
         >
@@ -41,7 +46,9 @@ export default function FilterSquare({ products, posts }) {
         </div>
         <div
           className={`${
-            activeFilter === "Opslag" ? "bg-activegreen text-white" : "bg-graybtn text-text"
+            activeFilter === "Opslag"
+              ? "bg-activegreen text-white"
+              : "bg-graybtn text-text"
           } py-2 px-4 rounded-lg w-1/3`}
           onClick={() => setActiveFilter("Opslag")}
         >
