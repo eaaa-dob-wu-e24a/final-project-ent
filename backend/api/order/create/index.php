@@ -14,8 +14,35 @@ handle_api_request('POST', 'Request method must be POST', 405);
 // Handle the JSON request
 $input = handle_json_request();
 
+// function to format the dates
+function format_date($date)
+{
+    $formats = [
+        'Y-m-d',     // ISO/MySQL format
+        'd-m-Y',     // Danish format
+        'm/d/Y',     // US format
+        'd/m/Y',     // EU format
+        'Y/m/d',     // Alternative ISO format
+    ];
+
+    foreach ($formats as $format) {
+        $parsed_date = DateTime::createFromFormat($format, $date);
+        if ($parsed_date) {
+            return $parsed_date->format('Y-m-d'); // Convert to MySQL format
+        }
+    }
+
+    // Fallback to strtotime if none of the above formats match
+    $timestamp = strtotime($date);
+    if ($timestamp) {
+        return date('Y-m-d', $timestamp);
+    }
+
+    return false; // Return false if parsing fails
+}
+
 // Validate that all required fields are provided in the input
-if (!isset($input['rental_period']) || !isset($input['order_status']) || !isset($input['post_id'])) {
+if (!isset($input['rental_period']) || !isset($input['order_status']) || !isset($input['post_id']) || !isset($input['start_date']) || !isset($input['end_date'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Please fill out all required fields']);
     exit();
@@ -25,6 +52,21 @@ if (!isset($input['rental_period']) || !isset($input['order_status']) || !isset(
 $rental_period = $input['rental_period'];
 $order_status = $input['order_status'];
 $post_id = $input['post_id'];
+$start_date = format_date($input['start_date']);
+$end_date = format_date($input['end_date']);
+
+if (!$start_date || !$end_date) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid date format. Please use a valid date format']);
+    exit();
+}
+
+// Validate logical order of dates
+if (strtotime($end_date) < strtotime($start_date)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'End date must be after start date']);
+    exit();
+}
 
 // Validate inputs
 if (!is_numeric($post_id) || $post_id <= 0) {
@@ -40,10 +82,10 @@ if (!is_numeric($rental_period) || $rental_period <= 0) {
 }
 
 // Fetch the price_per_day for the given post_id
-$stmt = $mySQL->prepare("SELECT price_per_day FROM post WHERE PK_ID = ?");
+$stmt = $mySQL->prepare("SELECT price_per_day, user_login_id FROM post WHERE PK_ID = ?");
 $stmt->bind_param("i", $post_id);
 $stmt->execute();
-$stmt->bind_result($price_per_day);
+$stmt->bind_result($price_per_day, $owner_id);
 $stmt->fetch();
 $stmt->close();
 
@@ -87,8 +129,8 @@ function generate_unique_order_number($mySQL)
 $order_number = generate_unique_order_number($mySQL);
 
 // Prepare the SQL statement
-$stmt = $mySQL->prepare("INSERT INTO product_order (order_number, deposit, rental_period, order_status, post_id, user_login_id) VALUES (?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("idssis", $order_number, $deposit, $rental_period, $order_status, $post_id, $user_login_id);
+$stmt = $mySQL->prepare("INSERT INTO product_order (order_number, deposit, rental_period, order_status, post_id, renter_id, owner_id, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("idssiiiss", $order_number, $deposit, $rental_period, $order_status, $post_id, $user_login_id, $owner_id, $start_date, $end_date);
 
 try {
     if ($stmt->execute()) {
@@ -104,7 +146,10 @@ try {
             'rental_period' => $rental_period,
             'order_status' => $order_status,
             'post_id' => $post_id,
-            'user_login_id' => $user_login_id
+            'renter_id' => $user_login_id,
+            'owner_id' => $owner_id,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
         ]);
     }
 } catch (mysqli_sql_exception $e) {

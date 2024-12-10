@@ -2,7 +2,12 @@
 
 import { cookies } from "next/headers";
 
-export async function createOrder({ rental_period, post_id }) {
+export async function createOrder({
+  rental_period,
+  post_id,
+  start_date,
+  end_date,
+}) {
   const accessToken = cookies().get("access_token")?.value;
 
   if (!accessToken) {
@@ -23,6 +28,8 @@ export async function createOrder({ rental_period, post_id }) {
           rental_period,
           order_status: "afventer", // Or any default status you prefer
           post_id,
+          start_date,
+          end_date,
         }),
       }
     );
