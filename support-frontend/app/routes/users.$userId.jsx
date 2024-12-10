@@ -37,25 +37,18 @@ export const loader = async ({ request, params }) => {
 
 export const action = async ({ request, params }) => {
   const accessToken = await getAccessToken(request);
-
   const { userId } = params;
   const formData = await request.formData();
-  const updatedData = {
-    username: formData.get("username"),
-    email: formData.get("email"),
-    phone_number: formData.get("phone_number"),
-    profile_picture: formData.get("profile_picture"),
-  };
 
-  // Update user data in the backend
+  // Send formData directly to the update endpoint
   const response = await fetch(
     `${process.env.BACKEND_URL}/api/user/update/?target_user_id=${userId}`,
     {
       method: "POST",
-      body: JSON.stringify(updatedData),
+      body: formData,
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
+        // Do not set Content-Type explicitly for multipart/form-data requests
       },
     }
   );
@@ -144,7 +137,7 @@ export default function UserDetail() {
               <img
                 src={user.profile_picture}
                 alt="Profile"
-                className="mt-2 w-32 h-32 rounded-full"
+                className="mt-2 w-32 h-32 object-cover rounded-full"
               />
             )}
           </div>
