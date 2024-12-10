@@ -3,6 +3,7 @@ import { RxSewingPinFilled } from "react-icons/rx";
 import Image from "next/image";
 import { format } from "date-fns";
 import { da } from "date-fns/locale";
+import Link from "next/link";
 
 export default function OrderCard({ order, color, iconStyles }) {
   const formatDate = (dateString) => {
@@ -11,8 +12,9 @@ export default function OrderCard({ order, color, iconStyles }) {
   };
 
   return (
-    <div
+    <Link
       key={order.order_id}
+      href={`/ordre-og-opslag/ordre/${order.order_id}`}
       className="bg-white rounded-lg shadow-lg flex flex-col gap-4 p-4 overflow-hidden relative"
     >
       <svg
@@ -86,6 +88,6 @@ export default function OrderCard({ order, color, iconStyles }) {
           className="object-cover h-full w-full rounded-2xl"
         />
       </div>
-    </div>
+    </Link>
   );
 }

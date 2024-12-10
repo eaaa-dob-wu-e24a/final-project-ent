@@ -107,3 +107,37 @@ export async function getUserRenterOrders() {
     throw new Error(error.message || "Failed to fetch orders");
   }
 }
+
+// function to get specific order
+export async function getSpecificOrder(order_id) {
+  // Await and get cookies
+  const cookiesStore = await cookies();
+  const accessToken = cookiesStore.get("access_token")?.value;
+
+  if (!accessToken) {
+    console.error("Access token is missing.");
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_API_URL + `/api/order/read/?order_id=${order_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error || "Failed to fetch order");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || "Failed to fetch order");
+  }
+}
