@@ -19,16 +19,13 @@ export async function getUserPosts() {
       }
     );
 
-    // Await and get response as json
-    const result = await response.json();
-
     // If response is not ok, throw error
     if (!response.ok) {
+      const result = await response.json();
       throw new Error(result.error || "Failed to fetch posts");
     }
 
-    // Return result if response is ok
-    return result;
+    return await response.json();
 
     // Catch and throw error if failed to fetch posts
   } catch (error) {

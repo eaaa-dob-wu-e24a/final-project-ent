@@ -95,12 +95,13 @@ try {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // If no products are found, respond with a 404 error
+    // If no products are found, respond with an empty array
     if ($result->num_rows === 0) {
-        http_response_code(404);
-        echo json_encode(["error" => "No products found for the specified criteria."]);
+        http_response_code(200); // Indicate success, but no content
+        echo json_encode([]); // Return an empty array
         exit();
     }
+
 
     // process the results____________________________
     if ($product_id) {

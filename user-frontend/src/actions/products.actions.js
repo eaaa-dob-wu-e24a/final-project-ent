@@ -19,16 +19,14 @@ export async function getUserProducts() {
       }
     );
 
-    // Await and get response as json
-    const result = await response.json();
-
     // If response is not ok, throw error
     if (!response.ok) {
+      const result = await response.json();
       throw new Error(result.error || "Failed to fetch products");
     }
 
     // Return result if response is ok
-    return result;
+    return await response.json();
 
     // Catch and throw error if failed to fetch products
   } catch (error) {
@@ -38,7 +36,6 @@ export async function getUserProducts() {
 
 // Function to get specific product
 export async function getSpecificProduct(product_id) {
-
   // Await and get cookies
   const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
@@ -51,7 +48,8 @@ export async function getSpecificProduct(product_id) {
 
   try {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + `/api/product/read/?product_id=${product_id}&user_only=true`,
+      process.env.NEXT_PUBLIC_API_URL +
+        `/api/product/read/?product_id=${product_id}&user_only=true`,
       {
         method: "GET",
         headers: {
@@ -101,8 +99,8 @@ export async function updateProduct({
     if (color) formData.append("color", color);
     if (size) formData.append("size", size);
 
-     if (image) {
-      formData.append("image", image); 
+    if (image) {
+      formData.append("image", image);
     }
 
     const response = await fetch(
@@ -110,9 +108,9 @@ export async function updateProduct({
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${accessToken}`, 
+          Authorization: `Bearer ${accessToken}`,
         },
-        body: formData, 
+        body: formData,
       }
     );
 
@@ -121,7 +119,7 @@ export async function updateProduct({
       throw new Error(errorResponse.error || "Failed to update product");
     }
 
-    return await response.json(); 
+    return await response.json();
   } catch (error) {
     console.error("Error updating product:", error);
     throw error;

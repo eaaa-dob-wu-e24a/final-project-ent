@@ -154,8 +154,8 @@ try {
     $result = $stmt->get_result();
 
     if ($result->num_rows === 0) {
-        http_response_code(404);
-        echo json_encode(["error" => "No posts found for the specified criteria."]);
+        http_response_code(200);
+        echo json_encode([]);
         exit();
     }
 
@@ -217,7 +217,6 @@ try {
 
         echo json_encode($posts);
     }
-    
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(["error" => "An error occurred while processing the request: " . $e->getMessage()]);
