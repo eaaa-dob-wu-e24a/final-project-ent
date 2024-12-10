@@ -42,7 +42,7 @@ function format_date($date)
 }
 
 // Validate that all required fields are provided in the input
-if (!isset($input['rental_period']) || !isset($input['order_status']) || !isset($input['post_id']) || !isset($input['start_date']) || !isset($input['end_date'])) {
+if (!isset($input['rental_period']) || !isset($input['order_status']) || !isset($input['post_id']) || !isset($input['start_date']) || !isset($input['end_date']) || !isset($input['destination'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Please fill out all required fields']);
     exit();
@@ -54,6 +54,7 @@ $order_status = $input['order_status'];
 $post_id = $input['post_id'];
 $start_date = format_date($input['start_date']);
 $end_date = format_date($input['end_date']);
+$destination = $input['destination'];
 
 if (!$start_date || !$end_date) {
     http_response_code(400);
@@ -129,8 +130,8 @@ function generate_unique_order_number($mySQL)
 $order_number = generate_unique_order_number($mySQL);
 
 // Prepare the SQL statement
-$stmt = $mySQL->prepare("INSERT INTO product_order (order_number, deposit, rental_period, order_status, post_id, renter_id, owner_id, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("idssiiiss", $order_number, $deposit, $rental_period, $order_status, $post_id, $user_login_id, $owner_id, $start_date, $end_date);
+$stmt = $mySQL->prepare("INSERT INTO product_order (order_number, deposit, rental_period, order_status, post_id, renter_id, owner_id, destination, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("idssiiisss", $order_number, $deposit, $rental_period, $order_status, $post_id, $user_login_id, $owner_id, $destination, $start_date, $end_date);
 
 try {
     if ($stmt->execute()) {
@@ -150,6 +151,7 @@ try {
             'owner_id' => $owner_id,
             'start_date' => $start_date,
             'end_date' => $end_date,
+            'destination' => $destination,
         ]);
     }
 } catch (mysqli_sql_exception $e) {

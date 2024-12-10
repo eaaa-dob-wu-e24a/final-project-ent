@@ -7,6 +7,7 @@ export async function createOrder({
   post_id,
   start_date,
   end_date,
+  destination,
 }) {
   const accessToken = cookies().get("access_token")?.value;
 
@@ -30,6 +31,7 @@ export async function createOrder({
           post_id,
           start_date,
           end_date,
+          destination,
         }),
       }
     );
@@ -45,5 +47,63 @@ export async function createOrder({
   } catch (error) {
     console.error("Failed to create order:", error);
     return { error: "An error occurred while creating the order." };
+  }
+}
+
+// function to get user owned orders
+export async function getUserOwnerOrders() {
+  // Await and get cookies
+  const cookiesStore = await cookies();
+  const accessToken = cookiesStore.get("access_token")?.value;
+
+  try {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_API_URL + "/api/order/read/?owner_only=true",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error || "Failed to fetch orders");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || "Failed to fetch orders");
+  }
+}
+
+// function to get user rented orders
+export async function getUserRenterOrders() {
+  // Await and get cookies
+  const cookiesStore = await cookies();
+  const accessToken = cookiesStore.get("access_token")?.value;
+
+  try {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_API_URL + "/api/order/read/?renter_only=true",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error || "Failed to fetch orders");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || "Failed to fetch orders");
   }
 }

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import MyCalendar from "@/components/my-calendar";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ export default function PostDetails({ post, colorLabels, createOrder }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [rentalPeriod, setRentalPeriod] = useState(0);
+  const [destination, setDestination] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const postId = post.post_id;
@@ -52,6 +54,7 @@ export default function PostDetails({ post, colorLabels, createOrder }) {
       post_id: postId,
       start_date: startDate.toLocaleDateString("da-DK"),
       end_date: endDate.toLocaleDateString("da-DK"),
+      destination: destination,
     });
 
     setIsLoading(false);
@@ -135,6 +138,13 @@ export default function PostDetails({ post, colorLabels, createOrder }) {
           <MyCalendar
             onRentalPeriodChange={handleRentalPeriodChange}
             onDateRangeChange={handleDateRangeChange}
+          />
+
+          <Input
+            type="text"
+            placeholder="Skriv din destination her..."
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
           />
 
           {error && (
