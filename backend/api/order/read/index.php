@@ -11,7 +11,8 @@ try {
     $user_login_id = authorize($mySQL);
 
     $order_id = $_GET['order_id'] ?? null;
-    $user_only = ($_GET['user_only'] ?? null);
+    $renter_only = ($_GET['renter_only'] ?? null);
+    $owner_only = ($_GET['owner_only'] ?? null);
 
     if ($order_id) {
         $sql = "
@@ -47,19 +48,27 @@ try {
                 o.PK_ID = ?
         ";
 
-        if ($user_only === 'true') {
+        if ($renter_only === 'true') {
             $sql .= " AND o.renter_id = ?";
             $stmt = $mySQL->prepare($sql);
             $stmt->bind_param('ii', $order_id, $user_login_id);
-        } elseif ($user_only === 'false') {
+        } elseif ($renter_only === 'false') {
             $sql .= " AND o.renter_id != ?";
+            $stmt = $mySQL->prepare($sql);
+            $stmt->bind_param('ii', $order_id, $user_login_id);
+        } elseif ($owner_only === 'true') {
+            $sql .= " AND o.owner_id = ?";
+            $stmt = $mySQL->prepare($sql);
+            $stmt->bind_param('ii', $order_id, $user_login_id);
+        } elseif ($owner_only === 'false') {
+            $sql .= " AND o.owner_id != ?";
             $stmt = $mySQL->prepare($sql);
             $stmt->bind_param('ii', $order_id, $user_login_id);
         } else {
             $stmt = $mySQL->prepare($sql);
             $stmt->bind_param('i', $order_id);
         }
-    } else if ($user_only === 'true') {
+    } else if ($renter_only === 'true') {
         $sql = "
             SELECT 
                 o.PK_ID AS order_id,
@@ -94,7 +103,48 @@ try {
 
         $stmt = $mySQL->prepare($sql);
         $stmt->bind_param('i', $user_login_id);
-    } elseif ($user_only === 'false') {
+    } elseif ($renter_only === 'false') {
+
+        http_response_code(200);
+        echo json_encode(['message' => 'Cannot fetch orders for other users']);
+        exit();
+    } elseif ($owner_only === 'true') {
+
+        $sql = "
+            SELECT 
+                o.PK_ID AS order_id,
+                o.renter_id,
+                o.owner_id,
+                o.rental_period,
+                o.order_status,
+                o.start_date,
+                o.end_date,
+                o.post_id,
+                p.description,
+                p.price_per_day,
+                p.location,
+                pr.PK_ID AS product_id,
+                pr.name AS product_name,
+                pr.brand,
+                pr.product_type,
+                pr.size,
+                pr.color,
+                pr.product_condition,
+                pp.picture_path
+            FROM 
+                product_order o
+            INNER JOIN 
+                post p ON o.post_id = p.PK_ID
+            INNER JOIN 
+                product pr ON p.product_id = pr.PK_ID
+            LEFT JOIN 
+                product_pictures pp ON pr.PK_ID = pp.product_id
+            WHERE 
+                o.owner_id = ?";
+
+        $stmt = $mySQL->prepare($sql);
+        $stmt->bind_param('i', $user_login_id);
+    } elseif ($owner_only === 'false') {
 
         http_response_code(200);
         echo json_encode(['message' => 'Cannot fetch orders for other users']);
