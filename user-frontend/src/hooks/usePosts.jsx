@@ -23,7 +23,7 @@ export default function usePosts() {
     const fetchPosts = async () => {
       try {
         const response = await fetch(
-          process.env.NEXT_PUBLIC_API_URL + "/api/post/read/?non_user_posts=true",
+          process.env.NEXT_PUBLIC_API_URL + "/api/post/read/?user_only=false",
           {
             method: "GET",
             credentials: "include",

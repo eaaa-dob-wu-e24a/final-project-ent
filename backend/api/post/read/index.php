@@ -14,13 +14,11 @@ try {
 
     // check for query parameters
     $post_id = $_GET['post_id'] ?? null;
-    $user_only = ($_GET['user_only'] ?? 'false') === 'true';
-    $non_user_posts = ($_GET['non_user_posts'] ?? 'false') === 'true';
+    $user_only = ($_GET['user_only'] ?? null);
 
     // SQL query and parameters
     if ($post_id) {
-
-        // fetch a specific post for an authenticated user
+        // Case 1: Fetch a specific post
         $sql = "
             SELECT 
                 p.PK_ID AS post_id,
@@ -46,15 +44,23 @@ try {
                 p.PK_ID = ?
         ";
 
-        if ($user_only) {
+        // Modify the query based on `user_only`
+        if ($user_only === 'true') {
+            // Include only posts owned by the authenticated user
             $sql .= " AND p.user_login_id = ?";
             $stmt = $mySQL->prepare($sql);
             $stmt->bind_param('ii', $post_id, $user_login_id);
+        } elseif ($user_only === 'false') {
+            // Exclude posts owned by the authenticated user
+            $sql .= " AND p.user_login_id != ?";
+            $stmt = $mySQL->prepare($sql);
+            $stmt->bind_param('ii', $post_id, $user_login_id);
         } else {
+            // Default: no ownership filter
             $stmt = $mySQL->prepare($sql);
             $stmt->bind_param('i', $post_id);
         }
-    } else if ($user_only) {
+    } else if ($user_only === 'true') {
 
         // fetch all posts for an authenticated user
         $sql = "
@@ -86,7 +92,7 @@ try {
 
         $stmt = $mySQL->prepare($sql);
         $stmt->bind_param("i", $user_login_id);
-    } else if ($non_user_posts) {
+    } else if ($user_only === 'false') {
 
         // Fetch all posts not owned by the authenticated user
         $sql = "
