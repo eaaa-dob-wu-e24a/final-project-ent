@@ -35,10 +35,11 @@ export const action = async ({ request }) => {
       );
     }
 
-    // Redirect to the admin dashboard or desired page upon successful login
+    const cookieValue = `access_token=${data.access_token}; Path=/; Secure; SameSite=None`;
+
     return redirect("/", {
       headers: {
-        "Set-Cookie": response.headers.get("Set-Cookie"),
+        "Set-Cookie": cookieValue,
       },
     });
   } catch (error) {
