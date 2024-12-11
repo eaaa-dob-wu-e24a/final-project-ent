@@ -125,3 +125,37 @@ export async function updateProduct({
     throw error;
   }
 }
+
+// Function to delete product
+
+export async function deleteProduct(productId) {
+  const cookiesStore = await cookies();
+  const accessToken = cookiesStore.get("access_token")?.value;
+
+  if (!accessToken) {
+    throw new Error("Unauthorized. Missing access token.");
+  }
+
+  try {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_API_URL + "/api/product/delete/",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ product_id: productId }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete product");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    throw error;
+  }
+}

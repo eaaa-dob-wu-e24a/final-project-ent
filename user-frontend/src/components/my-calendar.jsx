@@ -6,13 +6,16 @@ import "react-day-picker/style.css";
 import { da } from "date-fns/locale";
 
 function CalenderComponent({ onRentalPeriodChange, onDateRangeChange }) {
+  // state to manage selected date range
   const [selectedRange, setSelectedRange] = useState({ from: null, to: null });
 
   // Calculate the rental period whenever the selected range changes
   useEffect(() => {
     if (selectedRange.from && selectedRange.to) {
+      // Calculate the difference in time between the start and end dates
       const timeDiff = Math.abs(selectedRange.to - selectedRange.from);
-      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // Include both start and end dates
+      // Convert the time difference to days and include both the start and end dates
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
       onRentalPeriodChange(daysDiff);
     } else {
       onRentalPeriodChange(0);
@@ -22,6 +25,20 @@ function CalenderComponent({ onRentalPeriodChange, onDateRangeChange }) {
   useEffect(() => {
     onDateRangeChange(selectedRange.from, selectedRange.to);
   }, [selectedRange, onDateRangeChange]);
+
+  // Handle the selection of a date range
+  const handleSelect = (range) => {
+    // Check if the new selection is the same as the current selection
+    if (
+      selectedRange.from?.getTime() === range?.from?.getTime() &&
+      selectedRange.to?.getTime() === range?.to?.getTime()
+    ) {
+      // Do nothing if the same range is selected again
+      return;
+    }
+    // Update the selected range, or reset it if no range is provided
+    setSelectedRange(range || { from: null, to: null });
+  };
 
   return (
     <div className="flex justify-center ">
@@ -40,7 +57,7 @@ function CalenderComponent({ onRentalPeriodChange, onDateRangeChange }) {
           footer: `text-black font-semibold justify-center pt-5 flex items-center`,
         }}
         selected={selectedRange}
-        onSelect={setSelectedRange}
+        onSelect={handleSelect}
         footer={
           selectedRange.from && selectedRange.to
             ? `Fra d. ${selectedRange.from.toLocaleDateString()} til d. ${selectedRange.to.toLocaleDateString()}`

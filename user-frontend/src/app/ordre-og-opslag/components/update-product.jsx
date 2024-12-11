@@ -12,13 +12,20 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
-export default function UpdateProduct({ product, updateProduct }) {
+export default function UpdateProduct({
+  product,
+  updateProduct,
+  deleteProduct,
+}) {
   const [name, setName] = useState(product.name);
   const [brand, setBrand] = useState(product.brand);
   const [color, setColor] = useState(product.color);
   const [size, setSize] = useState(product.size);
   const [image, setImage] = useState(null);
+
+  const router = useRouter();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -55,6 +62,17 @@ export default function UpdateProduct({ product, updateProduct }) {
       toast.success("Produktet er opdateret!");
     } catch (error) {
       console.error("Error updating product:", error);
+      toast.error("Noget gik galt. Prøv igen.");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteProduct(product.product_id);
+      toast.success("Produktet er slettet!");
+      router.push("/ordre-og-opslag");
+    } catch (error) {
+      console.error("Error deleting product:", error);
       toast.error("Noget gik galt. Prøv igen.");
     }
   };
@@ -213,6 +231,14 @@ export default function UpdateProduct({ product, updateProduct }) {
           Opdater Produkt
         </Button>
       </form>
+      <Button
+        variant="destructive"
+        size="medium"
+        onClick={handleDelete}
+        className="text-base mt-4"
+      >
+        Slet Produkt
+      </Button>
     </>
   );
 }
