@@ -35,7 +35,7 @@ function LoginForm() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
-          // credentials: "include", // Include cookies in the request
+          credentials: "include", // Include cookies in the request
         }
       );
 
