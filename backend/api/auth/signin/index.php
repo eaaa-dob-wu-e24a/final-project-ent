@@ -93,10 +93,10 @@ try {
         [
             'expires' => time() + 3600, // 1 hour from now
             'path' => '/',
-            'domain' => 'localhost',  // Adjust as needed
+            // 'domain' => 'localhost',  // Adjust as needed
             'secure' => true,        // Set to true if using HTTPS
             'httponly' => true,
-            'samesite' => 'Lax'
+            'samesite' => 'None'
         ]
     );
 
