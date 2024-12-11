@@ -3,7 +3,6 @@
 import { cookies } from "next/headers";
 
 export async function getUser() {
-
   // Await and get cookies
   const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
@@ -32,7 +31,7 @@ export async function getUser() {
     if (!response.ok) {
       throw new Error(result.error || "Failed to fetch user");
     }
-    
+
     // Return result if response is ok
     return result;
 
@@ -48,7 +47,6 @@ export async function updateUser({
   phone_number,
   profile_picture,
 }) {
-
   // Await and get cookies
   const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
@@ -92,6 +90,41 @@ export async function updateUser({
     return await response.json();
   } catch (error) {
     console.error("Error updating user:", error);
+    throw error;
+  }
+}
+
+export async function deleteUser() {
+  // Await and get cookies
+  const cookiesStore = await cookies();
+  const accessToken = cookiesStore.get("access_token")?.value;
+
+  // If access token is missing, throw error
+  if (!accessToken) {
+    console.error("Access token is missing.");
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_API_URL + "/api/user/delete/",
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    // If response is not ok, throw error
+    if (!response.ok) {
+      throw new Error("Failed to delete user");
+    }
+
+    // Await and return response as json
+    await cookiesStore.set("access_token", "", { expires: new Date(0) });
+  } catch (error) {
+    console.error("Error deleting user:", error);
     throw error;
   }
 }

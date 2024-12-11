@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { logout } from "@/actions/auth.actions";
 import { toast } from "react-hot-toast";
 
-export default function UpdateProfile({ user, updateUser }) {
+export default function UpdateProfile({ user, updateUser, deleteUser }) {
   // State for user data
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
@@ -45,6 +45,27 @@ export default function UpdateProfile({ user, updateUser }) {
       router.push("/profil");
     } catch (error) {
       console.error("Error updating user:", error);
+      toast.error("Noget gik galt. Prøv igen.");
+    }
+  };
+
+  const handleDelete = async () => {
+    // Display a confirmation dialog with "OK" and "Cancel"
+    const confirmation = confirm(
+      "Er du sikker på, at du vil slette din profil?"
+    );
+    // If "Cancel" is clicked do nothing
+    if (!confirmation) {
+      return;
+    }
+
+    // If "OK" is clicked, delete the user
+    try {
+      await deleteUser();
+      toast.success("Brugeren er slettet!");
+      router.push("/");
+    } catch (error) {
+      console.error("Error deleting user:", error);
       toast.error("Noget gik galt. Prøv igen.");
     }
   };
@@ -145,6 +166,15 @@ export default function UpdateProfile({ user, updateUser }) {
             Opdater Profil
           </Button>
         </form>
+
+        <Button
+          variant="destructive"
+          size="medium"
+          onClick={handleDelete}
+          className="text-base mt-4"
+        >
+          Slet Profil
+        </Button>
 
         {/* Logout Button */}
         <div className="mt-7 text-center">
