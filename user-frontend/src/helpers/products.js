@@ -15,11 +15,22 @@ export async function createProduct(data) {
     // Append the image file to the form data
     formData.append("image", image);
 
+    const cookieString = typeof document !== "undefined" ? document.cookie : "";
+    const tokenMatch = cookieString
+      .split("; ")
+      .find((row) => row.startsWith("access_token="));
+    const accessToken = tokenMatch ? tokenMatch.split("=")[1] : null;
+
     const response = await fetch(
       process.env.NEXT_PUBLIC_API_URL + "/api/product/create/",
       {
         method: "POST",
         credentials: "include",
+        headers: accessToken
+          ? {
+              Authorization: `Bearer ${accessToken}`,
+            }
+          : {},
         body: formData,
       }
     );
