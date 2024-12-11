@@ -1,7 +1,7 @@
 // app/routes/userpage.jsx
 import { useState } from "react";
 import { json } from "@remix-run/node";
-import { fetchUsers } from "../utils/user";
+import { fetchUsers } from "../utils/user_util";
 import Users from "../components/users";
 import { useLoaderData } from "@remix-run/react";
 

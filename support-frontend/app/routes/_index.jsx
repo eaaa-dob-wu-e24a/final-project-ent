@@ -3,8 +3,8 @@ import Users from "../components/users";
 import Posts from "../components/posts";
 import { json } from "@remix-run/node";
 
-import { fetchUsers } from "../utils/user";
-import { fetchPosts } from "../utils/post";
+import { fetchUsers } from "../utils/user_util";
+import { fetchPosts } from "../utils/post_util";
 
 export const loader = async ({ request }) => {
   const [users, posts] = await Promise.all([

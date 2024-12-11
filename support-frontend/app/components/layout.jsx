@@ -19,7 +19,7 @@ export default function Layout() {
               </a>
             </li>
             <li className="px-6 py-2 hover:bg-gray-700">
-              <a href="/ordre" className="block">
+              <a href="/orderpage" className="block">
                 Ordre
               </a>
             </li>

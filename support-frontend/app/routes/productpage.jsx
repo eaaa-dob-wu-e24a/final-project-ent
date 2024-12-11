@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import { fetchProducts } from "../utils/product";
+import { fetchProducts } from "../utils/product_util";
 import Products from "../components/product";
 
 export const loader = async ({ request }) => {
