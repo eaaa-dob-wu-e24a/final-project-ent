@@ -1,5 +1,7 @@
 import { useActionData, Form } from "@remix-run/react";
-import { json, redirect } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useEffect } from "react";
+import { useNavigate } from "@remix-run/react";
 
 export const action = async ({ request }) => {
   try {
@@ -7,7 +9,6 @@ export const action = async ({ request }) => {
     const email = formData.get("email");
     const password = formData.get("password");
 
-    // Include admin: true to indicate an admin-level login request
     const response = await fetch(
       `${process.env.BACKEND_URL}/api/auth/signin/`,
       {
@@ -16,18 +17,16 @@ export const action = async ({ request }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password, admin: true }),
-        credentials: "include", // Ensure cookies are included in the request
+        credentials: "include",
       }
     );
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const data = await response.json();
       return json({ error: data.error || "Login failed" }, { status: 400 });
     }
 
-    const data = await response.json();
-
-    // Optionally, you can verify if the response includes is_admin
     if (!data.is_admin) {
       return json(
         { error: "You do not have admin privileges." },
@@ -35,13 +34,22 @@ export const action = async ({ request }) => {
       );
     }
 
+    // Set the cookie from the token returned by the backend
     const cookieValue = `access_token=${data.access_token}; Path=/; Secure; SameSite=None`;
 
-    return redirect("/", {
-      headers: {
-        "Set-Cookie": cookieValue,
+    // Return a JSON response indicating success, and set the cookie
+    // No redirect from the server side; let the client handle navigation
+    return json(
+      {
+        message: "Login successful",
+        is_admin: data.is_admin,
       },
-    });
+      {
+        headers: {
+          "Set-Cookie": cookieValue,
+        },
+      }
+    );
   } catch (error) {
     console.error("Login error:", error);
     return json({ error: "An error occurred during login." }, { status: 500 });
@@ -50,6 +58,15 @@ export const action = async ({ request }) => {
 
 export default function Login() {
   const actionData = useActionData();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If no error and actionData is present, it means login succeeded
+    if (actionData && !actionData.error) {
+      // Redirect to homepage (or another protected route) on the client side
+      navigate("/");
+    }
+  }, [actionData, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -64,7 +81,8 @@ export default function Login() {
               Email
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 
+                         text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="email"
               name="email"
               type="email"
@@ -79,7 +97,8 @@ export default function Login() {
               Password
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 
+                         text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
               id="password"
               name="password"
               type="password"
@@ -93,7 +112,8 @@ export default function Login() {
           )}
           <div className="flex items-center justify-between">
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold 
+                         py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
               Login
