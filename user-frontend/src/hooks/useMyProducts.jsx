@@ -51,7 +51,8 @@ export default function useMyProducts() {
           brand: product.brand,
           image:
             product.pictures.length > 0
-              ? `http://localhost:4000/api/product/create/${product.pictures[0]}`
+              ? process.env.NEXT_PUBLIC_API_URL +
+                `/api/product/create/${product.pictures[0]}`
               : "../dummypicture.webp",
         }));
 

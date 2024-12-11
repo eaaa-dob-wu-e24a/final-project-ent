@@ -27,14 +27,17 @@ function LoginForm() {
     };
 
     try {
-      const response = await fetch("http://localhost:4000/api/auth/signin/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        credentials: "include", // Include cookies in the request
-      });
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/api/auth/signin/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+          credentials: "include", // Include cookies in the request
+        }
+      );
 
       console.log("Received response:", response);
 
