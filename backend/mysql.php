@@ -11,7 +11,9 @@ $database = getenv('DB_DATABASE');
 // Allowed origins
 $allowedOrigins = [
     "http://localhost:5173",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://lendr-nine.vercel.app",
+    "https://lendr.tobiaswolmar.dk",
 ];
 
 // Check the Origin header and set the appropriate CORS headers
