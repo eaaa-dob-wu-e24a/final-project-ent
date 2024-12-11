@@ -35,18 +35,14 @@ function LoginForm() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
-          credentials: "include", // Include cookies in the request
+          // credentials: "include", // Include cookies in the request
         }
       );
 
-      console.log("Received response:", response);
-
       const result = await response.json();
 
-      console.log("Parsed response JSON:", result);
-
       if (response.ok) {
-        console.log("Login successful, redirecting...");
+        document.cookie = `access_token=${result.access_token}; Path=/; Secure; HttpOnly; SameSite=Strict`;
         // Redirect to a protected page or dashboard
         router.push("/hjem");
       } else {

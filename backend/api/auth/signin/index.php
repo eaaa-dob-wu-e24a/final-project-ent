@@ -86,19 +86,19 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    // Set the access token as an HTTP-only cookie
-    setcookie(
-        'access_token',
-        $access_token,
-        [
-            'expires' => time() + 3600, // 1 hour from now
-            'path' => '/',
-            // 'domain' => 'localhost',  // Adjust as needed
-            'secure' => true,        // Set to true if using HTTPS
-            'httponly' => true,
-            'samesite' => 'None'
-        ]
-    );
+    // // Set the access token as an HTTP-only cookie
+    // setcookie(
+    //     'access_token',
+    //     $access_token,
+    //     [
+    //         'expires' => time() + 3600, // 1 hour from now
+    //         'path' => '/',
+    //         // 'domain' => 'localhost',  // Adjust as needed
+    //         'secure' => true,        // Set to true if using HTTPS
+    //         'httponly' => true,
+    //         'samesite' => 'None'
+    //     ]
+    // );
 
     // Return a single JSON response
     echo json_encode([
