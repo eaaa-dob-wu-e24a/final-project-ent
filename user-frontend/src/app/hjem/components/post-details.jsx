@@ -34,6 +34,7 @@ export default function PostDetails({ post, colorLabels, createOrder }) {
     }
   };
 
+  // Function to handle sending request
   const handleSendRequest = async () => {
     if (rentalPeriod <= 0) {
       setError("Vælg venligst en gyldig lejeperiode.");
