@@ -42,7 +42,7 @@ function LoginForm() {
       const result = await response.json();
 
       if (response.ok) {
-        document.cookie = `access_token=${result.access_token}; Path=/; Secure; HttpOnly; SameSite=None`;
+        document.cookie = `access_token=${result.access_token}; Path=/; Secure; SameSite=None`;
         // Redirect to a protected page or dashboard
         router.push("/hjem");
       } else {
