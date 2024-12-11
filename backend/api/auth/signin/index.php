@@ -94,7 +94,7 @@ try {
             'expires' => time() + 3600, // 1 hour from now
             'path' => '/',
             'domain' => 'localhost',  // Adjust as needed
-            'secure' => false,        // Set to true if using HTTPS
+            'secure' => true,        // Set to true if using HTTPS
             'httponly' => true,
             'samesite' => 'Lax'
         ]
@@ -106,7 +106,6 @@ try {
         "access_token" => $access_token, // Optional: include if needed on the client side
         "is_admin" => (bool)$is_admin
     ]);
-
 } catch (Exception $e) {
     // Log the error message (adjust the path as needed)
     error_log($e->getMessage());
