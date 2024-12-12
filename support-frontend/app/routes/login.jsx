@@ -14,17 +14,14 @@ export const action = async ({ request }) => {
     const email = formData.get("email");
     const password = formData.get("password");
 
-    const response = await fetch(
-      `${process.env.BACKEND_URL}/api/auth/signin/`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password, admin: true }),
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`lendr.tobiaswolmar.dk/api/auth/signin/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password, admin: true }),
+      credentials: "include",
+    });
 
     const data = await response.json();
     console.log("Backend token:", data.access_token); // Log the backend token
