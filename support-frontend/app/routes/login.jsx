@@ -28,6 +28,7 @@ export const action = async ({ request }) => {
 
     const data = await response.json();
     console.log("Backend token:", data.access_token); // Log the backend token
+    console.log(data);
 
     if (!response.ok) {
       return json({ error: data.error || "Login failed" }, { status: 400 });
