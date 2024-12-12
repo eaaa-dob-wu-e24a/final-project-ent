@@ -34,8 +34,8 @@ export const action = async ({ request }) => {
 
     const testResponse = await clone.text();
 
-    const data = await response.json();
     console.log("Login response:", testResponse); // Log the response
+    const data = await response.json();
     console.log("Backend token:", data.access_token); // Log the backend token
 
     if (!response.ok) {
