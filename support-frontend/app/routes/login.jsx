@@ -1,7 +1,12 @@
 import { useActionData, Form } from "@remix-run/react";
-import { json } from "@remix-run/node";
-import { useEffect } from "react";
-import { useNavigate } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node";
+import { createCookie } from "@remix-run/node";
+
+// export const accessTokenCookie = createCookie("access_token", {
+//   path: "/",
+//   secure: true,
+//   sameSite: "none",
+// });
 
 export const action = async ({ request }) => {
   try {
@@ -22,6 +27,7 @@ export const action = async ({ request }) => {
     );
 
     const data = await response.json();
+    console.log("Backend token:", data.access_token); // Log the backend token
 
     if (!response.ok) {
       return json({ error: data.error || "Login failed" }, { status: 400 });
@@ -34,22 +40,15 @@ export const action = async ({ request }) => {
       );
     }
 
-    // Set the cookie from the token returned by the backend
-    const cookieValue = `access_token=${data.access_token}; Path=/; Secure; SameSite=None`;
+    // const cookieHeader = await accessTokenCookie.serialize(data.access_token);
+    const cookieHeader = `access_token=${data.access_token}; Path=/; Secure; SameSite=None`;
 
-    // Return a JSON response indicating success, and set the cookie
-    // No redirect from the server side; let the client handle navigation
-    return json(
-      {
-        message: "Login successful",
-        is_admin: data.is_admin,
+    // Return a response that sets the cookie
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": cookieHeader,
       },
-      {
-        headers: {
-          "Set-Cookie": cookieValue,
-        },
-      }
-    );
+    });
   } catch (error) {
     console.error("Login error:", error);
     return json({ error: "An error occurred during login." }, { status: 500 });
@@ -58,15 +57,6 @@ export const action = async ({ request }) => {
 
 export default function Login() {
   const actionData = useActionData();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // If no error and actionData is present, it means login succeeded
-    if (actionData && !actionData.error) {
-      // Redirect to homepage (or another protected route) on the client side
-      navigate("/");
-    }
-  }, [actionData, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
