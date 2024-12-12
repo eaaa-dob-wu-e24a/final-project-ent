@@ -16,6 +16,8 @@ export const action = async ({ request }) => {
     const email = formData.get("email");
     const password = formData.get("password");
 
+    const customUserAgent = "MinUserAgent/1.0";
+
     console.log("Form data received:", { email, password });
 
     const response = await fetch(
