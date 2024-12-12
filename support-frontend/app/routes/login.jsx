@@ -1,6 +1,7 @@
 import { useActionData, Form } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { createCookie } from "@remix-run/node";
+import { fetchWithUserAgent } from "../utils/fetchWithUserAgent";
 
 export const accessTokenCookie = createCookie("access_token", {
   path: "/", // Cookie will be sent to all routes
@@ -16,17 +17,14 @@ export const action = async ({ request }) => {
     const email = formData.get("email");
     const password = formData.get("password");
 
-    const customUserAgent = "MinUserAgent/1.0";
-
     console.log("Form data received:", { email, password });
 
-    const response = await fetch(
+    const response = await fetchWithUserAgent(
       `https://lendr.tobiaswolmar.dk/api/auth/signin/`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "user-agent": customUserAgent,
         },
         body: JSON.stringify({ email, password, admin: true }),
         credentials: "include",

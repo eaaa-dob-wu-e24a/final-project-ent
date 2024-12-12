@@ -1,5 +1,6 @@
 // app/utils/order.js
 import { getAccessToken } from "./setCookies";
+import { fetchWithUserAgent } from "~/utils/fetchWithUserAgent";
 
 export async function fetchOrders(request) {
   const accessToken = await getAccessToken(request);
@@ -21,7 +22,7 @@ export async function fetchOrders(request) {
 
 export async function fetchOrder(order_id, request) {
   const accessToken = await getAccessToken(request);
-  const response = await fetch(
+  const response = await fetchWithUserAgent(
     `${process.env.BACKEND_URL}/api/order/read/?order_id=${order_id}/`,
     {
       method: "GET",
