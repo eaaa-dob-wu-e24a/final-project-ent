@@ -24,6 +24,7 @@ export const action = async ({ request }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "user-agent": customUserAgent,
         },
         body: JSON.stringify({ email, password, admin: true }),
         credentials: "include",

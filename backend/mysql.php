@@ -15,6 +15,7 @@ $allowedOrigins = [
     "https://lendr-nine.vercel.app",
     "https://lendr.tobiaswolmar.dk",
     "https://lendr-2cbp.vercel.app",
+    "https://lendr-2nd.vercel.app"
 ];
 
 // Check the Origin header and set the appropriate CORS headers
