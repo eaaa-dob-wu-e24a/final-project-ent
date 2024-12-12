@@ -3,11 +3,13 @@ import { getAccessToken } from "./setCookies";
 
 export async function fetchProducts(request) {
   const accessToken = await getAccessToken(request);
+  const customUserAgent = "MinUserAgent/1.0";
   const response = await fetch(`${process.env.BACKEND_URL}/api/product/read/`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
+      "user-agent": customUserAgent,
     },
   });
 

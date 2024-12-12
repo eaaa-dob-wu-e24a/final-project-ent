@@ -2,13 +2,13 @@ import { useActionData, Form } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { createCookie } from "@remix-run/node";
 
-export const accessTokenCookie = createCookie("access_token", {
-  path: "/", // Cookie will be sent to all routes
-  secure: true, // Only send over HTTPS
-  sameSite: "none", // For cross-site usage if needed
-  // No 'expires' or 'maxAge' here means it's a session cookie by default.
-  // Add these if you want to control cookie lifetime.
-});
+// export const accessTokenCookie = createCookie("access_token", {
+//   path: "/", // Cookie will be sent to all routes
+//   secure: true, // Only send over HTTPS
+//   sameSite: "none", // For cross-site usage if needed
+//   // No 'expires' or 'maxAge' here means it's a session cookie by default.
+//   // Add these if you want to control cookie lifetime.
+// });
 
 export const action = async ({ request }) => {
   try {
@@ -21,7 +21,7 @@ export const action = async ({ request }) => {
     console.log("Form data received:", { email, password });
 
     const response = await fetch(
-      `https://lendr.tobiaswolmar.dk/api/auth/signin/`,
+      `${process.env.BACKEND_URL}/api/auth/signin/`,
       {
         method: "POST",
         headers: {

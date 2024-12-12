@@ -12,6 +12,7 @@ export const loader = async ({ request, params }) => {
   const { userId } = params;
 
   // Fetch user data from the backend
+  const customUserAgent = "MinUserAgent/1.0";
   const response = await fetch(
     `${process.env.BACKEND_URL}/api/user/read/?target_user_id=${userId}`,
     {
@@ -19,6 +20,7 @@ export const loader = async ({ request, params }) => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
+        "user-agent": customUserAgent,
       },
     }
   );
