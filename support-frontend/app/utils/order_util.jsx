@@ -1,14 +1,15 @@
 // app/utils/order.js
 import { getAccessToken } from "./setCookies";
-import { fetchWithUserAgent } from "~/utils/fetchWithUserAgent";
 
 export async function fetchOrders(request) {
   const accessToken = await getAccessToken(request);
+  const customUserAgent = "MinUserAgent/1.0";
   const response = await fetch(`${process.env.BACKEND_URL}/api/order/read/`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
+      "user-agent": customUserAgent,
     },
   });
 
@@ -22,13 +23,15 @@ export async function fetchOrders(request) {
 
 export async function fetchOrder(order_id, request) {
   const accessToken = await getAccessToken(request);
-  const response = await fetchWithUserAgent(
+  const customUserAgent = "MinUserAgent/1.0";
+  const response = await fetch(
     `${process.env.BACKEND_URL}/api/order/read/?order_id=${order_id}/`,
     {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
+        "user-agent": customUserAgent,
       },
     }
   );
