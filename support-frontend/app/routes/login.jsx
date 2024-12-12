@@ -16,6 +16,8 @@ export const action = async ({ request }) => {
     const email = formData.get("email");
     const password = formData.get("password");
 
+    console.log("Form data received:", { email, password });
+
     const response = await fetch(
       `https://lendr.tobiaswolmar.dk/api/auth/signin/`,
       {
@@ -28,7 +30,12 @@ export const action = async ({ request }) => {
       }
     );
 
+    const clone = response.clone();
+
+    const testResponse = await clone.text();
+
     const data = await response.json();
+    console.log("Login response:", testResponse); // Log the response
     console.log("Backend token:", data.access_token); // Log the backend token
 
     if (!response.ok) {
