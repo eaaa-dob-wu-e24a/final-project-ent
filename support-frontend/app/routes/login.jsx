@@ -2,11 +2,13 @@ import { useActionData, Form } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { createCookie } from "@remix-run/node";
 
-// export const accessTokenCookie = createCookie("access_token", {
-//   path: "/",
-//   secure: true,
-//   sameSite: "none",
-// });
+export const accessTokenCookie = createCookie("access_token", {
+  path: "/", // Cookie will be sent to all routes
+  secure: true, // Only send over HTTPS
+  sameSite: "none", // For cross-site usage if needed
+  // No 'expires' or 'maxAge' here means it's a session cookie by default.
+  // Add these if you want to control cookie lifetime.
+});
 
 export const action = async ({ request }) => {
   try {
@@ -14,18 +16,20 @@ export const action = async ({ request }) => {
     const email = formData.get("email");
     const password = formData.get("password");
 
-    const response = await fetch(`lendr.tobiaswolmar.dk/api/auth/signin/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password, admin: true }),
-      credentials: "include",
-    });
+    const response = await fetch(
+      `https://lendr.tobiaswolmar.dk/api/auth/signin/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, admin: true }),
+        credentials: "include",
+      }
+    );
 
     const data = await response.json();
     console.log("Backend token:", data.access_token); // Log the backend token
-    console.log(data);
 
     if (!response.ok) {
       return json({ error: data.error || "Login failed" }, { status: 400 });
