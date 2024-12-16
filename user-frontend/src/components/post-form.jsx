@@ -1,4 +1,3 @@
-// src/components/post-form.jsx
 "use client";
 
 import { useState } from "react";

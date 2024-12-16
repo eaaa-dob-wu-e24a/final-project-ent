@@ -6,8 +6,10 @@ import UserPosts from "./user-posts";
 import UserOrders from "./user-orders";
 
 export default function FilterSquare({ products, posts, orders }) {
+  // State for active filter
   const [activeFilter, setActiveFilter] = useState("Ordre");
 
+  // Function to filter content based on active filter
   const filteredContent = () => {
     switch (activeFilter) {
       case "Ordre":

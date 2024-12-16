@@ -1,4 +1,3 @@
-// src/components/top-section.jsx
 "use client";
 import React from "react";
 import PostFilter from "./post-filter";

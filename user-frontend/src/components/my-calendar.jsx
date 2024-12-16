@@ -1,4 +1,3 @@
-// components/my-calendar.jsx
 "use client";
 import React, { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";

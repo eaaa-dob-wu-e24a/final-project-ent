@@ -5,8 +5,10 @@ import Image from "next/image";
 import UpdatePost from "../../components/update-post";
 
 export default async function Page({ params }) {
+  // Get the post_id from params
   const { post_id } = await params;
 
+  // Fetch specific post using post_id
   const post = await getSpecificPost(post_id);
 
   return (

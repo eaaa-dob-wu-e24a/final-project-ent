@@ -1,5 +1,3 @@
-// src/helpers/posts.js
-
 export async function createPost(data) {
   const { description, price_per_day, product_id, location } = data;
 

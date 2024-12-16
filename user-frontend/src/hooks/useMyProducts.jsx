@@ -1,5 +1,3 @@
-// File: /hooks/useMyProducts.jsx
-
 import { useState, useEffect } from "react";
 
 export default function useMyProducts() {

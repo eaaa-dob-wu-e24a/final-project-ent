@@ -8,7 +8,7 @@ import Link from "next/link";
 export default function OrderCard({ order, color, iconStyles }) {
   const formatDate = (dateString) => {
     const date = new Date(dateString); // Parse the date string
-    return format(date, "dd.MM.yyyy", { locale: da });
+    return format(date, "dd.MM.yyyy", { locale: da }); // Format the date
   };
 
   return (
