@@ -39,6 +39,7 @@ try {
                 p.PK_ID = ?
         ";
 
+        // check if the user_only parameter is set
         if ($user_only === 'true') {
             $sql .= " AND p.user_login_id = ?";
             $stmt = $mySQL->prepare($sql);
