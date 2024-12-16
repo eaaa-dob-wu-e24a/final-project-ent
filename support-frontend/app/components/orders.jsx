@@ -14,15 +14,15 @@ export default function Orders({ orders }) {
     <div className="py-6 bg-gray-100 min-h-screen">
       <div className="mx-auto">
         <h2 className="text-2xl font-semibold mb-6 text-gray-700">
-          Manage Orders
+          Ordre oversigt
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {orders.map((order) => (
             <Link to={`/orders/${order.order_id}`} key={order.order_id}>
               <div className="bg-white border border-gray-200 flex flex-col justify-between rounded-lg shadow hover:shadow-lg transition-shadow p-4 cursor-pointer">
                 <p className="font-semibold">Order ID: {order.order_id}</p>
-                <p>Product Name: {order.product_name}</p>
-                <p>Customer: {order.owner_id}</p>
+                <p>Produkt navn: {order.product_name}</p>
+                <p>Bruger: {order.owner_id}</p>
               </div>
             </Link>
           ))}

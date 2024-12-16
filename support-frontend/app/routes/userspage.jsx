@@ -20,10 +20,10 @@ export default function UsersPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">All Users</h1>
+      <h1 className="text-2xl font-bold mb-4">Alle brugere</h1>
       <input
         type="text"
-        placeholder="Search users..."
+        placeholder="Søg brugere..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="mb-4 p-2 border border-gray-300 rounded w-full max-w-md"

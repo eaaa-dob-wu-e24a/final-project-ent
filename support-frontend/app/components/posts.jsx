@@ -26,21 +26,18 @@ export default function Posts({ posts }) {
                 {post.description.substring(0, 50)}...
               </p>
               <p className="text-gray-600 text-sm">
-                <span className="font-medium">Location:</span> {post.location}
+                <span className="font-medium">Lokation:</span> {post.location}
               </p>
               <p className="text-gray-600 text-sm">
-                <span className="font-medium">Price per Day:</span> $
-                {post.price_per_day}
+                <span className="font-medium">Pris pr dag: </span>
+                {post.price_per_day} kr,-
               </p>
               <p className="text-gray-600 text-sm mb-4">
                 <span className="font-medium">Brand:</span> {post.product.brand}
               </p>
               <div className="flex justify-between items-center">
                 <button className="text-blue-600 hover:underline text-sm">
-                  View Details
-                </button>
-                <button className="bg-red-500 text-white px-4 py-1 rounded text-sm hover:bg-red-600">
-                  Delete
+                  Se opslag..
                 </button>
               </div>
             </div>

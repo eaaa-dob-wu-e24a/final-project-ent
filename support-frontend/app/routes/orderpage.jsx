@@ -24,10 +24,10 @@ export default function OrderPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">All Orders</h1>
+      <h1 className="text-2xl font-bold mb-4">Søg i ordre</h1>
       <input
         type="text"
-        placeholder="Search by Product Name or Order ID..."
+        placeholder="Søg efter produkt ID eller navn..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="mb-4 p-2 border border-gray-300 rounded w-full max-w-md"

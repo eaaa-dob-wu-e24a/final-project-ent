@@ -1,8 +1,7 @@
 // app/components/Products.jsx
 import { Link } from "@remix-run/react";
-import PropTypes from "prop-types";
 
-export default function Products({ products, layout = "grid" }) {
+export default function Products({ products, backendUrl }) {
   if (!Array.isArray(products) || products.length === 0) {
     return (
       <div className="bg-white shadow-md rounded-md p-6">
@@ -11,53 +10,50 @@ export default function Products({ products, layout = "grid" }) {
     );
   }
 
-  // Define class names based on the layout prop
-  const containerClasses =
-    layout === "grid"
-      ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-      : "flex gap-4 overflow-x-auto whitespace-nowrap";
-
-  const itemClasses =
-    layout === "grid"
-      ? "bg-white border border-gray-200 rounded-lg shadow p-4"
-      : "shrink-0 w-60 bg-white border border-gray-200 rounded-lg shadow p-4";
-
   return (
-    <div className="w-full max-w-[1200px] py-4">
-      <h4 className="text-xl font-semibold mb-4">Products</h4>
-      <ul className={containerClasses}>
+    <div className="w-full max-w-7xl mx-auto py-8 px-4">
+      <h2 className="text-3xl font-bold text-center mb-8">Product Overview</h2>
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
-          <li key={product.product_id} className={itemClasses}>
-            <Link to={`/products/${product.product_id}`} className="block">
-              <div>
+          <li
+            key={product.product_id}
+            className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+          >
+            <Link
+              to={`/products/${product.product_id}`}
+              className="block h-full"
+            >
+              {product.pictures[0] ? (
+                <img
+                  src={`${backendUrl}/api/product/create/${product.pictures[0]}`}
+                  alt={product.name}
+                  className="w-full h-48 object-cover"
+                />
+              ) : (
+                <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500">No Image Available</span>
+                </div>
+              )}
+              <div className="p-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   {product.name}
                 </h3>
-                <p className="text-sm text-gray-500 mb-2">
-                  Type: {product.product_type}
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">Size:</span> {product.size}
                 </p>
-                <p className="text-sm text-gray-500 mb-2">
-                  Size: {product.size}
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">Color:</span> {product.color}
                 </p>
-                <p className="text-sm text-gray-500 mb-2">
-                  Color: {product.color}
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">Condition:</span>{" "}
+                  {product.product_condition}
                 </p>
-                <p className="text-sm text-gray-500 mb-2">
-                  Condition: {product.product_condition}
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">Brand:</span> {product.brand}
                 </p>
-                <p className="text-sm text-gray-500 mb-4">
-                  Brand: {product.brand}
-                </p>
-                <p className="text-gray-600 text-sm">
+                <p className="text-xs text-gray-500">
                   Posted by User ID: {product.user_id}
                 </p>
-                {product.pictures.length > 0 && (
-                  <img
-                    src={product.pictures[0]}
-                    alt={product.name}
-                    className="mt-2 w-full h-40 object-cover rounded"
-                  />
-                )}
               </div>
             </Link>
           </li>
@@ -66,20 +62,3 @@ export default function Products({ products, layout = "grid" }) {
     </div>
   );
 }
-
-Products.propTypes = {
-  products: PropTypes.arrayOf(
-    PropTypes.shape({
-      product_id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      product_type: PropTypes.string.isRequired,
-      size: PropTypes.string.isRequired,
-      color: PropTypes.string.isRequired,
-      product_condition: PropTypes.string.isRequired,
-      brand: PropTypes.string.isRequired,
-      user_id: PropTypes.string.isRequired,
-      pictures: PropTypes.arrayOf(PropTypes.string).isRequired,
-    })
-  ).isRequired,
-  layout: PropTypes.oneOf(["flex", "grid"]),
-};
