@@ -14,7 +14,7 @@ try {
 
     // check for query parameters
     $product_id = $_GET['product_id'] ?? null;
-    $user_only = ($_GET['user_only'] ?? 'false') === 'true';
+    $user_only = ($_GET['user_only'] ?? null);
 
     // SQL query and parameters
     if ($product_id) {
@@ -36,12 +36,22 @@ try {
             LEFT JOIN 
                 product_pictures pp ON p.PK_ID = pp.product_id
             WHERE 
-                p.user_login_id = ? AND p.PK_ID = ?
+                p.PK_ID = ?
         ";
 
-        $stmt = $mySQL->prepare($sql);
-        $stmt->bind_param('ii', $user_login_id, $product_id);
-    } else if ($user_only) {
+        if ($user_only === 'true') {
+            $sql .= " AND p.user_login_id = ?";
+            $stmt = $mySQL->prepare($sql);
+            $stmt->bind_param('ii', $product_id, $user_login_id);
+        } elseif ($user_only === 'false') {
+            $sql .= " AND p.user_login_id != ?";
+            $stmt = $mySQL->prepare($sql);
+            $stmt->bind_param('ii', $product_id, $user_login_id);
+        } else {
+            $stmt = $mySQL->prepare($sql);
+            $stmt->bind_param('i', $product_id);
+        }
+    } else if ($user_only === 'true') {
 
         // fetch all products for a authenticated user
         $sql = "
