@@ -17,7 +17,6 @@ try {
     if (!isset($input["email"]) || !isset($input["password"])) {
         http_response_code(400);
         echo json_encode(["error" => "Please fill out all required fields"]);
-        ob_end_flush();
         exit();
     }
 
@@ -38,7 +37,6 @@ try {
     if ($stmt->num_rows == 0) {
         http_response_code(401);
         echo json_encode(["error" => "Invalid email or password"]);
-        ob_end_flush();
         exit();
     }
 
@@ -51,7 +49,6 @@ try {
     if (!password_verify($password, $password_hash_db)) {
         http_response_code(401);
         echo json_encode(["error" => "Invalid email or password"]);
-        ob_end_flush();
         exit();
     }
 
@@ -60,13 +57,11 @@ try {
         // User attempting to log into the admin site
         http_response_code(403); // Forbidden
         echo json_encode(["error" => "Insufficient privileges for admin site", "admin" => false]);
-        ob_end_flush();
         exit();
     } elseif (!$adminRequest && $is_admin) {
         // Admin attempting to log into the user site
         http_response_code(403); // Forbidden
         echo json_encode(["error" => "Admins cannot log into the user site", "admin" => false]);
-        ob_end_flush();
         exit();
     }
 
@@ -114,5 +109,3 @@ try {
     http_response_code(500);
     echo json_encode(["error" => "An error occurred during login. Please try again later."]);
 }
-
-ob_end_flush();

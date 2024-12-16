@@ -1,6 +1,4 @@
 <?php
-
-// Include the authorize and handle_api_request functions
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_multipart_request.php");
@@ -14,8 +12,10 @@ handle_api_request('POST', 'Request method must be POST', 405);
 $input = handle_multipart_request();
 
 // Validate that all required fields are provided in the input
-if (!isset($input['name']) || !isset($input['brand']) || !isset($input['product_type']) || 
-    !isset($input['size']) || !isset($input['color']) || !isset($input['product_condition']) || !isset($input['files']['image'])) {
+if (
+    !isset($input['name']) || !isset($input['brand']) || !isset($input['product_type']) ||
+    !isset($input['size']) || !isset($input['color']) || !isset($input['product_condition']) || !isset($input['files']['image'])
+) {
     http_response_code(400);
     echo json_encode(['error' => 'Please fill out all required fields, including an image']);
     exit();
@@ -31,7 +31,8 @@ $product_condition = $input['product_condition'];
 $image = $input['files']['image'];  // Extract the image file from the input using the 'files' key
 
 // Function to handle image upload
-function upload_image($image){
+function upload_image($image)
+{
 
     // check for upload errors
     if ($image['error'] !== UPLOAD_ERR_OK) {
@@ -75,7 +76,7 @@ try {
 
     // Prepare the SQL statement to call the stored procedure
     $stmt = $mySQL->prepare("CALL create_user_product_with_image(?, ?, ?, ?, ?, ?, ?, ?)");
-    
+
     // Bind the parameters to the SQL statement. (s = string, i = integer)
     $stmt->bind_param("ssssssis", $name, $product_type, $size, $color, $product_condition, $brand, $user_login_id, $image_path);
 
@@ -86,12 +87,12 @@ try {
         $row = $result->fetch_assoc();
 
         if ($row && isset($row['new_product_id'])) {
-         // Return success response with the new product ID and image path
-         echo json_encode([
-            'message' => 'Product created successfully',
-            'product_id' => $row['new_product_id'],
-            'image_path' => $image_path
-        ]);
+            // Return success response with the new product ID and image path
+            echo json_encode([
+                'message' => 'Product created successfully',
+                'product_id' => $row['new_product_id'],
+                'image_path' => $image_path
+            ]);
         } else {
             // If no product ID is returned, respond with an error. If the procedure runs successfully, but does not return a valid result.
             http_response_code(500);
@@ -113,5 +114,3 @@ try {
 
 // Close the database connection to release resources
 $mySQL->close();
-
-?>

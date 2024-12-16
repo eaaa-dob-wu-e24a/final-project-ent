@@ -1,14 +1,11 @@
 <?php
-
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_json_request.php");
 
-
 $user_login_id = authorize($mySQL);
 
 handle_api_request('DELETE', 'Request method must be DELETE', 405);
-
 
 // get the image paths associated with the user
 $result = $mySQL->query("SELECT profile_picture FROM user_profile WHERE user_login_id = $user_login_id");

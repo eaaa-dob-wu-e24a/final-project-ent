@@ -1,6 +1,4 @@
 <?php
-// backend/api/product_order/create/index.php
-
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_json_request.php");
@@ -58,7 +56,7 @@ $destination = $input['destination'];
 
 if (!$start_date || !$end_date) {
     http_response_code(400);
-    echo json_encode(['error' => 'Invalid date format. Please use a valid date format']);
+    echo json_encode(['error' => 'Please provide start and end dates.']);
     exit();
 }
 

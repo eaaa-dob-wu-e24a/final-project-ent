@@ -1,4 +1,4 @@
-<?php 
+<?php
 include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 include($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_json_request.php");
 
@@ -26,7 +26,6 @@ $phone_number = $input["phone_number"];
 
 // Hash the password
 $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
 
 try {
     $stmt = $mySQL->prepare("CALL create_user(?, ?, ?, ?)");

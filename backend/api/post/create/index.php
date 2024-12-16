@@ -1,7 +1,4 @@
 <?php
-// backend/api/post/create/index.php
-
-
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_json_request.php");
@@ -61,15 +58,15 @@ try {
 
     // check for invalid product id
     if (strpos($e->getMessage(), 'foreign key constraint fails') !== false) {
-        http_response_code(400); 
+        http_response_code(400);
         echo json_encode(['error' => 'Product does not exist or you do not own the product']);
 
-    // check for duplicate entry
+        // check for duplicate entry
     } else if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
-        http_response_code(400); 
+        http_response_code(400);
         echo json_encode(['error' => 'You have already created a post for this product']);
 
-    // return a generic error message for any other database-related errors
+        // return a generic error message for any other database-related errors
     } else {
         http_response_code(500);
         echo json_encode(['error' => 'An error occurred while creating the post']);

@@ -1,6 +1,4 @@
 <?php
-// /functions/authorize.php
-
 include("handle_api_request.php");
 
 function authorize($mySQL)
@@ -72,4 +70,3 @@ function authorize($mySQL)
     // Return the user_login_id
     return $user_login_id;
 }
-?>

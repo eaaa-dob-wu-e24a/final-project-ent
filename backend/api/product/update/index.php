@@ -1,5 +1,4 @@
 <?php
-
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_multipart_request.php");

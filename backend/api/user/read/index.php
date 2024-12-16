@@ -24,7 +24,6 @@ try {
         $sql = "CALL get_user_profile(?)";
         $stmt = $mySQL->prepare($sql);
         $stmt->bind_param("i", $target_user_id);
-
     } else if ($user_list) {
         // Admin fetching all users
         if (!is_admin($user_login_id, $mySQL)) {
@@ -33,13 +32,11 @@ try {
 
         $sql = "SELECT * FROM user_profile";
         $stmt = $mySQL->prepare($sql);
-
     } else if ($user_login_id) {
         // Normal user fetching their own profile
         $sql = "CALL get_user_profile(?)";
         $stmt = $mySQL->prepare($sql);
         $stmt->bind_param("i", $user_login_id);
-
     } else {
         throw new Exception('Invalid query parameters');
     }
@@ -63,7 +60,6 @@ try {
             exit();
         }
         echo json_encode($user);
-
     } else {
         // Multiple user cases
         $users = [];
@@ -79,7 +75,6 @@ try {
 
         echo json_encode($users);
     }
-
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);

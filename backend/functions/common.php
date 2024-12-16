@@ -1,5 +1,4 @@
 <?php
-// /functions/common.php
 
 function is_admin($user_login_id, $mySQL)
 {
@@ -13,4 +12,3 @@ function is_admin($user_login_id, $mySQL)
 
     return (bool)$is_admin;
 }
-?>

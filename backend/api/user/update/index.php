@@ -1,6 +1,4 @@
 <?php
-
-// Include necessary files
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/authorize.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_api_request.php");
 include_once($_SERVER["DOCUMENT_ROOT"] . "/functions/handle_multipart_request.php");
@@ -17,7 +15,7 @@ $input = handle_multipart_request();
 // Initialize an array to hold the response
 $response = [];
 
-// Function to upload the image and delete the old profile picture
+// Function to upload the image and delete the old profile picture if it exists
 function upload_image($image, $user_login_id, $mySQL)
 {
     // Check for upload errors
@@ -45,7 +43,7 @@ function upload_image($image, $user_login_id, $mySQL)
     if ($result->num_rows > 0) { // If the user has a profile picture
         $row = $result->fetch_assoc();
         $old_image_path = __DIR__ . '/' . $row['profile_picture']; // Construct the old image path
-        
+
         if ($row['profile_picture'] && file_exists($old_image_path)) { // Check if the old image exists
             // Delete the old file if it exists
             if (!unlink($old_image_path)) {
